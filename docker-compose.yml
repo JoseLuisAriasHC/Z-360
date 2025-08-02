@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
+      MYSQL_DATABASE: z-360
       MYSQL_USER: laravel
       MYSQL_PASSWORD: secret
     ports:
