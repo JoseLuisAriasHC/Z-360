@@ -17,3 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Herlper para el auto-completado
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
