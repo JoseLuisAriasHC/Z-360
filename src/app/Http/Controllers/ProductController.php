@@ -4,19 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
      * Listar todos los productos
      */
-    public function index()
+    public function index(Request $request)
     {
-        $product = Product::all();
+        $query = Product::query()->with('marca');
+
+        if ($request->filled('genero')) {
+            $query->where('genero', $request->input('genero'));
+        }
+
+        if ($request->filled('marca')) {
+            $query->where('marca_id', $request->input('marca'));
+        }
+
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->input('tipo'));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'LIKE', "%{$search}%")
+                    ->orWhere('tipo', 'LIKE', "%{$search}%")
+                    ->orWhere('genero', 'LIKE', "%{$search}%")
+                    ->orWhereHas('marca', fn($m) => $m->where('nombre', 'LIKE', "%{$search}%"));
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return response()->json([
             'success' => true,
-            'data' => $product
+            'data' => $products
         ]);
     }
 
