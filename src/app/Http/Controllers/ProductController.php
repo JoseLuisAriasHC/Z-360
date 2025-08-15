@@ -37,7 +37,7 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate(10);
+        $products = $query->orderBy('created_at', 'desc')->paginate(config('web.paginacion_por_pagina'));
 
         return response()->json([
             'success' => true,
