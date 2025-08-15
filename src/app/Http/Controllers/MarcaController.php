@@ -12,7 +12,7 @@ class MarcaController extends Controller
      */
     public function index()
     {
-        $marcas = Marca::all();
+        $marcas = Marca::paginate(config('web.paginacion_por_pagina'));
 
         return response()->json([
             'success' => true,
