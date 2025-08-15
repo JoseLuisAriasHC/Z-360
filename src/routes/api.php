@@ -4,6 +4,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductVariantController;
+use App\Http\Controllers\VariantImageController;
+use App\Http\Controllers\VariantSizeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +26,11 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// ProductController
+// Productos
 Route::apiResource('products', ProductController::class);
+Route::apiResource('product-variants', ProductVariantController::class);
+Route::apiResource('variant-sizes', VariantSizeController::class);
+Route::apiResource('variant-images', VariantImageController::class);
 
 // MarcaController
 Route::apiResource('marcas', MarcaController::class);
