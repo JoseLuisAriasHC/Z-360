@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -27,6 +28,9 @@ Route::apiResource('products', ProductController::class);
 
 // MarcaController
 Route::apiResource('marcas', MarcaController::class);
+
+// ColorController
+Route::apiResource('colores', ColorController::class);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
