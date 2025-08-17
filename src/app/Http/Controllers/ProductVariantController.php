@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductVariantRequest;
 use App\Models\ProductVariant;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductVariantController extends Controller
 {
@@ -72,6 +74,51 @@ class ProductVariantController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Variante de producto eliminada correctamente',
+        ]);
+    }
+
+    public function generate(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'colores'    => 'required|array|min:1',
+            'colores.*'  => 'exists:colores,id',
+            'tallas'     => 'required|array|min:1',
+            'tallas.*'   => 'exists:tallas,id',
+        ]);
+
+        $productId = $request->input('product_id');
+        $colores   = $request->input('colores');
+        $tallas    = $request->input('tallas');
+
+        $variants = [];
+
+        DB::transaction(function () use ($productId, $colores, $tallas, &$variants) {
+            foreach ($colores as $colorId) {
+                $variant = ProductVariant::create([
+                    'product_id'        => $productId,
+                    'color_id'          => $colorId,
+                    'precio'            => 0,
+                    'descuento'         => null,
+                    'imagen_principal'  => null,
+                ]);
+
+                foreach ($tallas as $tallaId) {
+                    $variant->sizes()->create([
+                        'talla_id'   => $tallaId,
+                        'stock'      => 0,
+                        'sku'        => strtoupper("SKU-{$variant->id}-{$tallaId}"),
+                    ]);
+                }
+
+                $variants[] = $variant->load('sizes');
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Combinaciones generadas correctamente',
+            'data'    => $variants,
         ]);
     }
 }

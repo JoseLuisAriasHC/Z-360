@@ -9,8 +9,10 @@ class VariantImage extends Model
 {
     use HasFactory;
 
+    protected $table = 'variant_images';
+
     protected $fillable = [
-        'variant_id',
+        'product_variant_id',
         'url',
     ];
 
