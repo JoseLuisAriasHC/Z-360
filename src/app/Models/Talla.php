@@ -11,6 +11,8 @@ class Talla extends Model
 
     protected $table = 'tallas';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'numero'
     ];
