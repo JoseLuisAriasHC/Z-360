@@ -5,6 +5,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariantController;
+use App\Http\Controllers\TallaController;
 use App\Http\Controllers\VariantImageController;
 use App\Http\Controllers\VariantSizeController;
 use Illuminate\Http\Request;
@@ -36,7 +37,10 @@ Route::apiResource('variant-images', VariantImageController::class);
 Route::apiResource('marcas', MarcaController::class);
 
 // ColorController
-Route::apiResource('colores', ColorController::class);
+Route::apiResource('colores', ColorController::class)->parameters(['colores' => 'color']);
+
+// TallaController
+Route::apiResource('tallas', TallaController::class);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
