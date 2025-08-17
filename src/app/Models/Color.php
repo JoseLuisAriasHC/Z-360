@@ -9,14 +9,17 @@ class Color extends Model
 {
     use HasFactory;
 
+    protected $table = 'colores';
+    
+    public $timestamps = false;
 
     protected $fillable = [
         'nombre',
         'codigo_hex',
     ];
 
-    // public function productVariants()
-    // {
-    //     return $this->hasMany(ProductVariant::class);
-    // }
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }
