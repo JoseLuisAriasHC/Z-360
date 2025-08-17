@@ -9,6 +9,8 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
+    protected $table = 'product_variants';
+
     protected $fillable = [
         'product_id',
         'color_id',
@@ -18,10 +20,6 @@ class ProductVariant extends Model
         'descuento_desde',
         'descuento_hasta',
     ];
-
-    protected $dates = ['descuento_desde', 'descuento_hasta'];
-
-    protected $appends = ['descuento_activo', 'precio_final'];
 
     public function product()
     {
