@@ -32,6 +32,7 @@ Route::apiResource('products', ProductController::class);
 Route::apiResource('product-variants', ProductVariantController::class);
 Route::apiResource('variant-sizes', VariantSizeController::class);
 Route::apiResource('variant-images', VariantImageController::class);
+Route::post('/product-variants/generate', [ProductVariantController::class, 'generate']);
 
 // MarcaController
 Route::apiResource('marcas', MarcaController::class);

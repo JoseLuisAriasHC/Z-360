@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('variant_sizes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('variant_id')->constrained('product_variants')->onDelete('cascade');
+            $table->foreignId('product_variant_id')->constrained('product_variants')->onDelete('cascade');
             $table->foreignId('talla_id')->constrained('tallas')->onDelete('cascade');
             $table->integer('stock')->default(0);
             $table->string('sku', 50)->unique();
