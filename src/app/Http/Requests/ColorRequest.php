@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ColorRequest extends FormRequest
 {
@@ -22,8 +23,17 @@ class ColorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:100|unique:colores,nombre',
-            'codigo_hex' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'nombre' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('colores', 'nombre')->ignore($this->route('color')),
+            ],
+            'codigo_hex' => [
+                'nullable',
+                'string',
+                'regex:/^#[0-9A-Fa-f]{6}$/'
+            ],
         ];
     }
 }
