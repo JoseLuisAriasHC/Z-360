@@ -12,8 +12,7 @@ class VariantSizeController extends Controller
      */
     public function index()
     {
-        $sizes = VariantSize::with('variant', 'talla')
-            ->paginate(config('web.paginacion_por_pagina'));
+        $sizes = VariantSize::with('productVariant.color', 'talla')->paginate(config('web.paginacion_por_pagina'));
 
         return response()->json([
             'success' => true,

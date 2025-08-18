@@ -22,13 +22,16 @@ class ProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => 'required|exists:products,id',
-            'color_id' => 'nullable|exists:colores,id',
-            'precio' => 'required|numeric|min:0',
-            'imagen_principal' => 'nullable|string|max:255',
-            'descuento' => 'nullable|numeric|min:0|max:100',
-            'descuento_desde' => 'nullable|date',
-            'descuento_hasta' => 'nullable|date|after_or_equal:descuento_desde',
+            'precio'           => 'sometimes|numeric|min:0',
+            'descuento'        => 'nullable|numeric|min:0',
+            'descuento_desde'  => 'nullable|date',
+            'descuento_hasta'  => 'nullable|date|after_or_equal:descuento_desde',
+            'imagen_principal' => 'nullable|image',
+            'imagenes'         => 'nullable|array',
+            'imagenes.*'       => 'image',
+            'tallas'           => 'sometimes|array',
+            'tallas.*.talla_id' => 'required|exists:tallas,id',
+            'tallas.*.stock'   => 'required|integer|min:0',
         ];
     }
 }

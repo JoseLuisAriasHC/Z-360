@@ -13,7 +13,7 @@ class VariantImage extends Model
 
     protected $fillable = [
         'product_variant_id',
-        'url',
+        'path',
     ];
 
     public function variant()
