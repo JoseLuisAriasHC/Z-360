@@ -29,9 +29,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 // Productos
 Route::apiResource('products', ProductController::class);
-Route::apiResource('product-variants', ProductVariantController::class);
 Route::apiResource('variant-sizes', VariantSizeController::class);
 Route::apiResource('variant-images', VariantImageController::class);
+
+// ProductVariantController
+Route::apiResource('product-variants', ProductVariantController::class)->except(['store']);
 Route::post('/product-variants/generate', [ProductVariantController::class, 'generate']);
 
 // MarcaController

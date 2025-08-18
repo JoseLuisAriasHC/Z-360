@@ -18,7 +18,7 @@ class VariantSize extends Model
         'sku',
     ];
 
-    public function variant()
+    public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
     }
