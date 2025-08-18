@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductVariantRequest;
+use App\Http\Resources\ProductVariantResource;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,27 +15,10 @@ class ProductVariantController extends Controller
      */
     public function index()
     {
-        $variants = ProductVariant::with(['product', 'color', 'sizes', 'images'])
+        $variants = ProductVariant::with(['color', 'sizes'])
             ->paginate(config('web.paginacion_por_pagina'));
 
-        return response()->json([
-            'success' => true,
-            'data' => $variants,
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ProductVariantRequest $request)
-    {
-        $variant = ProductVariant::create($request->validated());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Variante de producto creada correctamente',
-            'data' => $variant,
-        ], 201);
+        return ProductVariantResource::collection($variants);
     }
 
     /**
@@ -42,7 +26,7 @@ class ProductVariantController extends Controller
      */
     public function show(ProductVariant $productVariant)
     {
-        $productVariant->load(['product', 'color', 'sizes', 'images']);
+        $productVariant->load(['color', 'sizes', 'images']);
 
         return response()->json([
             'success' => true,
@@ -91,10 +75,15 @@ class ProductVariantController extends Controller
         $colores   = $request->input('colores');
         $tallas    = $request->input('tallas');
 
-        $variants = [];
-
-        DB::transaction(function () use ($productId, $colores, $tallas, &$variants) {
+        DB::transaction(function () use ($productId, $colores, $tallas) {
             foreach ($colores as $colorId) {
+                $existVariant = ProductVariant::where('product_id', $productId)
+                    ->where('color_id', $colorId)
+                    ->first();
+                if ($existVariant) {
+                    continue;
+                }
+
                 $variant = ProductVariant::create([
                     'product_id'        => $productId,
                     'color_id'          => $colorId,
@@ -110,15 +99,12 @@ class ProductVariantController extends Controller
                         'sku'        => strtoupper("SKU-{$variant->id}-{$tallaId}"),
                     ]);
                 }
-
-                $variants[] = $variant->load('sizes');
             }
         });
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Combinaciones generadas correctamente',
-            'data'    => $variants,
-        ]);
+        $variants = ProductVariant::with(['color', 'sizes.talla'])
+            ->paginate(config('web.paginacion_por_pagina'));
+
+        return ProductVariantResource::collection($variants);
     }
 }
