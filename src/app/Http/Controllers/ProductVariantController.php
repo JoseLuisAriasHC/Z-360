@@ -39,12 +39,41 @@ class ProductVariantController extends Controller
      */
     public function update(ProductVariantRequest $request, ProductVariant $productVariant)
     {
-        $productVariant->update($request->validated());
+        DB::transaction(function () use ($request, $productVariant) {
+
+            $request->validated();
+            // Actualizar campos principales
+            $productVariant->update([
+                'precio'           => $request->precio ?? $productVariant->precio,
+                'descuento'        => $request->descuento ?? $productVariant->descuento,
+                'descuento_desde'  => $request->descuento_desde ?? $productVariant->descuento_desde,
+                'descuento_hasta'  => $request->descuento_hasta ?? $productVariant->descuento_hasta,
+                'imagen_principal' => $request->imagen_principal ? $request->file('imagen_principal')->store('product_variants') : $productVariant->imagen_principal,
+            ]);
+
+            // Actualizar tallas y stock
+            if ($request->has('tallas')) {
+                foreach ($request->tallas as $talla) {
+                    $size = $productVariant->sizes()->updateOrCreate(
+                        ['talla_id' => $talla['talla_id']],
+                        ['stock' => $talla['stock'], 'sku' => strtoupper("SKU-{$productVariant->id}-{$talla['talla_id']}")]
+                    );
+                }
+            }
+
+            // Guardar nuevas imágenes adicionales
+            if ($request->has('imagenes')) {
+                foreach ($request->file('imagenes') as $img) {
+                    $productVariant->images()->create([
+                        'path' => $img->store('variant_images'),
+                    ]);
+                }
+            }
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Variante de producto actualizada correctamente',
-            'data' => $productVariant,
+            'data' => $productVariant->load(['sizes', 'images', 'color']),
         ]);
     }
 
