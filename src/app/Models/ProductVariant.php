@@ -40,7 +40,4 @@ class ProductVariant extends Model
     {
         return $this->hasMany(VariantImage::class);
     }
-
-    // saber si su descuento esta activo
-    // saber el precio con y sin descuento
 }
