@@ -29,6 +29,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 // Productos
 Route::apiResource('products', ProductController::class);
+Route::get('/products/search', [ProductController::class, 'search']);
 Route::apiResource('variant-sizes', VariantSizeController::class);
 Route::apiResource('variant-images', VariantImageController::class);
 
