@@ -7,15 +7,17 @@ use App\Http\Resources\ProductVariantResource;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Storage;
 
 class ProductVariantController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $productId)
     {
         $variants = ProductVariant::with(['color', 'sizes'])
+            ->where('product_id', $productId)
             ->paginate(config('web.paginacion_por_pagina'));
 
         return ProductVariantResource::collection($variants);
@@ -42,7 +44,9 @@ class ProductVariantController extends Controller
         DB::transaction(function () use ($request, $productVariant) {
 
             $request->validated();
-            // Actualizar campos principales
+            if ($request->hasFile('imagen_principal') && $productVariant->imagen_principal && Storage::exists($productVariant->imagen_principal))
+                Storage::delete($productVariant->imagen_principal);
+
             $productVariant->update([
                 'precio'           => $request->precio ?? $productVariant->precio,
                 'descuento'        => $request->descuento ?? $productVariant->descuento,
@@ -51,17 +55,25 @@ class ProductVariantController extends Controller
                 'imagen_principal' => $request->imagen_principal ? $request->file('imagen_principal')->store('product_variants') : $productVariant->imagen_principal,
             ]);
 
-            // Actualizar tallas y stock
             if ($request->has('tallas')) {
                 foreach ($request->tallas as $talla) {
-                    $size = $productVariant->sizes()->updateOrCreate(
+                    $productVariant->sizes()->updateOrCreate(
                         ['talla_id' => $talla['talla_id']],
                         ['stock' => $talla['stock'], 'sku' => strtoupper("SKU-{$productVariant->id}-{$talla['talla_id']}")]
                     );
                 }
             }
 
-            // Guardar nuevas imágenes adicionales
+            if ($request->filled('borrar_imagenes')) {
+                foreach ($request->borrar_imagenes as $imgId) {
+                    $img = $productVariant->images()->find($imgId);
+                    if ($img) {
+                        Storage::delete($img->path);
+                        $img->delete();
+                    }
+                }
+            }
+
             if ($request->has('imagenes')) {
                 foreach ($request->file('imagenes') as $img) {
                     $productVariant->images()->create([
