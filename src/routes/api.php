@@ -33,7 +33,10 @@ Route::apiResource('variant-sizes', VariantSizeController::class);
 Route::apiResource('variant-images', VariantImageController::class);
 
 // ProductVariantController
-Route::apiResource('product-variants', ProductVariantController::class)->except(['store']);
+Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
+Route::get('/product-variants/{product_variant}', [ProductVariantController::class, 'show']);
+Route::put('/product-variants/{product_variant}', [ProductVariantController::class, 'update']);
+Route::delete('/product-variants/{product_variant}', [ProductVariantController::class, 'destroy']);
 Route::post('/product-variants/generate', [ProductVariantController::class, 'generate']);
 
 // MarcaController
