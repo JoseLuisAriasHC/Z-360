@@ -26,4 +26,9 @@ class Product extends Model
     {
         return $this->belongsTo(Marca::class);
     }
+
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }
