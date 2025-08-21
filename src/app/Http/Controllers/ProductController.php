@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     /**
-     * Listar todos los productos
+     * Listar todos los productos en el ADM
      */
     public function index()
     {
@@ -20,7 +20,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Listar todos los productos
+     * Listar todos los productos en la Web
      */
     public function search(Request $request)
     {
@@ -57,7 +57,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Guardar un Producto
+     * Guardar un Producto en el ADM
      */
     public function store(ProductRequest $request)
     {
@@ -72,7 +72,7 @@ class ProductController extends Controller
 
 
     /**
-     * Mostrar un producto específica.
+     * Mostrar un producto específica en el ADM
      */
     public function show(Product $product)
     {
@@ -83,7 +83,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Actualizar un producto.
+     * Actualizar un producto en el ADM
      */
     public function update(ProductRequest $request, Product $product)
     {
@@ -97,7 +97,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Eliminar un producto.
+     * Eliminar un producto en el ADM
      */
     public function destroy(Product $product)
     {

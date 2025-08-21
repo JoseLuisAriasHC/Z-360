@@ -12,7 +12,7 @@ use Storage;
 class ProductVariantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar una lista de los productos variables de un producto en el ADM
      */
     public function index(int $productId)
     {
@@ -24,7 +24,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un producto variable en el ADM
      */
     public function show(ProductVariant $productVariant)
     {
@@ -37,7 +37,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar un producto variable con sus tallas e imagenes 
      */
     public function update(ProductVariantRequest $request, ProductVariant $productVariant)
     {
@@ -90,7 +90,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un producto variable
      */
     public function destroy(ProductVariant $productVariant)
     {
@@ -102,6 +102,9 @@ class ProductVariantController extends Controller
         ]);
     }
 
+    /**
+     * Generar los productos variables de un producto
+     */
     public function generate(Request $request)
     {
         $request->validate([

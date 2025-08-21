@@ -6,8 +6,7 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\TallaController;
-use App\Http\Controllers\VariantImageController;
-use App\Http\Controllers\VariantSizeController;
+use App\Http\Controllers\UserBrandSizeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,8 +29,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // Productos
 Route::apiResource('products', ProductController::class);
 Route::get('/products/search', [ProductController::class, 'search']);
-Route::apiResource('variant-sizes', VariantSizeController::class);
-Route::apiResource('variant-images', VariantImageController::class);
 
 // ProductVariantController
 Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
