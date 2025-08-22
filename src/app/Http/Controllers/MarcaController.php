@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MarcaRequest;
 use App\Models\Marca;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MarcaController extends Controller
 {
@@ -23,14 +24,20 @@ class MarcaController extends Controller
     /**
      * Guardar una nueva marca.
      */
-    public function store(Request $request)
+    public function store(MarcaRequest $request)
     {
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255|unique:marcas,nombre',
-            'logo_url' => 'nullable|url|max:255',
-        ]);
+        $validated = $request->validated();
+        $log_path = null;
 
-        $marca = Marca::create($validated);
+        if ($request->hasFile('logo')) {
+            $log_path = $request->file('logo')->store('marca_logos', 'public');
+        }
+
+        $marca = Marca::create([
+            'nombre'       => $validated['nombre'],
+            'talla_offset' => $validated['talla_offset'],
+            'logo'     => $log_path
+        ]);
 
         return response()->json([
             'success' => true,
@@ -53,14 +60,18 @@ class MarcaController extends Controller
     /**
      * Actualizar una marca.
      */
-    public function update(Request $request, Marca $marca)
+    public function update(MarcaRequest $request, Marca $marca)
     {
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255|unique:marcas,nombre,' . $marca->id,
-            'logo_url' => 'nullable|url|max:255',
-        ]);
+        $request->validated();
 
-        $marca->update($validated);
+        if ($request->hasFile('logo') && $marca->logo && Storage::disk('public')->exists($marca->logo))
+            Storage::disk('public')->delete($marca->logo);
+
+        $marca->update([
+            'nombre'        => $request->nombre ?? $marca->nombre,
+            'talla_offset'  => $request->talla_offset ?? $marca->talla_offset,
+            'logo'          => $request->hasFile('logo') ? $request->file('logo')->store('marca_logos', 'public') : $marca->logo,
+        ]);
 
         return response()->json([
             'success' => true,

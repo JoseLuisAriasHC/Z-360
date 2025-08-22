@@ -13,10 +13,17 @@ class Marca extends Model
 
     protected $fillable = [
         'nombre',
-        'logo_url',
+        'logo',
+        'talla_offset',
     ];
 
-    public function products(){
+    public function products()
+    {
         return $this->hasMany(Product::class);
+    }
+
+    public function userBrandSizes()
+    {
+        return $this->hasMany(UserBrandSize::class);
     }
 }
