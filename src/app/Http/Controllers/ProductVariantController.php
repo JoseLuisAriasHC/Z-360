@@ -44,15 +44,15 @@ class ProductVariantController extends Controller
         DB::transaction(function () use ($request, $productVariant) {
 
             $request->validated();
-            if ($request->hasFile('imagen_principal') && $productVariant->imagen_principal && Storage::exists($productVariant->imagen_principal))
-                Storage::delete($productVariant->imagen_principal);
+            if ($request->hasFile('imagen_principal') && $productVariant->imagen_principal && Storage::disk('public')->exists($productVariant->imagen_principal))
+                Storage::disk('public')->delete($productVariant->imagen_principal);
 
             $productVariant->update([
                 'precio'           => $request->precio ?? $productVariant->precio,
                 'descuento'        => $request->descuento ?? $productVariant->descuento,
                 'descuento_desde'  => $request->descuento_desde ?? $productVariant->descuento_desde,
                 'descuento_hasta'  => $request->descuento_hasta ?? $productVariant->descuento_hasta,
-                'imagen_principal' => $request->imagen_principal ? $request->file('imagen_principal')->store('product_variants') : $productVariant->imagen_principal,
+                'imagen_principal' => $request->hasFile('imagen_principal') ? $request->file('imagen_principal')->store('product_variants', 'public') : $productVariant->imagen_principal,
             ]);
 
             if ($request->has('tallas')) {
@@ -64,20 +64,20 @@ class ProductVariantController extends Controller
                 }
             }
 
-            if ($request->filled('borrar_imagenes')) {
+            if ($request->filled('borrar_imagenes') && is_array($request->borrar_imagenes)) {
                 foreach ($request->borrar_imagenes as $imgId) {
                     $img = $productVariant->images()->find($imgId);
                     if ($img) {
-                        Storage::delete($img->path);
+                        Storage::disk('public')->delete($img->path);
                         $img->delete();
                     }
                 }
             }
 
-            if ($request->has('imagenes')) {
+            if ($request->has('imagenes') && is_array($request->imagenes)) {
                 foreach ($request->file('imagenes') as $img) {
                     $productVariant->images()->create([
-                        'path' => $img->store('variant_images'),
+                        'path' => $img->store('variant_images', 'public'),
                     ]);
                 }
             }
