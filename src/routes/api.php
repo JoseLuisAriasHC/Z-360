@@ -46,6 +46,10 @@ Route::apiResource('colores', ColorController::class)->parameters(['colores' => 
 // TallaController
 Route::apiResource('tallas', TallaController::class);
 
+// UserBrandSizeController
+Route::get('/user-brand-size/{userId}', [UserBrandSizeController::class, 'index']);
+Route::post('/user-brand-size/bulk', [UserBrandSizeController::class, 'bulk']);
+
 Route::get('/me', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

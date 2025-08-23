@@ -16,4 +16,9 @@ class Talla extends Model
     protected $fillable = [
         'numero'
     ];
+
+    public function userBrandSizes()
+    {
+        return $this->hasMany(UserBrandSize::class);
+    }
 }
