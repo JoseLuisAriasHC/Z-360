@@ -44,4 +44,9 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    public function userBrandSizes()
+    {
+        return $this->hasMany(UserBrandSize::class);
+    }
 }
