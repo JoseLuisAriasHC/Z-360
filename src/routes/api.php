@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\TallaController;
 use App\Http\Controllers\UserBrandSizeController;
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,12 @@ Route::apiResource('tallas', TallaController::class);
 // UserBrandSizeController
 Route::get('/user-brand-size/{userId}', [UserBrandSizeController::class, 'index']);
 Route::post('/user-brand-size/bulk', [UserBrandSizeController::class, 'bulk']);
+
+// UserPhotoController
+Route::apiResource('user-photos', UserPhotoController::class)->except(['update']);
+Route::patch('user-photos/{userPhoto}/aprobar', [UserPhotoController::class, 'aprobar']);
+Route::patch('user-photos/{userPhoto}/descartar', [UserPhotoController::class, 'descartar']);
+Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoController::class, 'eliminarNoAprobadas']);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
