@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\TallaController;
 use App\Http\Controllers\UserBrandSizeController;
 use App\Http\Controllers\UserPhotoController;
+use App\Http\Controllers\WebSettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,11 @@ Route::apiResource('user-photos', UserPhotoController::class)->except(['update']
 Route::patch('user-photos/{userPhoto}/aprobar', [UserPhotoController::class, 'aprobar']);
 Route::patch('user-photos/{userPhoto}/descartar', [UserPhotoController::class, 'descartar']);
 Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoController::class, 'eliminarNoAprobadas']);
+
+// WebSettingsController
+Route::get('/web-settings', [WebSettingsController::class, 'index']);
+Route::get('/web-settings/{web_settings}', [WebSettingsController::class, 'show']);
+Route::patch('/web-settings/{clave}', [WebSettingsController::class, 'update']);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
