@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserPhoto;
+use App\Models\WebSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,14 +37,15 @@ class UserPhotoController extends Controller
             'foto'       => 'required|image',
         ]);
 
+        $maxFotos = (int) WebSettings::getValue('max_fotos_producto_por_usuario', 4);
         $count = UserPhoto::where('user_id', $validated['user_id'])
             ->where('product_id', $validated['product_id'])
             ->count();
 
-        if ($count >= 4) {
+        if ($count >= $maxFotos) {
             return response()->json([
                 'success' => false,
-                'message' => 'No puedes subir más de 4 fotos para este producto.',
+                'message' => "No puedes subir más de $maxFotos fotos para este producto.",
             ], 422);
         }
 
