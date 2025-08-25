@@ -31,4 +31,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+
+    public function etiquetas()
+    {
+        return $this->belongsToMany(Etiqueta::class, 'product_etiquetas');
+    }
 }

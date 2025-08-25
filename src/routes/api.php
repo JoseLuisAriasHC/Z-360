@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ColorController;
+use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductVariantController;
@@ -62,6 +63,12 @@ Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoContro
 Route::get('/web-settings', [WebSettingsController::class, 'index']);
 Route::get('/web-settings/{web_settings}', [WebSettingsController::class, 'show']);
 Route::patch('/web-settings/{clave}', [WebSettingsController::class, 'update']);
+
+// EtiquetaController
+Route::apiResource('etiquetas', EtiquetaController::class);
+Route::post('/products/{product}/etiquetas', [EtiquetaController::class, 'asignarEtiquetas']);
+Route::delete('/products/{product}/etiquetas', [EtiquetaController::class, 'eliminarEtiquetas']);
+Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaController::class, 'limpiarEtiqueta']);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
