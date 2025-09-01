@@ -63,6 +63,13 @@ class ProductController extends Controller
     {
         $product = Product::create($request->validated());
 
+        $product->detail()->create([
+            'parte_superior' => null,
+            'parte_inferior' => null,
+            'suela' => null,
+            'cuidados' => null,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Producto creado correctamente',

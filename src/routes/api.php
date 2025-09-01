@@ -5,6 +5,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\TallaController;
 use App\Http\Controllers\UserBrandSizeController;
@@ -32,6 +33,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // Productos
 Route::apiResource('products', ProductController::class);
 Route::get('/products/search', [ProductController::class, 'search']);
+
+// ProductDetailController
+Route::get('products/{product}/details', [ProductDetailController::class, 'show']);
+Route::put('products/{product}/details', [ProductDetailController::class, 'update']);
 
 // ProductVariantController
 Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
