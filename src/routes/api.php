@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ColorController;
+use App\Http\Controllers\CuponController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
@@ -76,9 +77,15 @@ Route::post('/products/{product}/etiquetas', [EtiquetaController::class, 'asigna
 Route::delete('/products/{product}/etiquetas', [EtiquetaController::class, 'eliminarEtiquetas']);
 Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaController::class, 'limpiarEtiqueta']);
 
+// ProductUsageController
 Route::apiResource('usages', ProductUsageController::class);
 Route::get('products/{product}/usages', [ProductUsageController::class, 'showProductUsages']);
 Route::post('products/{product}/usages', [ProductUsageController::class, 'asignarUsos']);
+
+// CuponController
+Route::apiResource('cupones', CuponController::class)->parameters([
+    'cupones' => 'cupon'
+]);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
