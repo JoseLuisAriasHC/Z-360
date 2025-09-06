@@ -6,6 +6,7 @@ use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
+use App\Http\Controllers\ProductUsageController;
 use App\Http\Controllers\ProductVariantController;
 use App\Http\Controllers\TallaController;
 use App\Http\Controllers\UserBrandSizeController;
@@ -74,6 +75,10 @@ Route::apiResource('etiquetas', EtiquetaController::class);
 Route::post('/products/{product}/etiquetas', [EtiquetaController::class, 'asignarEtiquetas']);
 Route::delete('/products/{product}/etiquetas', [EtiquetaController::class, 'eliminarEtiquetas']);
 Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaController::class, 'limpiarEtiqueta']);
+
+Route::apiResource('usages', ProductUsageController::class);
+Route::get('products/{product}/usages', [ProductUsageController::class, 'showProductUsages']);
+Route::post('products/{product}/usages', [ProductUsageController::class, 'asignarUsos']);
 
 Route::get('/me', function (Request $request) {
     return $request->user();
