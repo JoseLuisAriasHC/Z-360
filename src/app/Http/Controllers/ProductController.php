@@ -77,7 +77,6 @@ class ProductController extends Controller
         ], 201);
     }
 
-
     /**
      * Mostrar un producto específica en el ADM
      */
@@ -98,7 +97,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Marca actualizada correctamente',
+            'message' => 'Producto actualizado correctamente',
             'data' => $product
         ]);
     }
@@ -112,7 +111,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Marca eliminada correctamente'
+            'message' => 'Producto eliminado correctamente'
         ]);
     }
 }
