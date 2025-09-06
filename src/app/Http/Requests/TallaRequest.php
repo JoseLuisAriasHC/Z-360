@@ -27,7 +27,7 @@ class TallaRequest extends FormRequest
                 'numeric',
                 'min:0',
                 'max:99.9',
-                'unique:tallas,numero,' . $this->route('talla'),
+                'unique:tallas,numero,' . $this->route('talla')->id,
                 'regex:/^\d{1,2}(\.\d)?$/',
             ],
         ];

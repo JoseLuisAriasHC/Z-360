@@ -49,7 +49,7 @@ class TallaController extends Controller
      */
     public function update(TallaRequest $request, Talla $talla)
     {
-        $talla = Talla::create($request->validated());
+        $talla->update($request->validated());
 
         return response()->json([
             'success' => true,
