@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CuponController;
+use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductController;
@@ -86,6 +87,10 @@ Route::post('products/{product}/usages', [ProductUsageController::class, 'asigna
 Route::apiResource('cupones', CuponController::class)->parameters([
     'cupones' => 'cupon'
 ]);
+
+Route::apiResource('direcciones', DireccionController::class)->parameters([
+    'direcciones' => 'direccion'
+])->middleware('auth:sanctum');
 
 Route::get('/me', function (Request $request) {
     return $request->user();
