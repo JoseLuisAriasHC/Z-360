@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -29,13 +31,20 @@ class Handler extends ExceptionHandler
     {
         $this->renderable(function (Throwable $e, Request $request) {
             if ($request->is('api/*')) {
+                if ($e instanceof HttpResponseException) {
+                    return response()->json([
+                        'success' => false,
+                        'error'   => 'No autenticado. Debes iniciar sesión o enviar un token válido.'
+                    ], 401);
+                }
+
                 if ($e instanceof NotFoundHttpException) {
                     return response()->json([
                         'success' => false,
                         'error'   => 'El recurso solicitado no existe.'
                     ], 404);
                 }
-                
+
                 if ($e instanceof ValidationException) {
                     return response()->json([
                         'success' => false,
@@ -50,6 +59,12 @@ class Handler extends ExceptionHandler
                     $status = $e->getStatusCode();
                     $message = $e->getMessage() ?: 'Error HTTP';
                 }
+
+                \Log::error('Excepción capturada', [
+                    'tipo' => get_class($e),
+                    'mensaje' => $e->getMessage(),
+                    'status' => method_exists($e, 'getStatusCode') ? $e->getCode() : null,
+                ]);
 
                 return response()->json([
                     'success' => false,
