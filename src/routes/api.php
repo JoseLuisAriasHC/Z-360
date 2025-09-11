@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CuponController;
 use App\Http\Controllers\DireccionController;
@@ -91,6 +92,15 @@ Route::apiResource('cupones', CuponController::class)->parameters([
 Route::apiResource('direcciones', DireccionController::class)->parameters([
     'direcciones' => 'direccion'
 ])->middleware('auth:sanctum');
+
+// CartControlle
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('cart', [CartController::class, 'getCart']);
+    Route::post('cart/add', [CartController::class, 'addItem']);
+    Route::put('cart/item/{item}', [CartController::class, 'updateItem']);
+    Route::delete('cart/item/{item}', [CartController::class, 'removeItem']);
+    Route::delete('cart/clear', [CartController::class, 'clearCart']);
+});
 
 Route::get('/me', function (Request $request) {
     return $request->user();
