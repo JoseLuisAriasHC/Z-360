@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\OrderControllerADM;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ColorController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\CuponController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\ProductUsageController;
@@ -101,6 +103,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('cart/item/{item}', [CartController::class, 'removeItem']);
     Route::delete('cart/clear', [CartController::class, 'clearCart']);
 });
+
+Route::prefix('orders')->group(function () {
+    // Usuario autenticado
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/', [OrderController::class, 'index']); // listar mis pedidos
+        Route::get('/last', [OrderController::class, 'showLastOrder']); // último pedido
+        Route::get('/{order}', [OrderController::class, 'show']); // ver pedido propio
+        Route::post('/from-cart', [OrderController::class, 'storeFromCart']); // crear pedido desde carrito
+    });
+
+    // Invitado
+    Route::get('/token/{token}', [OrderController::class, 'showByToken']); // ver pedido invitado por token
+    Route::post('/guest', [OrderController::class, 'storeGuest']); // crear pedido invitado
+});
+
+Route::prefix('admin/orders')
+    ->middleware(['auth:sanctum', 'admin']) // 👈 puedes usar un Gate o Policy
+    ->group(function () {
+        Route::get('/', [OrderControllerADM::class, 'index']); // listar todos
+        Route::get('/{order}', [OrderControllerADM::class, 'show']); // ver detalle
+        Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']); // cambiar estado
+    });
 
 Route::get('/me', function (Request $request) {
     return $request->user();
