@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TipoCupon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,5 +18,9 @@ class Cupon extends Model
         'tipo',
         'fecha_expiracion',
         'uso_maximo',
+    ];
+
+    protected $casts = [
+        'tipo' => TipoCupon::class,
     ];
 }
