@@ -30,7 +30,6 @@ class DireccionRequest extends FormRequest
             'ciudad' => 'required|string|max:100',
             'cp' => ['required', 'string', 'regex:/^\d{5}$/'],
             'telefono' => ['required', 'string', 'regex:/^6\d{8}$|^7\d{8}$/'],
-            'telefono' => ['required', 'string', 'regex:/^\+\d{2}\s\d{3}\s\d{3}\s\d{3}$/'],
             'predeterminada' => 'boolean',
         ];
     }
