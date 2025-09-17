@@ -2,37 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'email' => 'required|string|max:150',
-            'password' => 'required|string|min:6',
-            'telefono' => 'nullable|string|max:20',
-        ]);
-
+        $request->validated();
         $user = User::create([
-            'nombre' => $request->nombre,
+            'nombre'   => $request->nombre,
             'apellido' => $request->apellido,
-            'email' => $request->email,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
             'telefono' => $request->telefono,
         ]);
 
-        return response()->json(
-            [
-                'message' => 'Usuario registrado correctamente',
-                'user' => $user
-            ],
-            201
-        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario registrado correctamente',
+            'data' => $user
+        ], 201);
     }
 
     public function login(Request $request)
@@ -41,6 +33,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        
         $user = User::Where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -50,8 +43,9 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
+            'success' => true,
             'message' => 'Login exitoso',
-            'user' => $user,
+            'data' => $user,
             'token' => $token,
         ]);
     }
@@ -60,6 +54,9 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Sesión cerrada']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión cerrada'
+        ]);
     }
 }
