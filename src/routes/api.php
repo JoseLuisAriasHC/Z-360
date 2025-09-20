@@ -19,6 +19,8 @@ use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\WebSettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,6 +128,44 @@ Route::prefix('admin/orders')
         Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']); // cambiar estado
     });
 
-Route::get('/me', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
+Route::post('/me', function (Request $request) {
+    $request->validate([
+        'imagen' => 'required|file|mimes:avif,jpeg,png,gif,webp',
+    ]);
+
+    $file = $request->file('imagen');
+    $filenameBase = time() . '_' . pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+    $sizes = [
+        'L'  => 680,
+        'Md' => 485,
+        'S'  => 164,
+        'Xs' => 78,
+    ];
+
+    // Crear ImageManager con driver Imagick
+    $manager = new ImageManager(new Driver());
+    $paths = [];
+
+    foreach ($sizes as $sizeName => $tamano) {
+        // Leer la imagen
+        $img = $manager->read($file->getRealPath());
+
+        // Redimensionar manteniendo proporción y sin exceder el tamaño
+        $img->resize($tamano, $tamano, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+
+        // Guardar como WebP con calidad 80
+        $path = "test_images/{$sizeName}_{$filenameBase}.webp";
+        Storage::disk('public')->put($path, (string) $img->toWebp(80));
+        $paths[$sizeName] = $path;
+    }
+
+    return response()->json([
+        'success' => true,
+        'files' => $paths,
+    ]);
+});
