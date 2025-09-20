@@ -15,7 +15,7 @@ use Str;
 class OrderController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listado de pedidos del usuario autenticado (paginado)
      */
     public function index()
     {
@@ -29,7 +29,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un pedido
      */
     public function show(Order $order)
     {
@@ -100,10 +100,7 @@ class OrderController extends Controller
     {
         $userId = Auth::id();
         if (!$userId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Autenticación requerida'
-            ], 401);
+            return response()->json(['success' => false, 'message' => 'Autenticación requerida'], 401);
         }
 
         $payload = $request->validated();
@@ -114,59 +111,17 @@ class OrderController extends Controller
         }
 
         return DB::transaction(function () use ($cart, $payload, $userId) {
-            $subtotal = 0;
+            $order = $this->createOrder($payload, null, $userId);
+            $subtotal = $this->addItems($order, $cart->items, true);
 
-            // Crear pedido
-            $order = Order::create([
-                'user_id' => $userId,
-                'token' => null,
-                'cupon_codigo' => $payload['cupon_codigo'] ?? null,
-                'estado' => 'pendiente',
-                'subtotal' => 0,
-                'descuento' => 0,
-                'costo_envio' => $payload['costo_envio'] ?? 0,
-                'total' => 0,
-                'nombre_cliente' => $payload['nombre_cliente'] ?? null,
-                'email_cliente' => $payload['email_cliente'] ?? null,
-                'telefono_cliente' => $payload['telefono_cliente'] ?? null,
-                'direccion_id' => $payload['direccion_id'] ?? null,
-                'direccion_calle' => $payload['direccion_calle'] ?? null,
-                'direccion_numero_calle' => $payload['direccion_numero_calle'] ?? null,
-                'direccion_piso_info' => $payload['direccion_piso_info'] ?? null,
-                'direccion_ciudad' => $payload['direccion_ciudad'] ?? null,
-                'direccion_cp' => $payload['direccion_cp'] ?? null,
-                'metodo_pago' => $payload['metodo_pago'] ?? null,
-                'fecha' => Carbon::now(),
-            ]);
-
-            // Añadir los productos al pedido desde el carrito
-            foreach ($cart->items as $cartItem) {
-                $variant_size = VariantSize::with('productVariant')->findOrFail($cartItem->variant_size_id);
-                $precio = $variant_size->productVariant->precio;
-                $cantidad = $cartItem->cantidad;
-
-                $order->items()->create([
-                    'variant_size_id' => $variant_size->id,
-                    'cantidad' => $cantidad,
-                    'precio_unitario' => $precio,
-                ]);
-
-                $subtotal += ($precio * $cantidad);
-            }
-
-            // Calcular subtotal, cupon y total
             $order->subtotal = round($subtotal, 2);
             $order->applyCupon($order->cupon_codigo);
             $order->calculateTotal();
             $order->save();
 
-            // vaciar carrito
             $cart->items()->delete();
 
-            return response()->json([
-                'success' => true,
-                'data' => $order->load('items')
-            ], 201);
+            return response()->json(['success' => true, 'data' => $order->load('items')], 201);
         });
     }
 
@@ -179,50 +134,14 @@ class OrderController extends Controller
 
         return DB::transaction(function () use ($data) {
             $token = Str::uuid()->toString();
+            $order = $this->createOrder($data, $token, null);
 
-            $order = Order::create([
-                'user_id' => null,
-                'token' => $token,
-                'cupon_codigo' => $data['cupon_codigo'] ?? null,
-                'estado' => 'pendiente',
-                'subtotal' => 0,
-                'descuento' => 0,
-                'costo_envio' => $data['costo_envio'] ?? 0,
-                'total' => 0,
-                'nombre_cliente' => $data['nombre_cliente'] ?? null,
-                'email_cliente' => $data['email_cliente'] ?? null,
-                'telefono_cliente' => $data['telefono_cliente'] ?? null,
-                'direccion_id' => $data['direccion_id'] ?? null,
-                'direccion_calle' => $data['direccion_calle'] ?? null,
-                'direccion_numero_calle' => $data['direccion_numero_calle'] ?? null,
-                'direccion_piso_info' => $data['direccion_piso_info'] ?? null,
-                'direccion_ciudad' => $data['direccion_ciudad'] ?? null,
-                'direccion_cp' => $data['direccion_cp'] ?? null,
-                'metodo_pago' => $data['metodo_pago'] ?? null,
-                'fecha' => Carbon::now(),
-            ]);
-
-            $subtotal = 0;
-            foreach ($data['items'] as $item) {
-                $variant_size = VariantSize::with('productVariant')->findOrFail($item['variant_size_id']);
-                $precio = $variant_size->productVariant->precio;
-                $cantidad = $item['cantidad'];
-
-                $order->items()->create([
-                    'variant_size_id' => $variant_size->id,
-                    'cantidad' => $cantidad,
-                    'precio_unitario' => $precio,
-                ]);
-
-                $subtotal += ($precio * $cantidad);
-            }
+            $subtotal = $this->addItems($order, $data['items'], false);
 
             $order->subtotal = round($subtotal, 2);
             $order->applyCupon($order->cupon_codigo);
             $order->calculateTotal();
             $order->save();
-
-            // TODo: enviar email, generar factura, etc
 
             return response()->json([
                 'success' => true,
@@ -230,5 +149,59 @@ class OrderController extends Controller
                 'token' => $token
             ], 201);
         });
+    }
+
+    /**
+     * Crear pedido base
+     */
+    private function createOrder(array $data, ?string $token = null, ?int $userId = null): Order
+    {
+        return Order::create([
+            'user_id' => $userId,
+            'token' => $token,
+            'cupon_codigo' => $data['cupon_codigo'] ?? null,
+            'estado' => 'pendiente',
+            'subtotal' => 0,
+            'descuento' => 0,
+            'total' => 0,
+            'nombre_cliente' => $data['nombre_cliente'],
+            'email_cliente' => $data['email_cliente'],
+            'telefono_cliente' => $data['telefono_cliente'],
+            'direccion_calle' => $data['direccion_calle'],
+            'direccion_numero_calle' => $data['direccion_numero_calle'],
+            'direccion_piso_info' => $data['direccion_piso_info'] ?? null,
+            'direccion_ciudad' => $data['direccion_ciudad'],
+            'direccion_cp' => $data['direccion_cp'],
+            'metodo_pago' => $data['metodo_pago'],
+            'fecha' => Carbon::now(),
+        ]);
+    }
+
+    /**
+     * Agregar items al pedido y calcular subtotal
+     * @param iterable $items Colección de items (puede ser del carrito o array de data)
+     * @param bool $fromCart true si vienen del carrito, false si vienen de array de payload
+     */
+    private function addItems(Order $order, iterable $items, bool $fromCart = false): float
+    {
+        $subtotal = 0;
+
+        foreach ($items as $item) {
+            $variantSizeId = $fromCart ? $item->variant_size_id : $item['variant_size_id'];
+            $cantidad = $fromCart ? $item->cantidad : $item['cantidad'];
+
+            $variantSize = VariantSize::with('productVariant')->findOrFail($variantSizeId);
+            $precio = $variantSize->productVariant->precio;
+
+            $order->items()->create([
+                'variant_size_id' => $variantSize->id,
+                'cantidad' => $cantidad,
+                'precio_unitario' => $precio,
+            ]);
+
+            $subtotal += $precio * $cantidad;
+        }
+
+        return $subtotal;
     }
 }
