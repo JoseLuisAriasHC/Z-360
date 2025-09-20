@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserOrderRequest extends FormRequest
 {
@@ -22,26 +23,22 @@ class UserOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cupon_codigo' => 'nullable|string|max:50',
-            'metodo_pago' => 'required|in:tarjeta,paypal,otro',
-            'costo_envio' => 'nullable|numeric|min:0',
+            // cupón y pago
+            'cupon_codigo'  => ['nullable', 'string', 'max:50'],
+            'metodo_pago'   => ['required', Rule::in(['tarjeta', 'paypal', 'otro'])],
+            'costo_envio'   => ['nullable', 'numeric', 'min:0'],
 
             // datos del cliente 
-            'nombre_cliente' => 'required|string|max:150',
-            'email_cliente' => 'nullable|email|max:150',
-            'telefono_cliente' => 'nullable|string|max:30',
+            'nombre_cliente'   => ['required', 'string', 'max:150'],
+            'email_cliente'    => ['nullable', 'email', 'max:150'],
+            'telefono_cliente' => ['nullable', 'string', 'max:30'],
 
-            // direccion
-            'direccion_calle' => 'nullable|string|max:100',
-            'direccion_numero_calle' => 'nullable|string|max:10',
-            'direccion_piso_info' => 'nullable|string|max:50',
-            'direccion_ciudad' => 'nullable|string|max:100',
-            'direccion_cp' => 'nullable|string|max:10',
-
-            // otros 
-            'cupon_codigo' => 'nullable|string|max:50',
-            'metodo_pago' => 'nullable|in:tarjeta,paypal,otro',
-            'costo_envio' => 'nullable|numeric|min:0',
+            // dirección
+            'direccion_calle'        => ['nullable', 'string', 'max:100'],
+            'direccion_numero_calle' => ['nullable', 'string', 'max:10'],
+            'direccion_piso_info'    => ['nullable', 'string', 'max:50'],
+            'direccion_ciudad'       => ['nullable', 'string', 'max:100'],
+            'direccion_cp'           => ['nullable', 'string', 'max:10'],
         ];
     }
 }

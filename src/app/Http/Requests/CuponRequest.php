@@ -23,24 +23,19 @@ class CuponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('cupones', 'codigo')->ignore(optional($this->route('cupon'))->id),
-            ],
-            'descuento' => 'required|numeric|min:0',
-            'tipo' => ['required', Rule::in(['porcentaje', 'fijo'])],
-            'fecha_expiracion' => 'required|date|after:now',
-            'uso_maximo' => 'required|integer|min:1',
+            'codigo'           => ['required', 'string', 'max:50', Rule::unique('cupones', 'codigo')->ignore(optional($this->route('cupon'))->id)],
+            'descuento'        => ['required', 'numeric', 'min:0'],
+            'tipo'             => ['required', Rule::in(['porcentaje', 'fijo'])],
+            'fecha_expiracion' => ['required', 'date', 'after:today'],
+            'uso_maximo'       => ['required', 'integer', 'min:1'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'codigo.unique' => 'Este código ya existe.',
-            'fecha_expiracion.after' => 'La fecha de expiración debe ser futura.',
+            'codigo.unique'            => 'Este código ya existe.',
+            'fecha_expiracion.after'   => 'La fecha de expiración debe ser futura.',
         ];
     }
 }

@@ -22,16 +22,16 @@ class ProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'precio'           => 'sometimes|numeric|min:0',
-            'descuento'        => 'nullable|numeric|min:0',
-            'descuento_desde'  => 'nullable|date',
-            'descuento_hasta'  => 'nullable|date|after_or_equal:descuento_desde',
-            'imagen_principal' => 'nullable|image',
-            'imagenes'         => 'nullable|array',
-            'imagenes.*'       => 'image',
-            'tallas'           => 'sometimes|array',
-            'tallas.*.talla_id' => 'required|exists:tallas,id',
-            'tallas.*.stock'   => 'required|integer|min:0',
+            'precio'             => ['sometimes', 'numeric', 'min:0'],
+            'descuento'          => ['nullable', 'numeric', 'min:0'],
+            'descuento_desde'    => ['nullable', 'date'],
+            'descuento_hasta'    => ['nullable', 'date', 'after_or_equal:descuento_desde'],
+            'imagen_principal'   => ['nullable', 'image'],
+            'imagenes'           => ['nullable', 'array'],
+            'imagenes.*'         => ['image'],
+            'tallas'             => ['sometimes', 'array'],
+            'tallas.*.talla_id'  => ['required', 'exists:tallas,id'],
+            'tallas.*.stock'     => ['required', 'integer', 'min:0'],
         ];
     }
 }

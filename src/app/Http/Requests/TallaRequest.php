@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TallaRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class TallaRequest extends FormRequest
                 'numeric',
                 'min:0',
                 'max:99.9',
-                'unique:tallas,numero,' . $this->route('talla')->id,
+                Rule::unique('tallas', 'numero')->ignore($this->route('talla')->id),
                 'regex:/^\d{1,2}(\.\d)?$/',
             ],
         ];
