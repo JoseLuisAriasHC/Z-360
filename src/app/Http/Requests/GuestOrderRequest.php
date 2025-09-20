@@ -30,20 +30,19 @@ class GuestOrderRequest extends FormRequest
 
             // datos del cliente 
             'nombre_cliente'    => ['required', 'string', 'max:150'],
-            'email_cliente'     => ['nullable', 'email', 'max:150'],
-            'telefono_cliente'  => ['nullable', 'string', 'max:30'],
+            'email_cliente'     => ['required', 'email', 'max:150'],
+            'telefono_cliente'  => ['required', 'string', 'max:30'],
 
             // dirección
-            'direccion_calle'         => ['nullable', 'string', 'max:100'],
-            'direccion_numero_calle'  => ['nullable', 'string', 'max:10'],
+            'direccion_calle'         => ['required', 'string', 'max:100'],
+            'direccion_numero_calle'  => ['required', 'string', 'max:10'],
             'direccion_piso_info'     => ['nullable', 'string', 'max:50'],
-            'direccion_ciudad'        => ['nullable', 'string', 'max:100'],
-            'direccion_cp'            => ['nullable', 'string', 'max:10'],
+            'direccion_ciudad'        => ['required', 'string', 'max:100'],
+            'direccion_cp'            => ['required', 'string', 'max:10'],
 
             // otros 
             'cupon_codigo'  => ['nullable', 'string', 'max:50'],
-            'metodo_pago'   => ['nullable', Rule::in(['tarjeta', 'paypal', 'otro'])],
-            'costo_envio'   => ['nullable', 'numeric', 'min:0'],
+            'metodo_pago'   => ['required', Rule::in(['tarjeta', 'paypal', 'otro'])],
         ];
     }
 }
