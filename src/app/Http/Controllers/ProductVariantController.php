@@ -14,6 +14,13 @@ use Str;
 
 class ProductVariantController extends Controller
 {
+    private const SIZES = [
+        'L'  => 680,
+        'M'  => 485,
+        'S'  => 164,
+        'XS' => 78,
+    ];
+
     /**
      * Mostrar una lista de los productos variables de un producto en el ADM
      */
@@ -45,46 +52,12 @@ class ProductVariantController extends Controller
     public function update(ProductVariantRequest $request, ProductVariant $productVariant)
     {
         DB::transaction(function () use ($request, $productVariant) {
-
             $request->validated();
             $manager = new ImageManager(new Driver());
-            $sizes = [
-                'L'  => 680,
-                'M'  => 485,
-                'S'  => 164,
-                'XS' => 78,
-            ];
 
-            // --- Manejo de imagen principal ---
             if ($request->hasFile('imagen_principal')) {
-                // Si ya existe una imagen principal, eliminarla junto con sus versiones
-                if ($productVariant->imagen_principal && Storage::disk('public')->exists($productVariant->imagen_principal)) {
-                    $filenameBase = pathinfo($productVariant->imagen_principal, PATHINFO_FILENAME);
-
-                    // Borrar también las versiones generadas
-                    foreach ($sizes as $sizeName) {
-                        $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
-                        if (Storage::disk('public')->exists($generatedPath)) {
-                            Storage::disk('public')->delete($generatedPath);
-                        }
-                    }
-                }
-                $filenameBase = Str::uuid();
-
-                // Generar las versiones redimensionadas en WebP
-                foreach ($sizes as $sizeName => $tamano) {
-                    $img = $manager->read($request->file('imagen_principal')->getRealPath());
-
-                    $img->resize($tamano, $tamano, function ($constraint) {
-                        $constraint->aspectRatio();
-                        $constraint->upsize();
-                    });
-
-                    $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
-                    Storage::disk('public')->put($generatedPath, (string) $img->toWebp(90));
-                }
-
-                $productVariant->imagen_principal = "product_variants/{$filenameBase}.webp";
+                $this->deleteOlImagenPrincipal($productVariant);
+                $this->saveImagemPrincipal($manager, $request->file('imagen_principal'), $productVariant);
             }
 
             $productVariant->update([
@@ -95,39 +68,16 @@ class ProductVariantController extends Controller
                 'imagen_principal' => $productVariant->imagen_principal,
             ]);
 
-            // --- Manejo de tallas ---
             if ($request->has('tallas')) {
-                foreach ($request->tallas as $talla) {
-                    $productVariant->sizes()->updateOrCreate(
-                        ['talla_id' => $talla['talla_id']],
-                        ['stock' => $talla['stock'], 'sku' => strtoupper("SKU-{$productVariant->id}-{$talla['talla_id']}")]
-                    );
-                }
+                $this->updateSizes($productVariant, $request->tallas);
             }
 
-            // --- Borrado de imágenes adicionales ---
-            if ($request->filled('borrar_imagenes') && is_array($request->borrar_imagenes)) {
-                foreach ($request->borrar_imagenes as $imgId) {
-                    $img = $productVariant->images()->find($imgId);
-                    if ($img) {
-                        Storage::disk('public')->delete($img->path);
-                        $img->delete();
-                    }
-                }
+            if ($request->filled('borrar_imagenes')) {
+                $this->deleteVariantImages($request->borrar_imagenes, $productVariant);
             }
 
-            if ($request->has('imagenes') && is_array($request->imagenes)) {
-                foreach ($request->file('imagenes') as $img) {
-                    $filenameBase = Str::uuid();
-
-                    $resized = $manager->read($img->getRealPath());
-                    $webpPath = "variant_images/{$filenameBase}.webp";
-                    Storage::disk('public')->put($webpPath, (string) $resized->toWebp(90));
-
-                    $productVariant->images()->create([
-                        'path' => $webpPath,
-                    ]);
-                }
+            if ($request->hasFile('imagenes')) {
+                $this->saveVariantImages($manager, $request->file('imagenes'), $productVariant);
             }
         });
 
@@ -198,5 +148,72 @@ class ProductVariantController extends Controller
             ->paginate(config('web.paginacion_por_pagina'));
 
         return ProductVariantResource::collection($variants);
+    }
+
+    private function deleteOlImagenPrincipal(ProductVariant $productVariant): void
+    {
+        if (!$productVariant->imagen_principal) return;
+
+        $filenameBase = pathinfo($productVariant->imagen_principal, PATHINFO_FILENAME);
+
+        foreach (self::SIZES as $sizeName => $size) {
+            $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
+            Storage::disk('public')->delete($generatedPath);
+        }
+    }
+
+    private function saveImagemPrincipal(ImageManager $manager, $file, ProductVariant $productVariant): void
+    {
+        $filenameBase = Str::uuid();
+
+        foreach (self::SIZES as $sizeName => $tamano) {
+            $img = $manager->read($file->getRealPath());
+            $img->resize($tamano, $tamano, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
+            Storage::disk('public')->put($generatedPath, (string) $img->toWebp(90));
+        }
+
+        $productVariant->imagen_principal = "product_variants/{$filenameBase}.webp";
+    }
+
+    private function saveVariantImages(ImageManager $manager, array $files, ProductVariant $productVariant): void
+    {
+        foreach ($files as $file) {
+            $filenameBase = Str::uuid();
+            $img = $manager->read($file->getRealPath());
+
+            $webpPath = "variant_images/{$filenameBase}.webp";
+            Storage::disk('public')->put($webpPath, (string) $img->toWebp());
+
+            $productVariant->images()->create(['path' => $webpPath]);
+        }
+    }
+
+    private function deleteVariantImages(array $imageIds, ProductVariant $productVariant): void
+    {
+        foreach ($imageIds as $imgId) {
+            $img = $productVariant->images()->find($imgId);
+            if ($img) {
+                Storage::disk('public')->delete($img->path);
+                $img->delete();
+            }
+        }
+    }
+
+    private function updateSizes(ProductVariant $productVariant, array $tallas): void
+    {
+        foreach ($tallas as $talla) {
+            $productVariant->sizes()->updateOrCreate(
+                ['talla_id' => $talla['talla_id']],
+                [
+                    'stock' => $talla['stock'],
+                    'sku'   => strtoupper("SKU-{$productVariant->id}-{$talla['talla_id']}")
+                ]
+            );
+        }
     }
 }
