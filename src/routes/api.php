@@ -109,25 +109,24 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('orders')->group(function () {
     // Usuario autenticado
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/', [OrderController::class, 'index']); // listar mis pedidos
-        Route::get('/last', [OrderController::class, 'showLastOrder']); // último pedido
-        Route::get('/{order}', [OrderController::class, 'show']); // ver pedido propio
-        Route::post('/from-cart', [OrderController::class, 'storeFromCart']); // crear pedido desde carrito
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/last', [OrderController::class, 'showLastOrder']);
+        Route::get('/{order}', [OrderController::class, 'show']);
+        Route::post('/from-cart', [OrderController::class, 'storeFromCart']);
     });
 
     // Invitado
-    Route::get('/token/{token}', [OrderController::class, 'showByToken']); // ver pedido invitado por token
-    Route::post('/guest', [OrderController::class, 'storeGuest']); // crear pedido invitado
+    Route::get('/token/{token}', [OrderController::class, 'showByToken']);
+    Route::post('/guest', [OrderController::class, 'storeGuest']);
 });
 
 Route::prefix('admin/orders')
-    ->middleware(['auth:sanctum', 'admin']) // 👈 puedes usar un Gate o Policy
+    ->middleware(['auth:sanctum', 'admin'])
     ->group(function () {
-        Route::get('/', [OrderControllerADM::class, 'index']); // listar todos
-        Route::get('/{order}', [OrderControllerADM::class, 'show']); // ver detalle
-        Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']); // cambiar estado
+        Route::get('/', [OrderControllerADM::class, 'index']);
+        Route::get('/{order}', [OrderControllerADM::class, 'show']);
+        Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']);
     });
-
 
 Route::post('/me', function (Request $request) {
     $request->validate([
@@ -139,9 +138,9 @@ Route::post('/me', function (Request $request) {
 
     $sizes = [
         'L'  => 680,
-        'Md' => 485,
+        'M' => 485,
         'S'  => 164,
-        'Xs' => 78,
+        'XS' => 78,
     ];
 
     // Crear ImageManager con driver Imagick
@@ -159,8 +158,8 @@ Route::post('/me', function (Request $request) {
         });
 
         // Guardar como WebP con calidad 80
-        $path = "test_images/{$sizeName}_{$filenameBase}.webp";
-        Storage::disk('public')->put($path, (string) $img->toWebp(80));
+        $path = "test_images4/{$sizeName}_{$filenameBase}.webp";
+        Storage::disk('public')->put($path, (string) $img->toWebp(90));
         $paths[$sizeName] = $path;
     }
 
