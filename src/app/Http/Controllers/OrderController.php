@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GuestOrderRequest;
 use App\Http\Requests\UserOrderRequest;
+use App\Mail\FacturaMail;
 use App\Models\Order;
 use App\Models\ShoppingCart;
 use App\Models\VariantSize;
+use App\Models\WebSettings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Str;
 
 class OrderController extends Controller
@@ -112,7 +115,7 @@ class OrderController extends Controller
 
         return DB::transaction(function () use ($cart, $payload, $userId) {
             $order = $this->createOrder($payload, null, $userId);
-            $subtotal = $this->addItems($order, $cart->items, true);
+            $subtotal = $this->addItemsAndCalculateSubtotal($order, $cart->items, true);
 
             $order->subtotal = round($subtotal, 2);
             $order->applyCupon($order->cupon_codigo);
@@ -120,6 +123,8 @@ class OrderController extends Controller
             $order->save();
 
             $cart->items()->delete();
+
+            $this->enviarFacturaPorEmail($order);
 
             return response()->json(['success' => true, 'data' => $order->load('items')], 201);
         });
@@ -136,12 +141,14 @@ class OrderController extends Controller
             $token = Str::uuid()->toString();
             $order = $this->createOrder($data, $token, null);
 
-            $subtotal = $this->addItems($order, $data['items'], false);
+            $subtotal = $this->addItemsAndCalculateSubtotal($order, $data['items'], false);
 
             $order->subtotal = round($subtotal, 2);
             $order->applyCupon($order->cupon_codigo);
             $order->calculateTotal();
             $order->save();
+
+            $this->enviarFacturaPorEmail($order);
 
             return response()->json([
                 'success' => true,
@@ -182,7 +189,7 @@ class OrderController extends Controller
      * @param iterable $items Colección de items (puede ser del carrito o array de data)
      * @param bool $fromCart true si vienen del carrito, false si vienen de array de payload
      */
-    private function addItems(Order $order, iterable $items, bool $fromCart = false): float
+    private function addItemsAndCalculateSubtotal(Order $order, iterable $items, bool $fromCart = false): float
     {
         $subtotal = 0;
 
@@ -203,5 +210,30 @@ class OrderController extends Controller
         }
 
         return $subtotal;
+    }
+
+    /**
+     * Enviar factura por email
+     */
+    private function enviarFacturaPorEmail(Order $order): void
+    {
+        try {
+            // Enviar el email con la factura
+            Mail::to($order->email_cliente)->send(new FacturaMail($order));
+
+            // Opcional: Log de éxito
+            \Log::info('Factura enviada correctamente', [
+                'order_id' => $order->id,
+                'email' => $order->email_cliente
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error enviando factura por email: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'email' => $order->email_cliente,
+                'trace' => $e->getTraceAsString()
+            ]);
+            // $email = WebSettings::getValue('correo_gestor_pedidos', 'devjoseluisariashc@gmail.com');
+            // Mail::to($email)->send(new ErrorNotification($e, $order));
+        }
     }
 }
