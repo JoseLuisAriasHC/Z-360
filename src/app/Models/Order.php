@@ -18,6 +18,8 @@ class Order extends Model
         'cupon_codigo',
         'estado',
         'subtotal',
+        'subtotal_sin_iva',
+        'iva',
         'descuento',
         'total',
         'nombre_cliente',
@@ -30,6 +32,16 @@ class Order extends Model
         'direccion_cp',
         'metodo_pago',
         'fecha'
+    ];
+
+    protected $casts = [
+        'fecha' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'subtotal' => 'decimal:2',
+        'descuento' => 'decimal:2',
+        'total' => 'decimal:2',
+        'costo_envio' => 'decimal:2'
     ];
 
     public function items()
@@ -65,7 +77,7 @@ class Order extends Model
     {
         $subtotal = $this->subtotal;
 
-        $coste_envio = (float) WebSettings::getValue('coste_envio', 5 );
+        $coste_envio = (float) WebSettings::getValue('coste_envio', 5);
         $free_from  = (float) WebSettings::getValue('free_coste_envio_from', 100);
 
         if ($subtotal >= $free_from) {
@@ -79,5 +91,15 @@ class Order extends Model
     {
         $this->calcularCosteEnvio();
         $this->total = round($this->subtotal - $this->descuento + $this->costo_envio, 2);
+    }
+
+    public function setSubtotalAttribute($value)
+    {
+        $ivaPorcentaje = (float) WebSettings::getValue('iva', 21);
+        $iva = $ivaPorcentaje / 100;
+
+        $this->attributes['subtotal'] = $value;
+        $this->attributes['iva'] = round($value * $iva, 2);
+        $this->attributes['subtotal_sin_iva'] = round($value - ($value * $iva), 2);
     }
 }
