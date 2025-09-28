@@ -61,11 +61,11 @@ class ProductVariantController extends Controller
             }
 
             $productVariant->update([
-                'precio'           => $request->precio ?? $productVariant->precio,
-                'descuento'        => $request->descuento ?? $productVariant->descuento,
-                'descuento_desde'  => $request->descuento_desde ?? $productVariant->descuento_desde,
-                'descuento_hasta'  => $request->descuento_hasta ?? $productVariant->descuento_hasta,
-                'imagen_principal' => $productVariant->imagen_principal,
+                'precio'            => $request->precio ?? $productVariant->precio,
+                'descuento'         => $request->descuento ?? $productVariant->descuento,
+                'descuento_desde'   => $request->descuento_desde ?? $productVariant->descuento_desde,
+                'descuento_hasta'   => $request->descuento_hasta ?? $productVariant->descuento_hasta,
+                'imagen_principal'  => $productVariant->imagen_principal,
             ]);
 
             if ($request->has('tallas')) {
@@ -177,7 +177,7 @@ class ProductVariantController extends Controller
             Storage::disk('public')->put($generatedPath, (string) $img->toWebp(90));
         }
 
-        $productVariant->imagen_principal = "product_variants/{$filenameBase}.webp";
+        $productVariant->imagen_principal = "{$filenameBase}.webp";
     }
 
     private function saveVariantImages(ImageManager $manager, array $files, ProductVariant $productVariant): void
@@ -189,7 +189,7 @@ class ProductVariantController extends Controller
             $webpPath = "variant_images/{$filenameBase}.webp";
             Storage::disk('public')->put($webpPath, (string) $img->toWebp());
 
-            $productVariant->images()->create(['path' => $webpPath]);
+            $productVariant->images()->create(['path' => "{$filenameBase}.webp"]);
         }
     }
 

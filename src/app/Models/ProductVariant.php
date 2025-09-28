@@ -15,6 +15,8 @@ class ProductVariant extends Model
         'product_id',
         'color_id',
         'precio',
+        'precio_sin_iva',
+        'iva',
         'imagen_principal',
         'descuento',
         'descuento_desde',
@@ -39,5 +41,15 @@ class ProductVariant extends Model
     public function images()
     {
         return $this->hasMany(VariantImage::class);
+    }
+
+    public function setPrecioAttribute($value)
+    {
+        $ivaPorcentaje = (float) WebSettings::getValue('iva', 21);
+        $iva = $ivaPorcentaje / 100;
+
+        $this->attributes['precio'] = $value;
+        $this->attributes['iva'] = round($value * $iva, 2);
+        $this->attributes['precio_sin_iva'] = round($value - ($value * $iva), 2);
     }
 }
