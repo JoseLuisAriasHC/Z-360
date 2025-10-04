@@ -163,7 +163,8 @@ class OrderController extends Controller
      */
     private function createOrder(array $data, ?string $token = null, ?int $userId = null): Order
     {
-        return Order::create([
+        $usarMismaDireccion = $data['usar_misma_direccion_facturacion'] ?? true;
+        $orderData = [
             'user_id' => $userId,
             'token' => $token,
             'cupon_codigo' => $data['cupon_codigo'] ?? null,
@@ -171,17 +172,40 @@ class OrderController extends Controller
             'subtotal' => 0,
             'descuento' => 0,
             'total' => 0,
-            'nombre_cliente' => $data['nombre_cliente'],
-            'email_cliente' => $data['email_cliente'],
-            'telefono_cliente' => $data['telefono_cliente'],
-            'direccion_calle' => $data['direccion_calle'],
-            'direccion_numero_calle' => $data['direccion_numero_calle'],
-            'direccion_piso_info' => $data['direccion_piso_info'] ?? null,
-            'direccion_ciudad' => $data['direccion_ciudad'],
-            'direccion_cp' => $data['direccion_cp'],
+            'envio_nombre' => $data['envio_nombre'],
+            'envio_email' => $data['envio_email'],
+            'envio_telefono' => $data['envio_telefono'],
+            'envio_direccion_calle' => $data['envio_direccion_calle'],
+            'envio_direccion_numero_calle' => $data['envio_direccion_numero_calle'],
+            'envio_direccion_piso_info' => $data['envio_direccion_piso_info'] ?? null,
+            'envio_direccion_ciudad' => $data['envio_direccion_ciudad'],
+            'envio_direccion_cp' => $data['envio_direccion_cp'],
+
+            'usar_misma_direccion_facturacion' => $usarMismaDireccion,
             'metodo_pago' => $data['metodo_pago'],
             'fecha' => Carbon::now(),
-        ]);
+        ];
+
+        if ($usarMismaDireccion) {
+            $orderData['facturacion_nombre'] = $data['envio_nombre'];
+            $orderData['facturacion_email'] = $data['envio_email'];
+            $orderData['facturacion_telefono'] = $data['envio_telefono'];
+            $orderData['facturacion_direccion_calle'] = $data['envio_direccion_calle'];
+            $orderData['facturacion_direccion_numero_calle'] = $data['envio_direccion_numero_calle'];
+            $orderData['facturacion_direccion_piso_info'] = $data['envio_direccion_piso_info'] ?? null;
+            $orderData['facturacion_direccion_ciudad'] = $data['envio_direccion_ciudad'];
+            $orderData['facturacion_direccion_cp'] = $data['envio_direccion_cp'];
+        } else {
+            $orderData['facturacion_nombre'] = $data['facturacion_nombre'];
+            $orderData['facturacion_email'] = $data['facturacion_email'];
+            $orderData['facturacion_telefono'] = $data['facturacion_telefono'];
+            $orderData['facturacion_direccion_calle'] = $data['facturacion_direccion_calle'];
+            $orderData['facturacion_direccion_numero_calle'] = $data['facturacion_direccion_numero_calle'];
+            $orderData['facturacion_direccion_piso_info'] = $data['facturacion_direccion_piso_info'] ?? null;
+            $orderData['facturacion_direccion_ciudad'] = $data['facturacion_direccion_ciudad'];
+            $orderData['facturacion_direccion_cp'] = $data['facturacion_direccion_cp'];
+        }
+        return Order::create($orderData);
     }
 
     /**
@@ -218,18 +242,16 @@ class OrderController extends Controller
     private function enviarFacturaPorEmail(Order $order): void
     {
         try {
-            // Enviar el email con la factura
-            Mail::to($order->email_cliente)->send(new FacturaMail($order));
+            Mail::to($order->envio_email)->send(new FacturaMail($order));
 
-            // Opcional: Log de éxito
             \Log::info('Factura enviada correctamente', [
                 'order_id' => $order->id,
-                'email' => $order->email_cliente
+                'email' => $order->envio_email
             ]);
         } catch (\Exception $e) {
             \Log::error('Error enviando factura por email: ' . $e->getMessage(), [
                 'order_id' => $order->id,
-                'email' => $order->email_cliente,
+                'email' => $order->envio_email,
                 'trace' => $e->getTraceAsString()
             ]);
             // $email = WebSettings::getValue('correo_gestor_pedidos', 'devjoseluisariashc@gmail.com');

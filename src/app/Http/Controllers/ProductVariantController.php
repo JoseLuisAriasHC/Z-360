@@ -56,8 +56,8 @@ class ProductVariantController extends Controller
             $manager = new ImageManager(new Driver());
 
             if ($request->hasFile('imagen_principal')) {
-                $this->deleteOlImagenPrincipal($productVariant);
-                $this->saveImagemPrincipal($manager, $request->file('imagen_principal'), $productVariant);
+                $this->deleteOldImagenPrincipal($productVariant);
+                $this->saveImagenPrincipal($manager, $request->file('imagen_principal'), $productVariant);
             }
 
             $productVariant->update([
@@ -66,6 +66,7 @@ class ProductVariantController extends Controller
                 'descuento_desde'   => $request->descuento_desde ?? $productVariant->descuento_desde,
                 'descuento_hasta'   => $request->descuento_hasta ?? $productVariant->descuento_hasta,
                 'imagen_principal'  => $productVariant->imagen_principal,
+                'imagen_principal_jpeg' => $productVariant->imagen_principal_jpeg,
             ]);
 
             if ($request->has('tallas')) {
@@ -92,6 +93,7 @@ class ProductVariantController extends Controller
      */
     public function destroy(ProductVariant $productVariant)
     {
+        $this->deleteOldImagenPrincipal($productVariant);
         $productVariant->delete();
 
         return response()->json([
@@ -132,6 +134,7 @@ class ProductVariantController extends Controller
                     'precio'            => 0,
                     'descuento'         => null,
                     'imagen_principal'  => null,
+                    'imagen_principal_jpeg' => null,
                 ]);
 
                 foreach ($tallas as $tallaId) {
@@ -150,36 +153,59 @@ class ProductVariantController extends Controller
         return ProductVariantResource::collection($variants);
     }
 
-    private function deleteOlImagenPrincipal(ProductVariant $productVariant): void
+    /**
+     * Eliminar imágenes antiguas (WebP y JPEG)
+     */
+    private function deleteOldImagenPrincipal(ProductVariant $productVariant): void
     {
         if (!$productVariant->imagen_principal) return;
 
         $filenameBase = pathinfo($productVariant->imagen_principal, PATHINFO_FILENAME);
 
+        // Eliminar todas las versiones WebP y JPEG
         foreach (self::SIZES as $sizeName => $size) {
-            $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
-            Storage::disk('public')->delete($generatedPath);
+            $webpPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
+            $jpegPath = "product_variants/{$sizeName}_{$filenameBase}.jpg";
+
+            Storage::disk('public')->delete($webpPath);
+            Storage::disk('public')->delete($jpegPath);
         }
     }
 
-    private function saveImagemPrincipal(ImageManager $manager, $file, ProductVariant $productVariant): void
+    /**
+     * Guardar imagen principal en ambos formatos (WebP + JPEG)
+     */
+    private function saveImagenPrincipal(ImageManager $manager, $file, ProductVariant $productVariant): void
     {
         $filenameBase = Str::uuid();
 
         foreach (self::SIZES as $sizeName => $tamano) {
+            // Leer y redimensionar imagen
             $img = $manager->read($file->getRealPath());
             $img->resize($tamano, $tamano, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
 
-            $generatedPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
-            Storage::disk('public')->put($generatedPath, (string) $img->toWebp(90));
+            // Guardar como WebP (para web)
+            $webpPath = "product_variants/{$sizeName}_{$filenameBase}.webp";
+            Storage::disk('public')->put($webpPath, (string) $img->toWebp(90));
+
+            // Guardar como JPEG solo para tamaño S (para PDFs)
+            if ($sizeName === 'S') {
+                $jpegPath = "product_variants/{$sizeName}_{$filenameBase}.jpg";
+                Storage::disk('public')->put($jpegPath, (string) $img->toJpeg(90));
+            }
         }
 
+        // Guardar nombres base (sin prefijo de tamaño)
         $productVariant->imagen_principal = "{$filenameBase}.webp";
+        $productVariant->imagen_principal_jpeg = "{$filenameBase}.jpg";
     }
 
+    /**
+     * Guardar imágenes adicionales de variante
+     */
     private function saveVariantImages(ImageManager $manager, array $files, ProductVariant $productVariant): void
     {
         foreach ($files as $file) {
@@ -193,17 +219,23 @@ class ProductVariantController extends Controller
         }
     }
 
+    /**
+     * Eliminar imágenes adicionales de variante
+     */
     private function deleteVariantImages(array $imageIds, ProductVariant $productVariant): void
     {
         foreach ($imageIds as $imgId) {
             $img = $productVariant->images()->find($imgId);
             if ($img) {
-                Storage::disk('public')->delete($img->path);
+                Storage::disk('public')->delete("variant_images/{$img->path}");
                 $img->delete();
             }
         }
     }
 
+    /**
+     * Actualizar tallas de la variante
+     */
     private function updateSizes(ProductVariant $productVariant, array $tallas): void
     {
         foreach ($tallas as $talla) {

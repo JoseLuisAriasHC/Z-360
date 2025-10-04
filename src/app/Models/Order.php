@@ -22,14 +22,28 @@ class Order extends Model
         'iva',
         'descuento',
         'total',
-        'nombre_cliente',
-        'email_cliente',
-        'telefono_cliente',
-        'direccion_calle',
-        'direccion_numero_calle',
-        'direccion_piso_info',
-        'direccion_ciudad',
-        'direccion_cp',
+
+        // Datos de ENVÍO
+        'envio_nombre',
+        'envio_email',
+        'envio_telefono',
+        'envio_direccion_calle',
+        'envio_direccion_numero_calle',
+        'envio_direccion_piso_info',
+        'envio_direccion_ciudad',
+        'envio_direccion_cp',
+
+        // Datos de FACTURACIÓN
+        'facturacion_nombre',
+        'facturacion_email',
+        'facturacion_telefono',
+        'facturacion_direccion_calle',
+        'facturacion_direccion_numero_calle',
+        'facturacion_direccion_piso_info',
+        'facturacion_direccion_ciudad',
+        'facturacion_direccion_cp',
+
+        'usar_misma_direccion_facturacion',
         'metodo_pago',
         'fecha'
     ];
@@ -41,7 +55,8 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'descuento' => 'decimal:2',
         'total' => 'decimal:2',
-        'costo_envio' => 'decimal:2'
+        'costo_envio' => 'decimal:2',
+        'usar_misma_direccion_facturacion' => 'boolean',
     ];
 
     public function items()

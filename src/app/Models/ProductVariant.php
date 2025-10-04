@@ -18,6 +18,7 @@ class ProductVariant extends Model
         'precio_sin_iva',
         'iva',
         'imagen_principal',
+        'imagen_principal_jpeg',
         'descuento',
         'descuento_desde',
         'descuento_hasta',

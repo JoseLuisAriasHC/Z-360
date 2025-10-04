@@ -35,7 +35,7 @@
         .invoice-header {
             display: table;
             width: 100%;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .header-left {
@@ -62,14 +62,8 @@
             margin-bottom: 10px;
         }
 
-        .company-logo::after {
-            content: "🏪";
-            color: white;
-            font-size: 20px;
-        }
-
         .invoice-title {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: bold;
             color: #111827;
             margin-bottom: 5px;
@@ -81,7 +75,7 @@
         }
 
         .company-info {
-            font-size: 14px;
+            font-size: 10px;
             color: #6b7280;
             line-height: 1.5;
         }
@@ -111,17 +105,17 @@
         }
 
         .section-title {
-            font-size: 14px;
+            font-size: 10px;
             font-weight: bold;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .customer-info {
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 12px;
+            line-height: 1.3;
             color: #374151;
         }
 
@@ -132,7 +126,7 @@
         }
 
         .invoice-details {
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1.8;
             color: #374151;
         }
@@ -146,13 +140,13 @@
 
         .products-table thead {
             background-color: #f9fafb;
+            text-align: center
         }
 
         .products-table th {
-            padding: 15px 12px;
-            text-align: left;
+            padding: 13px 10px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
             color: #374151;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -160,9 +154,10 @@
         }
 
         .products-table td {
-            padding: 20px 12px;
+            padding: 10px 12px;
             border-bottom: 1px solid #f3f4f6;
             vertical-align: middle;
+            text-align: center;
         }
 
         .products-table tbody tr:last-child td {
@@ -170,26 +165,20 @@
         }
 
         .product-image {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             object-fit: cover;
             border-radius: 8px;
             background-color: #f3f4f6;
         }
 
-        .product-placeholder {
-            width: 60px;
-            height: 60px;
-            background-color: #e5e7eb;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        td.product-td {
+            text-align: left;
+            padding-left: 40px;
         }
 
         .product-name {
-            font-size: 14px;
+            font-size: 12px;
             color: #111827;
             font-weight: 500;
         }
@@ -200,20 +189,12 @@
             margin-top: 2px;
         }
 
-        .quantity-cell {
-            text-align: center;
-            font-size: 14px;
-            color: #374151;
-        }
-
-        .price-cell {
-            text-align: right;
-            font-size: 14px;
+        .number-cell {
+            font-size: 12px;
             color: #374151;
         }
 
         .total-cell {
-            text-align: right;
             font-size: 14px;
             color: #111827;
             font-weight: 500;
@@ -231,8 +212,8 @@
         }
 
         .totals-table td {
-            padding: 8px 0;
-            font-size: 14px;
+            font-size: 12px;
+            padding: 4px 0px;
         }
 
         .totals-table .label {
@@ -255,13 +236,13 @@
 
         .total-final .label {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 12px;
             color: #111827;
         }
 
         .total-final .amount {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 14px;
             color: #111827;
         }
 
@@ -305,25 +286,40 @@
             <!-- Billing Information -->
             <div class="billing-info">
                 <div class="billing-left">
-                    <div class="section-title">Facturado A</div>
+                    <div class="section-title">Envio A</div>
                     <div class="customer-info">
-                        <div class="customer-name">{{ $order->nombre_cliente }}</div>
-                        {{ $order->direccion_calle }} {{ $order->direccion_numero_calle }},<br>
-                        @if ($order->direccion_piso_info)
-                            {{ $order->direccion_piso_info }}<br>
+                        <div class="customer-name">{{ $order->envio_nombre }}</div>
+                        {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }}, 
+                        @if ($order->envio_direccion_piso_info)
+                            {{ $order->envio_direccion_piso_info }}<br>
                         @endif
-                        {{ $order->direccion_ciudad }}, {{ $order->direccion_cp }}<br>
-                        {{ $order->email_cliente }}<br>
-                        {{ $order->telefono_cliente }}
+                        {{ $order->envio_direccion_ciudad }}, {{ $order->envio_direccion_cp }}<br>
+                        {{ $order->envio_email }}<br>
+                        {{ $order->envio_telefono }}
                     </div>
                 </div>
                 <div class="billing-right">
-                    <div class="section-title">Detalles de la Factura</div>
-                    <div class="invoice-details">
-                        <strong>Fecha de emisión:</strong>
-                        {{ is_string($order->fecha) ? $order->fecha : $order->fecha->format('d \d\e F, Y') }}<br>
-                        <strong>Fecha de vencimiento:</strong>
-                        {{ is_string($order->fecha) ? $order->fecha : $order->fecha->addDays(30)->format('d \d\e F, Y') }}
+                    <div class="section-title">Factura A</div>
+                    <div class="customer-info">
+                        @if ($order->usar_misma_direccion_facturacion)
+                            <div class="customer-name">{{ $order->envio_nombre }}</div>
+                            {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }}, 
+                            @if ($order->envio_direccion_piso_info)
+                                {{ $order->envio_direccion_piso_info }}<br>
+                            @endif
+                            {{ $order->envio_direccion_ciudad }}, {{ $order->envio_direccion_cp }}<br>
+                            {{ $order->facturacion_email }}<br>
+                            {{ $order->envio_telefono }}
+                        @else
+                            <div class="customer-name">{{ $order->facturacion_nombre }}</div>
+                            {{ $order->facturacion_direccion_calle }} {{ $order->facturacion_direccion_numero_calle }}, 
+                            @if ($order->facturacion_direccion_piso_info)
+                                {{ $order->facturacion_direccion_piso_info }}<br>
+                            @endif
+                            {{ $order->facturacion_direccion_ciudad }}, {{ $order->facturacion_direccion_cp }}<br>
+                            {{ $order->facturacion_email }}<br>
+                            {{ $order->facturacion_telefono }}
+                        @endif
                     </div>
                 </div>
             </div>
@@ -334,24 +330,24 @@
                     <tr>
                         <th style="width: 80px;"></th>
                         <th style="width: 40%;">Producto</th>
-                        <th style="width: 15%;" class="quantity-cell">Cantidad</th>
-                        <th style="width: 20%;" class="price-cell">Precio Unitario (con IVA)</th>
-                        <th style="width: 20%;" class="total-cell">Total</th>
+                        <th style="width: 15%;">Cantidad</th>
+                        <th style="width: 20%;">Precio Unitario (con IVA)</th>
+                        <th style="width: 20%;">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($order->items as $item)
                         <tr>
                             <td>
-                                @if ($item->variantSize && $item->variantSize->productVariant && $item->variantSize->productVariant->imagen_principal)
-                                    <img class="product-image"
-                                        src="{{ asset("storage/product_variant/S_{$item->variantSize->productVariant->imagen_principal}") }}"
+                                @if ($item->imagen_base64)
+                                    <img class="product-image" src="{{ $item->imagen_base64 }}"
                                         alt="{{ $item->variantSize->productVariant->product->nombre ?? 'Producto' }}">
                                 @else
-                                    <div class="product-placeholder">📦</div>
+                                    <img class="product-image" src="#"
+                                        alt="{{ $item->variantSize->productVariant->product->nombre ?? 'Producto' }}">
                                 @endif
                             </td>
-                            <td>
+                            <td class="product-td">
                                 <div class="product-name">
                                     {{ $item->variantSize->productVariant->product->nombre ?? 'Producto no disponible' }}
                                 </div>
@@ -364,8 +360,8 @@
                                     </div>
                                 @endif
                             </td>
-                            <td class="quantity-cell">{{ $item->cantidad }}</td>
-                            <td class="price-cell">€{{ number_format($item->precio_unitario, 2) }}</td>
+                            <td class="number-cell">{{ $item->cantidad }}</td>
+                            <td class="number-cell">€{{ number_format($item->precio_unitario, 2) }}</td>
                             <td class="total-cell">€{{ number_format($item->precio_unitario * $item->cantidad, 2) }}
                             </td>
                         </tr>
