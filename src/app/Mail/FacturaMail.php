@@ -25,7 +25,7 @@ class FacturaMail extends Mailable implements ShouldQueue
     ) {}
 
     /**
-     * asunto y configuración del email.
+     * Asunto y configuración del email.
      */
     public function envelope(): Envelope
     {
@@ -35,16 +35,17 @@ class FacturaMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Get the message content definition.
+     * Get the message content definition (para email HTML).
      */
     public function content(): Content
     {
         $webSettings = $this->getWebSettings();
+
         return new Content(
             view: 'emails.factura',
             with: [
                 'order' => $this->order,
-                'items' => $this->order->items->load('variantSize.productVariant'),
+                'items' => $this->prepareItemsForWeb(), // WebP para web
                 'settings' => $webSettings
             ]
         );
@@ -59,7 +60,7 @@ class FacturaMail extends Mailable implements ShouldQueue
 
         $pdf = Pdf::loadView('emails.factura-pdf', [
             'order' => $this->order,
-            'items' => $this->order->items->load('variantSize.productVariant'),
+            'items' => $this->prepareItemsForPdf(), // JPEG en base64 para PDF
             'settings' => $webSettings
         ]);
 
@@ -67,6 +68,57 @@ class FacturaMail extends Mailable implements ShouldQueue
             Attachment::fromData(fn() => $pdf->output(), 'factura-' . $this->order->id . '.pdf')
                 ->withMime('application/pdf'),
         ];
+    }
+
+    /**
+     * Preparar items para email HTML (con rutas WebP)
+     */
+    private function prepareItemsForWeb()
+    {
+        return $this->order->items->load([
+            'variantSize.productVariant.product',
+            'variantSize.productVariant.color',
+            'variantSize.talla'
+        ]);
+    }
+
+    /**
+     * Preparar items para PDF (con imágenes JPEG en base64)
+     */
+    private function prepareItemsForPdf()
+    {
+        $items = $this->order->items->load([
+            'variantSize.productVariant.product',
+            'variantSize.productVariant.color',
+            'variantSize.talla'
+        ]);
+
+        // Convertir imágenes a base64
+        foreach ($items as $item) {
+            if (
+                $item->variantSize &&
+                $item->variantSize->productVariant &&
+                $item->variantSize->productVariant->imagen_principal_jpeg
+            ) {
+
+                $jpegFilename = $item->variantSize->productVariant->imagen_principal_jpeg;
+                $jpegPath = storage_path("app/public/product_variants/S_{$jpegFilename}");
+
+                try {
+                    $imageData = file_get_contents($jpegPath);
+                    $mimeType = mime_content_type($jpegPath);
+                    $item->imagen_base64 = "data:{$mimeType};base64," . base64_encode($imageData);
+                } catch (\Exception $e) {
+                    \Log::warning('Error cargando imagen JPEG para PDF', [
+                        'path' => $jpegPath,
+                        'error' => $e->getMessage()
+                    ]);
+                    $item->imagen_base64 = null;
+                }
+            }
+        }
+
+        return $items;
     }
 
     /**

@@ -27,17 +27,27 @@ class UserOrderRequest extends FormRequest
             'cupon_codigo'  => ['nullable', 'string', 'max:50'],
             'metodo_pago'   => ['required', Rule::in(['tarjeta', 'paypal', 'otro'])],
 
-            // datos del cliente 
-            'nombre_cliente'   => ['required', 'string', 'max:150'],
-            'email_cliente'    => ['required', 'email', 'max:150'],
-            'telefono_cliente' => ['required', 'string', 'max:30'],
+            // Datos de ENVÍO
+            'envio_nombre'                  => ['required', 'string', 'max:255'],
+            'envio_email'                   => ['required', 'email', 'max:255'],
+            'envio_telefono'                => ['nullable', 'string', 'regex:/^6\d{8}$|^7\d{8}$/'],
+            'envio_direccion_calle'         => ['required', 'string', 'max:255'],
+            'envio_direccion_numero_calle'  => ['required', 'string', 'max:50'],
+            'envio_direccion_piso_info'     => ['nullable', 'string', 'max:255'],
+            'envio_direccion_ciudad'        => ['required', 'string', 'max:100'],
+            'envio_direccion_cp'            => ['required', 'string', 'max:10'],
 
-            // dirección
-            'direccion_calle'        => ['required', 'string', 'max:100'],
-            'direccion_numero_calle' => ['required', 'string', 'max:10'],
-            'direccion_piso_info'    => ['nullable', 'string', 'max:50'],
-            'direccion_ciudad'       => ['required', 'string', 'max:100'],
-            'direccion_cp'           => ['required', 'string', 'max:10'],
+            'usar_misma_direccion_facturacion' => ['boolean'],
+
+            // Datos de FACTURACIÓN
+            'facturacion_nombre'                    => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:255'],
+            'facturacion_email'                     => ['required_if:usar_misma_direccion_facturacion,false', 'email', 'max:255'],
+            'facturacion_telefono'                  => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'regex:/^6\d{8}$|^7\d{8}$/'],
+            'facturacion_direccion_calle'           => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:255'],
+            'facturacion_direccion_numero_calle'    => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:50'],
+            'facturacion_direccion_piso_info'       => ['nullable', 'string', 'max:255'],
+            'facturacion_direccion_ciudad'          => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:100'],
+            'facturacion_direccion_cp'              => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:10'],
         ];
     }
 }

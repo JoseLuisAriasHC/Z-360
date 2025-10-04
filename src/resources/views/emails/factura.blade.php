@@ -54,6 +54,10 @@
             margin-bottom: 30px;
         }
 
+        .order-info.direccion .info-row {
+            margin-bottom: 0px;
+        }
+
         .order-info h2 {
             margin: 0 0 15px 0;
             color: #333;
@@ -76,6 +80,10 @@
         .info-value {
             display: table-cell;
             color: #333;
+        }
+
+        .order-info.direccion .info-value{
+            width: 50%;
         }
 
         .products-summary {
@@ -189,6 +197,10 @@
             text-decoration: none;
         }
 
+        .margin-top {
+            margin-top: 10px;
+        }
+
         /* Responsive */
         @media only screen and (max-width: 600px) {
             .email-container {
@@ -231,7 +243,7 @@
             </div>
 
             <div class="content">
-                <p>Hola <strong>{{ $order->nombre_cliente }}</strong>,</p>
+                <p>Hola <strong>{{ $order->envio_nombre }}</strong>,</p>
                 <p>Nos complace confirmar que tu pedido ha sido procesado exitosamente.</p>
 
                 <div class="order-info">
@@ -255,7 +267,7 @@
                     </div>
                 </div>
 
-                <div class="order-info">
+                <div class="order-info direccion">
                     <div class="info-row">
                         <div class="info-value">
                             <h2>Dirección de envío</h2>
@@ -265,25 +277,42 @@
                         </div>
                     </div>
                     <div class="info-row">
-                        <div class="info-value">{{ $order->direccion_cp }}, {{ ucfirst($order->direccion_ciudad) }}
+                        <div class="info-value">{{ $order->envio_nombre }}
                         </div>
-                        <div class="info-value">{{ $order->direccion_cp }}, {{ ucfirst($order->direccion_ciudad) }}
+                        <div class="info-value">{{ $order->facturacion_nombre }}
                         </div>
                     </div>
                     <div class="info-row">
-                        <div class="info-value">{{ $order->direccion_calle }} {{ $order->direccion_numero_calle }}
+                        <div class="info-value">{{ $order->envio_direccion_calle }}
+                            {{ $order->envio_direccion_numero_calle }}
                         </div>
-                        <div class="info-value">{{ $order->direccion_calle }} {{ $order->direccion_numero_calle }}
+                        <div class="info-value">{{ $order->facturacion_direccion_calle }}
+                            {{ $order->facturacion_direccion_numero_calle }}
                         </div>
                     </div>
-                    @if ($order->direccion_piso_info)
+                    <div class="info-row">
+                        <div class="info-value">{{ $order->envio_direccion_cp }}
+                            {{ $order->envio_direccion_ciudad }}
+                        </div>
+                        <div class="info-value">{{ $order->facturacion_direccion_cp }}
+                            {{ $order->facturacion_direccion_ciudad }}
+                        </div>
+                    </div>
+
+                    <div class="margin-top">
                         <div class="info-row">
-                            <div class="info-value">{{ $order->direccion_calle }} {{ $order->direccion_numero_calle }}
+                            <div class="info-value">{{ $order->envio_email }}
                             </div>
-                            <div class="info-value">{{ $order->direccion_calle }} {{ $order->direccion_numero_calle }}
+                            <div class="info-value">{{ $order->facturacion_email }}
                             </div>
                         </div>
-                    @endif
+                        <div class="info-row">
+                            <div class="info-value">{{ $order->envio_telefono }}
+                            </div>
+                            <div class="info-value">{{ $order->facturacion_telefono }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="products-summary">
