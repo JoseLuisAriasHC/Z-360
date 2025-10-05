@@ -334,7 +334,7 @@
                             </div>
                             <div class="product-pricing">
                                 <div class="quantity">Cantidad: {{ $item->cantidad }}</div>
-                                <div class="price">€{{ number_format($item->precio_unitario * $item->cantidad, 2) }}
+                                <div class="price">{{ number_format($item->precio_unitario * $item->cantidad, 2) }} €
                                 </div>
                             </div>
                         </div>
@@ -344,7 +344,7 @@
                 <div class="totals-box">
                     <div class="total-row">
                         <div class="total-label">Subtotal:</div>
-                        <div class="total-amount">€{{ number_format($order->subtotal, 2) }}</div>
+                        <div class="total-amount">{{ number_format($order->subtotal, 2) }} €</div>
                     </div>
 
                     @if ($order->descuento > 0)
@@ -358,7 +358,7 @@
                     @if (isset($order->costo_envio) && $order->costo_envio > 0)
                         <div class="total-row">
                             <div class="total-label">Coste de envío:</div>
-                            <div class="total-amount">€{{ number_format($order->costo_envio, 2) }}</div>
+                            <div class="total-amount">{{ number_format($order->costo_envio, 2) }} €</div>
                         </div>
                     @elseif(isset($order->costo_envio))
                         <div class="total-row">
@@ -369,7 +369,7 @@
 
                     <div class="total-row final-total">
                         <div class="total-label">TOTAL:</div>
-                        <div class="total-amount">€{{ number_format($order->total, 2) }}</div>
+                        <div class="total-amount">{{ number_format($order->total, 2) }} €</div>
                     </div>
                 </div>
 
