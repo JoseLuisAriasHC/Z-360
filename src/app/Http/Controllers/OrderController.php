@@ -8,7 +8,6 @@ use App\Mail\FacturaMail;
 use App\Models\Order;
 use App\Models\ShoppingCart;
 use App\Models\VariantSize;
-use App\Models\WebSettings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -126,7 +125,10 @@ class OrderController extends Controller
 
             $this->enviarFacturaPorEmail($order);
 
-            return response()->json(['success' => true, 'data' => $order->load('items')], 201);
+            return response()->json([
+                'success' => true,
+                'data' => $order->load('items')
+            ], 201);
         });
     }
 
@@ -254,8 +256,6 @@ class OrderController extends Controller
                 'email' => $order->envio_email,
                 'trace' => $e->getTraceAsString()
             ]);
-            // $email = WebSettings::getValue('correo_gestor_pedidos', 'devjoseluisariashc@gmail.com');
-            // Mail::to($email)->send(new ErrorNotification($e, $order));
         }
     }
 }

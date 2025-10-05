@@ -289,7 +289,7 @@
                     <div class="section-title">Envio A</div>
                     <div class="customer-info">
                         <div class="customer-name">{{ $order->envio_nombre }}</div>
-                        {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }}, 
+                        {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }},
                         @if ($order->envio_direccion_piso_info)
                             {{ $order->envio_direccion_piso_info }}<br>
                         @endif
@@ -303,7 +303,7 @@
                     <div class="customer-info">
                         @if ($order->usar_misma_direccion_facturacion)
                             <div class="customer-name">{{ $order->envio_nombre }}</div>
-                            {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }}, 
+                            {{ $order->envio_direccion_calle }} {{ $order->envio_direccion_numero_calle }},
                             @if ($order->envio_direccion_piso_info)
                                 {{ $order->envio_direccion_piso_info }}<br>
                             @endif
@@ -312,7 +312,8 @@
                             {{ $order->envio_telefono }}
                         @else
                             <div class="customer-name">{{ $order->facturacion_nombre }}</div>
-                            {{ $order->facturacion_direccion_calle }} {{ $order->facturacion_direccion_numero_calle }}, 
+                            {{ $order->facturacion_direccion_calle }}
+                            {{ $order->facturacion_direccion_numero_calle }},
                             @if ($order->facturacion_direccion_piso_info)
                                 {{ $order->facturacion_direccion_piso_info }}<br>
                             @endif
@@ -361,8 +362,8 @@
                                 @endif
                             </td>
                             <td class="number-cell">{{ $item->cantidad }}</td>
-                            <td class="number-cell">€{{ number_format($item->precio_unitario, 2) }}</td>
-                            <td class="total-cell">€{{ number_format($item->precio_unitario * $item->cantidad, 2) }}
+                            <td class="number-cell">{{ number_format($item->precio_unitario, 2) }} €</td>
+                            <td class="total-cell">{{ number_format($item->precio_unitario * $item->cantidad, 2) }} €
                             </td>
                         </tr>
                     @empty
@@ -380,22 +381,26 @@
                 <table class="totals-table">
                     <tr>
                         <td class="label">Subtotal</td>
-                        <td class="amount">€{{ number_format($order->subtotal_sin_iva, 2) }}</td>
+                        <td class="amount">{{ number_format($order->subtotal_sin_iva, 2) }} €</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Envío</td>
+                        <td class="amount">{{ number_format($order->costo_envio, 2) }} €</td>
                     </tr>
                     <tr>
                         <td class="label">IVA ({{ (float) $settings['iva'] }}%)</td>
-                        <td class="amount">€{{ number_format($order->iva, 2) }}</td>
+                        <td class="amount">{{ number_format($order->iva, 2) }}€</td>
                     </tr>
                     @if ($order->descuento > 0)
                         <tr>
                             <td class="label">Descuento</td>
-                            <td class="amount" style="color: #059669;">-€{{ number_format($order->descuento, 2) }}</td>
+                            <td class="amount" style="color: #059669;">-{{ number_format($order->descuento, 2) }}€</td>
                         </tr>
                     @endif
                     <tr class="total-final">
                         <td class="label">Total</td>
                         <td class="amount">
-                            €{{ number_format($order->total, 2) }}
+                            {{ number_format($order->total, 2) }} €
                         </td>
                     </tr>
                 </table>

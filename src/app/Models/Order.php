@@ -71,22 +71,40 @@ class Order extends Model
 
     public function applyCupon(?string $codigo): void
     {
-        $descuento = 0;
+        $this->descuento = 0;
 
-        if ($codigo) {
-            $cupon = Cupon::where('codigo', $codigo)->first();
-
-            if ($cupon) {
-                $descuento = match ($cupon->tipo) {
-                    TipoCupon::PORCENTAJE => round($this->subtotal * ($cupon->descuento / 100), 2),
-                    TipoCupon::FIJO       => min($cupon->descuento, $this->subtotal),
-                    default               => 0,
-                };
-            }
+        if (!$codigo) {
+            return;
         }
 
+        $cupon = Cupon::where('codigo', $codigo)->first();
+
+        if (!$cupon) {
+            return;
+        }
+
+        if ($cupon->fecha_expiracion && $cupon->fecha_expiracion->isPast()) {
+            return;
+        }
+
+        if (!is_null($cupon->uso_maximo) && $cupon->uso_maximo <= 0) {
+            return;
+        }
+
+        // Calcular descuento
+        $descuento = match ($cupon->tipo) {
+            TipoCupon::PORCENTAJE => round($this->subtotal * ($cupon->descuento / 100), 2),
+            TipoCupon::FIJO       => min($cupon->descuento, $this->subtotal),
+            default               => 0,
+        };
+
         $this->descuento = $descuento;
+
+        if (!is_null($cupon->uso_maximo) && $cupon->uso_maximo > 0) {
+            $cupon->decrement('uso_maximo');
+        }
     }
+
 
     private function calcularCosteEnvio(): void
     {

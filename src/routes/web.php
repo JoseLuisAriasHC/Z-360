@@ -25,5 +25,5 @@ Route::get('/', function () {
     ];
     $order = Order::latest()->first();
 
-    return view('emails.factura', compact('order', 'settings'));
+    return view('emails.factura-pdf', compact('order', 'settings'));
 });
