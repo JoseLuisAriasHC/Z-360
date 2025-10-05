@@ -1,17 +1,19 @@
 services:
   app:
     build: .
-    container_name: Z-360
+    container_name: z360_app
     volumes:
       - ./src:/var/www/html
     ports:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - z360
 
   db:
     image: mysql:8.0
-    container_name: mysql-db
+    container_name: z360_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -22,6 +24,27 @@ services:
       - "3307:3306"
     volumes:
       - db_mysql:/var/lib/mysql
+    networks:
+      - z360
+
+  queue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Z-360_queue_worker
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - app
+      - db
+    networks:
+      - z360
 
 volumes:
   db_mysql:
+
+networks:
+  z360:
+    driver: bridge

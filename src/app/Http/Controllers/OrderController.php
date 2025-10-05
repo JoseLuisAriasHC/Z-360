@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GuestOrderRequest;
 use App\Http\Requests\UserOrderRequest;
+use App\Jobs\SendFacturaMailJob;
 use App\Mail\FacturaMail;
 use App\Models\Order;
 use App\Models\ShoppingCart;
@@ -243,19 +244,11 @@ class OrderController extends Controller
      */
     private function enviarFacturaPorEmail(Order $order): void
     {
-        try {
-            Mail::to($order->envio_email)->send(new FacturaMail($order));
+        SendFacturaMailJob::dispatch($order);
 
-            \Log::info('Factura enviada correctamente', [
-                'order_id' => $order->id,
-                'email' => $order->envio_email
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Error enviando factura por email: ' . $e->getMessage(), [
-                'order_id' => $order->id,
-                'email' => $order->envio_email,
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
+        \Log::info('Job de envío de factura ejecutado', [
+            'order_id' => $order->id,
+            'email' => $order->envio_email
+        ]);
     }
 }
