@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\FacturaMail;
+use App\Mail\FailedFacturaMail;
 use App\Models\Order;
 use App\Models\WebSettings;
 use Illuminate\Bus\Queueable;
@@ -68,7 +69,25 @@ class SendFacturaMailJob implements ShouldQueue
             'error' => $exception->getMessage()
         ]);
 
-        $emailAdmin = WebSettings::getValue('email_admin',config('web.paginacion_por_pagina'));
-        // Mail::to('admin@tuempresa.com')->send(new FailedInvoiceNotification($this->order, $exception));
+        // Notificar al administrador sobre el fallo
+        try {
+            $adminEmail = WebSettings::getValue('email_admin', config('web.paginacion_por_pagina'));
+            Mail::to($adminEmail)
+                ->send(new FailedFacturaMail(
+                    $this->order,
+                    $exception,
+                    'Error al enviar factura después de ' . $this->tries . ' intentos.'
+                ));
+
+            \Log::info('Notificación de fallo en el envio de la facutara al correo del cliente enviada al administrador', [
+                'order_id' => $this->order->id,
+                'admin_email' => $adminEmail
+            ]);
+        } catch (\Exception $e) {
+            \Log::critical('No se pudo notificar al administrador sobre el fallo', [
+                'order_id' => $this->order->id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
