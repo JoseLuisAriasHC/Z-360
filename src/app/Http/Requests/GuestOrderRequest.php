@@ -52,7 +52,6 @@ class GuestOrderRequest extends FormRequest
 
             // otros 
             'cupon_codigo'  => ['nullable', 'string', 'max:50'],
-            'metodo_pago'   => ['required', Rule::in(['tarjeta', 'paypal', 'otro'])],
         ];
     }
 }
