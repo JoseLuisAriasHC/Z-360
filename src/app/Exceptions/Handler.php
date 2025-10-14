@@ -6,6 +6,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -60,7 +61,7 @@ class Handler extends ExceptionHandler
                     $message = $e->getMessage() ?: 'Error HTTP';
                 }
 
-                \Log::error('Excepción capturada', [
+                Log::error('Excepción capturada', [
                     'tipo' => get_class($e),
                     'mensaje' => $e->getMessage(),
                     'status' => method_exists($e, 'getStatusCode') ? $e->getCode() : null,
