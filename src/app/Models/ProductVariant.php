@@ -24,6 +24,15 @@ class ProductVariant extends Model
         'descuento_hasta',
     ];
 
+    protected $casts = [
+        'precio' => 'decimal:2',
+        'precio_sin_iva' => 'decimal:2',
+        'iva' => 'decimal:2',
+        'descuento' => 'decimal:2',
+        'descuento_desde' => 'datetime',
+        'descuento_hasta' => 'datetime',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

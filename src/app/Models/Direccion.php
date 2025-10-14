@@ -24,8 +24,25 @@ class Direccion extends Model
         'predeterminada',
     ];
 
+    protected $casts = [
+        'predeterminada' => 'boolean',
+        'user_id' => 'integer',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Garantizar una sola dirección predeterminada por usuario
+    protected static function booted()
+    {
+        static::saving(function ($direccion) {
+            if ($direccion->predeterminada) {
+                static::where('user_id', $direccion->user_id)
+                    ->where('id', '!=', $direccion->id)
+                    ->update(['predeterminada' => false]);
+            }
+        });
     }
 }

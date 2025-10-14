@@ -19,6 +19,13 @@ class ProductDetail extends Model
         'cuidados',
     ];
 
+    protected $casts = [
+        'parte_superior' => 'string',
+        'parte_inferior' => 'string',
+        'suela' => 'string',
+        'cuidados' => 'string',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);

@@ -141,7 +141,6 @@ class ProductVariantController extends Controller
                     $variant->sizes()->create([
                         'talla_id'   => $tallaId,
                         'stock'      => 0,
-                        'sku'        => strtoupper("SKU-{$variant->id}-{$tallaId}"),
                     ]);
                 }
             }
@@ -241,10 +240,7 @@ class ProductVariantController extends Controller
         foreach ($tallas as $talla) {
             $productVariant->sizes()->updateOrCreate(
                 ['talla_id' => $talla['talla_id']],
-                [
-                    'stock' => $talla['stock'],
-                    'sku'   => strtoupper("SKU-{$productVariant->id}-{$talla['talla_id']}")
-                ]
+                ['stock' => $talla['stock']]
             );
         }
     }

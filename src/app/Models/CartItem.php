@@ -17,6 +17,12 @@ class CartItem extends Model
         'cantidad'
     ];
 
+    protected $casts = [
+        'shopping_cart_id' => 'integer',
+        'variant_size_id' => 'integer',
+        'cantidad' => 'integer',
+    ];
+
     public function cart()
     {
         return $this->belongsTo(ShoppingCart::class, 'shopping_cart_id');
