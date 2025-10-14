@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WebSettingsRequest;
 use App\Models\WebSettings;
 
-class WebSettingsController extends Controller
+class WebSettingsControllerADM extends Controller
 {
     /**
      * Display a listing of the resource.

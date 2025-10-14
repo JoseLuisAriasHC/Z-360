@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CuponRequest;
 use App\Models\Cupon;
-use Illuminate\Http\Request;
 
-class CuponController extends Controller
+class CuponControllerADM extends Controller
 {
     /**
      * Display a listing of the resource.

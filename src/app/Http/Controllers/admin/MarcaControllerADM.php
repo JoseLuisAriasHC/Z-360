@@ -6,7 +6,7 @@ use App\Http\Requests\MarcaRequest;
 use App\Models\Marca;
 use Illuminate\Support\Facades\Storage;
 
-class MarcaController extends Controller
+class MarcaControllerADM extends Controller
 {
     /**
      * Listar todas las marcas.

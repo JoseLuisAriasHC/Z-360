@@ -2,72 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TallaRequest;
-use App\Models\Talla;
+use App\Http\Requests\ColorRequest;
+use App\Models\Color;
 
-class TallaController extends Controller
+class ColorControllerADM extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $tallas = Talla::paginate(config('web.paginacion_por_pagina'));
+        $colores = Color::paginate(config('web.paginacion_por_pagina'));
         return response()->json([
             'success' => true,
-            'data' => $tallas
+            'data' => $colores
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TallaRequest $request)
+    public function store(ColorRequest $request)
     {
-        $talla = Talla::create($request->validated());
+        $color = Color::create($request->validated());
 
         return response()->json([
             'success' => true,
-            'message' => 'Talla creada correctamente',
-            'data' => $talla
+            'message' => 'Color creado correctamente',
+            'data' => $color
         ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Talla $talla)
+    public function show(Color $color)
     {
         return response()->json([
             'success' => true,
-            'data' => $talla
+            'data' => $color
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(TallaRequest $request, Talla $talla)
+    public function update(ColorRequest $request, Color $color)
     {
-        $talla->update($request->validated());
+        $color->update($request->validated());
 
         return response()->json([
             'success' => true,
-            'message' => 'Talla actulizadda correctamente',
-            'data' => $talla
+            'message' => 'Color actualizado correctamente',
+            'data' => $color
         ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Talla $talla)
+    public function destroy(Color $color)
     {
-        $talla->delete();
-
+        $color->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Marca eliminada correctamente'
+            'message' => 'Color eliminado correctamente'
         ]);
     }
 }

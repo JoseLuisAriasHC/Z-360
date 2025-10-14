@@ -6,7 +6,7 @@ use App\Models\Etiqueta;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class EtiquetaController extends Controller
+class EtiquetaControllerADM extends Controller
 {
     /**
      * Display a listing of the resource.

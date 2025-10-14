@@ -3,24 +3,21 @@
 use App\Http\Controllers\admin\OrderControllerADM;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\ColorController;
-use App\Http\Controllers\CuponController;
+use App\Http\Controllers\ColorControllerADM;
+use App\Http\Controllers\CuponControllerADM;
 use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\EtiquetaController;
-use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\EtiquetaControllerADM;
+use App\Http\Controllers\MarcaControllerADM;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductDetailController;
-use App\Http\Controllers\ProductUsageController;
-use App\Http\Controllers\ProductVariantController;
-use App\Http\Controllers\TallaController;
+use App\Http\Controllers\ProductControllerADM;
+use App\Http\Controllers\ProductDetailControllerADM;
+use App\Http\Controllers\ProductUsageControllerADM;
+use App\Http\Controllers\ProductVariantControllerADM;
+use App\Http\Controllers\TallaControllerADM;
 use App\Http\Controllers\UserBrandSizeController;
-use App\Http\Controllers\UserPhotoController;
-use App\Http\Controllers\WebSettingsController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserPhotoControllerADM;
+use App\Http\Controllers\WebSettingsControllerADM;
 use Illuminate\Support\Facades\Route;
-use Intervention\Image\Drivers\Imagick\Driver;
-use Intervention\Image\ImageManager;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,79 +30,28 @@ use Intervention\Image\ImageManager;
 |
 */
 
-// AuthController
+// Rutas para la Autenticacion
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// Productos
-Route::apiResource('products', ProductController::class);
-Route::get('/products/search', [ProductController::class, 'search']);
-
-// ProductDetailController
-Route::get('products/{product}/details', [ProductDetailController::class, 'show']);
-Route::put('products/{product}/details', [ProductDetailController::class, 'update']);
-
-// ProductVariantController
-Route::get('/products/{product}/variants', [ProductVariantController::class, 'index']);
-Route::get('/product-variants/{product_variant}', [ProductVariantController::class, 'show']);
-Route::put('/product-variants/{product_variant}', [ProductVariantController::class, 'update']);
-Route::delete('/product-variants/{product_variant}', [ProductVariantController::class, 'destroy']);
-Route::post('/product-variants/generate', [ProductVariantController::class, 'generate']);
-
-// MarcaController
-Route::apiResource('marcas', MarcaController::class);
-
-// ColorController
-Route::apiResource('colores', ColorController::class)->parameters(['colores' => 'color']);
-
-// TallaController
-Route::apiResource('tallas', TallaController::class);
-
-// UserBrandSizeController
-Route::get('/user-brand-size/{userId}', [UserBrandSizeController::class, 'index']);
-Route::post('/user-brand-size/bulk', [UserBrandSizeController::class, 'bulk']);
-
-// UserPhotoController
-Route::apiResource('user-photos', UserPhotoController::class)->except(['update']);
-Route::patch('user-photos/{userPhoto}/aprobar', [UserPhotoController::class, 'aprobar']);
-Route::patch('user-photos/{userPhoto}/descartar', [UserPhotoController::class, 'descartar']);
-Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoController::class, 'eliminarNoAprobadas']);
-
-// WebSettingsController
-Route::get('/web-settings', [WebSettingsController::class, 'index']);
-Route::get('/web-settings/{web_settings}', [WebSettingsController::class, 'show']);
-Route::patch('/web-settings/{clave}', [WebSettingsController::class, 'update']);
-
-// EtiquetaController
-Route::apiResource('etiquetas', EtiquetaController::class);
-Route::post('/products/{product}/etiquetas', [EtiquetaController::class, 'asignarEtiquetas']);
-Route::delete('/products/{product}/etiquetas', [EtiquetaController::class, 'eliminarEtiquetas']);
-Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaController::class, 'limpiarEtiqueta']);
-
-// ProductUsageController
-Route::apiResource('usages', ProductUsageController::class);
-Route::get('products/{product}/usages', [ProductUsageController::class, 'showProductUsages']);
-Route::post('products/{product}/usages', [ProductUsageController::class, 'asignarUsos']);
-
-// CuponController
-Route::apiResource('cupones', CuponController::class)->parameters([
-    'cupones' => 'cupon'
-]);
-
-Route::apiResource('direcciones', DireccionController::class)->parameters([
-    'direcciones' => 'direccion'
-])->middleware('auth:sanctum');
-
-// CartControlle
 Route::middleware('auth:sanctum')->group(function () {
+    // Rutas para el carrito
     Route::get('cart', [CartController::class, 'getCart']);
     Route::post('cart/add', [CartController::class, 'addItem']);
     Route::put('cart/item/{item}', [CartController::class, 'updateItem']);
     Route::delete('cart/item/{item}', [CartController::class, 'removeItem']);
     Route::delete('cart/clear', [CartController::class, 'clearCart']);
+
+    // Rutas para las direcciones
+    Route::apiResource('direcciones', DireccionController::class)->parameters(['direcciones' => 'direccion']);
+
+    // Rutas para las tallas perzonalizadas de los usuarios
+    Route::get('/user-brand-size/{userId}', [UserBrandSizeController::class, 'index']);
+    Route::post('/user-brand-size/bulk', [UserBrandSizeController::class, 'bulk']);
 });
 
+// Rutas para los pedidos
 Route::prefix('orders')->group(function () {
     // Usuario autenticado
     Route::middleware('auth:sanctum')->group(function () {
@@ -122,13 +68,70 @@ Route::prefix('orders')->group(function () {
     Route::post('/{order}/confirmar-pago', [OrderController::class, 'confirmarPago']);
 });
 
-Route::post('/stripe/webhook', [OrderController::class, 'stripeWebhook']);
+/*
+|--------------------------------------------------------------------------
+| Routes ADM
+|--------------------------------------------------------------------------
+|
+| Todas las rutas que se usaran SOLO en la parte de la administración
+| Solo podran acceder usuarios autenticados y que sean administradores
+|
+*/
 
-Route::prefix('admin/orders')
-    ->middleware(['auth:sanctum', 'admin'])
-    ->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    // Rutas para el Producto Base
+    Route::apiResource('products', ProductControllerADM::class);
+    Route::get('/products/search', [ProductControllerADM::class, 'search']);
+
+    // Rutas para las variantes de los productos
+    Route::get('/products/{product}/variants', [ProductVariantControllerADM::class, 'index']);
+    Route::get('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'show']);
+    Route::put('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'update']);
+    Route::delete('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'destroy']);
+    Route::post('/product-variants/generate', [ProductVariantControllerADM::class, 'generate']);
+
+    // Rutas para los detalles de un producto
+    Route::get('products/{product}/details', [ProductDetailControllerADM::class, 'show']);
+    Route::put('products/{product}/details', [ProductDetailControllerADM::class, 'update']);
+
+    // Ruta para las etiquetas de un producto
+    Route::apiResource('etiquetas', EtiquetaControllerADM::class);
+    Route::post('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'asignarEtiquetas']);
+    Route::delete('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'eliminarEtiquetas']);
+    Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaControllerADM::class, 'limpiarEtiqueta']);
+
+    // Ruta para los usos de un producto
+    Route::apiResource('usages', ProductUsageControllerADM::class);
+    Route::get('products/{product}/usages', [ProductUsageControllerADM::class, 'showProductUsages']);
+    Route::post('products/{product}/usages', [ProductUsageControllerADM::class, 'asignarUsos']);
+
+    // Rutas para los Pedidos
+    Route::prefix('orders')->group(function () {
         Route::get('/', [OrderControllerADM::class, 'index']);
         Route::get('/{order}', [OrderControllerADM::class, 'show']);
         Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']);
     });
 
+    // Rutas para la gestion de las fotos de los usuarios
+    Route::apiResource('user-photos', UserPhotoControllerADM::class)->except(['update']);
+    Route::patch('user-photos/{userPhoto}/aprobar', [UserPhotoControllerADM::class, 'aprobar']);
+    Route::patch('user-photos/{userPhoto}/descartar', [UserPhotoControllerADM::class, 'descartar']);
+    Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoControllerADM::class, 'eliminarNoAprobadas']);
+
+    // Rutas para las configuraciones de la aplicacion (IVA, Coste de envio, cuando es gratis el coste de envio, etc) 
+    Route::get('/web-settings', [WebSettingsControllerADM::class, 'index']);
+    Route::get('/web-settings/{web_settings}', [WebSettingsControllerADM::class, 'show']);
+    Route::patch('/web-settings/{clave}', [WebSettingsControllerADM::class, 'update']);
+
+    // Ruta para los Colores
+    Route::apiResource('colores', ColorControllerADM::class)->parameters(['colores' => 'color']);
+    // Ruta para los Cupones
+    Route::apiResource('cupones', CuponControllerADM::class)->parameters(['cupones' => 'cupon']);
+    // Ruta para las marcas
+    Route::apiResource('marcas', MarcaControllerADM::class);
+    // Ruta para las tallas
+    Route::apiResource('tallas', TallaControllerADM::class);
+});
+
+// Ruta del webhook de stripe para capturar los eventos en el proceso de pago que queremos
+Route::post('/stripe/webhook', [OrderController::class, 'stripeWebhook']);
