@@ -118,7 +118,11 @@ Route::prefix('orders')->group(function () {
     // Invitado
     Route::get('/token/{token}', [OrderController::class, 'showByToken']);
     Route::post('/guest', [OrderController::class, 'storeGuest']);
+
+    Route::post('/{order}/confirmar-pago', [OrderController::class, 'confirmarPago']);
 });
+
+Route::post('/stripe/webhook', [OrderController::class, 'stripeWebhook']);
 
 Route::prefix('admin/orders')
     ->middleware(['auth:sanctum', 'admin'])
@@ -128,43 +132,3 @@ Route::prefix('admin/orders')
         Route::patch('/{order}/status', [OrderControllerADM::class, 'updateStatus']);
     });
 
-Route::post('/me', function (Request $request) {
-    $request->validate([
-        'imagen' => 'required|file|mimes:avif,jpeg,png,gif,webp',
-    ]);
-
-    $file = $request->file('imagen');
-    $filenameBase = time() . '_' . pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-
-    $sizes = [
-        'L'  => 680,
-        'M' => 485,
-        'S'  => 164,
-        'XS' => 78,
-    ];
-
-    // Crear ImageManager con driver Imagick
-    $manager = new ImageManager(new Driver());
-    $paths = [];
-
-    foreach ($sizes as $sizeName => $tamano) {
-        // Leer la imagen
-        $img = $manager->read($file->getRealPath());
-
-        // Redimensionar manteniendo proporción y sin exceder el tamaño
-        $img->resize($tamano, $tamano, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
-
-        // Guardar como WebP con calidad 80
-        $path = "test_images4/{$sizeName}_{$filenameBase}.webp";
-        Storage::disk('public')->put($path, (string) $img->toWebp(90));
-        $paths[$sizeName] = $path;
-    }
-
-    return response()->json([
-        'success' => true,
-        'files' => $paths,
-    ]);
-});

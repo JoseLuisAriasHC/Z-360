@@ -2,21 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EstadoOrder;
+use App\Enums\EstadoPagoOrder;
+use App\Enums\EstadoPagoStripe;
 use App\Http\Requests\GuestOrderRequest;
 use App\Http\Requests\UserOrderRequest;
 use App\Jobs\SendFacturaMailJob;
-use App\Mail\FacturaMail;
 use App\Models\Order;
 use App\Models\ShoppingCart;
 use App\Models\VariantSize;
+use App\Services\StripeService;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Str;
 
 class OrderController extends Controller
 {
+    protected $stripeService;
+
+    public function __construct(StripeService $stripeService)
+    {
+        $this->stripeService = $stripeService;
+    }
+
     /**
      * Listado de pedidos del usuario autenticado (paginado)
      */
@@ -122,13 +134,21 @@ class OrderController extends Controller
             $order->calculateTotal();
             $order->save();
 
-            $cart->items()->delete();
+            $paymentResult = $this->stripeService->createPaymentIntent($order);
 
-            $this->enviarFacturaPorEmail($order);
+            if (!$paymentResult['success']) {
+                throw new Exception($paymentResult['message']);
+            }
+
+            $cart->items()->delete();
 
             return response()->json([
                 'success' => true,
-                'data' => $order->load('items')
+                'data' => $order->load('items'),
+                'payment' => [
+                    'clientSecret' => $paymentResult['clientSecret'],
+                    'paymentIntentId' => $paymentResult['paymentIntentId']
+                ]
             ], 201);
         });
     }
@@ -151,14 +171,87 @@ class OrderController extends Controller
             $order->calculateTotal();
             $order->save();
 
-            $this->enviarFacturaPorEmail($order);
+            $paymentResult = $this->stripeService->createPaymentIntent($order);
+
+            if (!$paymentResult['success']) {
+                throw new Exception($paymentResult['message']);
+            }
 
             return response()->json([
                 'success' => true,
                 'data' => $order->load('items'),
-                'token' => $token
+                'token' => $token,
+                'payment' => [
+                    'clientSecret' => $paymentResult['clientSecret'],
+                    'paymentIntentId' => $paymentResult['paymentIntentId']
+                ]
             ], 201);
         });
+    }
+
+    /**
+     * Confirmar pago exitoso (llamado desde frontend después de Stripe)
+     */
+    public function confirmarPago(Request $request, Order $order)
+    {
+        $request->validate([
+            'payment_intent_id' => 'required|string'
+        ]);
+
+        if ($order->pago_id !== $request->payment_intent_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment Intent no coincide con el pedido'
+            ], 400);
+        }
+
+        $verification = $this->stripeService->verificarPago($request->payment_intent_id);
+
+        if (!$verification['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al verificar el pago'
+            ], 500);
+        }
+
+        if ($verification['status'] === EstadoPagoStripe::EXITOSO->value) {
+            $order->update([
+                'pago_estado' => EstadoPagoOrder::EXITOSO->value,
+                'pago_fecha' => now(),
+                'estado' => EstadoOrder::CONFIRMADO->value
+            ]);
+
+            $this->enviarFacturaPorEmail($order);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pago confirmado exitosamente',
+                'data' => $order->fresh()
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'El pago no ha sido completado',
+            'payment_status' => $verification['status']
+        ], 400);
+    }
+
+    /**
+     * Webhook para recibir eventos de Stripe
+     */
+    public function stripeWebhook(Request $request)
+    {
+        $payload = $request->getContent();
+        $signature = $request->header('Stripe-Signature');
+
+        $result = $this->stripeService->handleWebhook($payload, $signature);
+
+        if ($result) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 400);
     }
 
     /**
@@ -185,7 +278,6 @@ class OrderController extends Controller
             'envio_direccion_cp' => $data['envio_direccion_cp'],
 
             'usar_misma_direccion_facturacion' => $usarMismaDireccion,
-            'metodo_pago' => $data['metodo_pago'],
             'fecha' => Carbon::now(),
         ];
 
@@ -213,8 +305,6 @@ class OrderController extends Controller
 
     /**
      * Agregar items al pedido y calcular subtotal
-     * @param iterable $items Colección de items (puede ser del carrito o array de data)
-     * @param bool $fromCart true si vienen del carrito, false si vienen de array de payload
      */
     private function addItemsAndCalculateSubtotal(Order $order, iterable $items, bool $fromCart = false): float
     {
@@ -246,7 +336,7 @@ class OrderController extends Controller
     {
         SendFacturaMailJob::dispatch($order);
 
-        \Log::info('Job de envío de factura ejecutado', [
+        Log::info('Job de envío de factura ejecutado', [
             'order_id' => $order->id,
             'email' => $order->envio_email
         ]);
