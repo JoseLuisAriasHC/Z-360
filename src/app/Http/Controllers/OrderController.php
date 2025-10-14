@@ -256,6 +256,9 @@ class OrderController extends Controller
 
     /**
      * Crear pedido base
+     * @param array $data payload con todos los datos para crear un pedido
+     * @param string $token token de un usuario no logueado
+     * @param int $userId id del usuario si es un pedido de un usuario logueado
      */
     private function createOrder(array $data, ?string $token = null, ?int $userId = null): Order
     {
@@ -278,7 +281,7 @@ class OrderController extends Controller
             'envio_direccion_cp' => $data['envio_direccion_cp'],
 
             'usar_misma_direccion_facturacion' => $usarMismaDireccion,
-            'fecha' => Carbon::now(),
+            'fecha_pedido' => Carbon::now(),
         ];
 
         if ($usarMismaDireccion) {
@@ -305,6 +308,8 @@ class OrderController extends Controller
 
     /**
      * Agregar items al pedido y calcular subtotal
+     * @param iterable $items Colección de items (puede ser del carrito o array de data)
+     * @param bool $fromCart true si vienen del carrito, false si vienen de array de payload
      */
     private function addItemsAndCalculateSubtotal(Order $order, iterable $items, bool $fromCart = false): float
     {

@@ -47,14 +47,17 @@ class Order extends Model
         'pago_id',
         'pago_estado',
         'pago_fecha',
+        'fecha_reembolso',
 
         'usar_misma_direccion_facturacion',
         'metodo_pago',
-        'fecha'
+        'fecha_pedido',
     ];
 
     protected $casts = [
-        'fecha' => 'datetime',
+        'fecha_pedido' => 'datetime',
+        'pago_fecha' => 'datetime',
+        'fecha_reembolso' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'subtotal' => 'decimal:2',

@@ -199,7 +199,7 @@
                         </div>
                         <div class="detail-item">
                             <p class="detail-label">Fecha del Pedido:</p>
-                            <p class="detail-value">{{ $order->fecha->format('d \d\e F, Y - H:i:s') }} UTC</p>
+                            <p class="detail-value">{{ $order->fecha_pedido->format('d \d\e F, Y - H:i:s') }} UTC</p>
                         </div>
                         <div class="detail-item">
                             <p class="detail-label">ID de Cliente:</p>

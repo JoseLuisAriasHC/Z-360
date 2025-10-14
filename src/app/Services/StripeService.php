@@ -185,7 +185,8 @@ class StripeService
 
         $order->update([
             'pago_estado' => EstadoPagoOrder::REEMBOLSADO,
-            'estado' => EstadoOrder::CANCELADO
+            'estado' => EstadoOrder::CANCELADO,
+            'fecha_reembolso' => now(),
         ]);
 
         Log::info('Reembolso procesado', [
@@ -207,7 +208,7 @@ class StripeService
         $paymentMethod = PaymentMethod::retrieve($paymentIntent->payment_method);
 
         return match ($paymentMethod->type) {
-            'card' => $paymentMethod->card->brand . ' ****' . $paymentMethod->card->last4,
+            'card' => $paymentMethod->card->brand . ' ***' . $paymentMethod->card->last4,
             'paypal' => 'PayPal',
             'apple_pay' => 'Apple pay',
             'google_pay' => 'Google pay',
