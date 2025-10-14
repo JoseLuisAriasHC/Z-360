@@ -7,7 +7,7 @@ use App\Models\WebSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class UserPhotoController extends Controller
+class UserPhotoControllerADM extends Controller
 {
     /**
      * Display a listing of the resource.

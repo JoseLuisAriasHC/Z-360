@@ -12,7 +12,7 @@ use Intervention\Image\ImageManager;
 use Storage;
 use Str;
 
-class ProductVariantController extends Controller
+class ProductVariantControllerADM extends Controller
 {
     private const SIZES = [
         'L'  => 680,

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ProductDetailController extends Controller
+class ProductDetailControllerADM extends Controller
 {
     /**
      * Display the specified resource.

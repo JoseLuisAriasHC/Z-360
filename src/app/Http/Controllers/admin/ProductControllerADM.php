@@ -7,7 +7,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class ProductControllerADM extends Controller
 {
     /**
      * Listar todos los productos en el ADM
