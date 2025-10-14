@@ -255,7 +255,7 @@
                     <div class="info-row">
                         <div class="info-label">Fecha:</div>
                         <div class="info-value">
-                            {{ is_string($order->fecha) ? $order->fecha : $order->fecha->format('d/m/Y') }}</div>
+                            {{ is_string($order->fecha_pedido) ? $order->fecha_pedido : $order->fecha_pedido->format('d/m/Y') }}</div>
                     </div>
                     <div class="info-row">
                         <div class="info-label">Estado:</div>
