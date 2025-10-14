@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\Order;
 use App\Models\WebSettings;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,6 +13,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class FacturaMail extends Mailable implements ShouldQueue
 {
@@ -108,8 +110,8 @@ class FacturaMail extends Mailable implements ShouldQueue
                     $imageData = file_get_contents($jpegPath);
                     $mimeType = mime_content_type($jpegPath);
                     $item->imagen_base64 = "data:{$mimeType};base64," . base64_encode($imageData);
-                } catch (\Exception $e) {
-                    \Log::warning('Error cargando imagen JPEG para PDF', [
+                } catch (Exception $e) {
+                    Log::warning('Error cargando imagen JPEG para PDF', [
                         'path' => $jpegPath,
                         'error' => $e->getMessage()
                     ]);
