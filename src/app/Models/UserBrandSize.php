@@ -18,6 +18,10 @@ class UserBrandSize extends Model
         'talla_personalizada',
     ];
 
+    protected $casts = [
+        'talla_personalizada' => 'decimal:2',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

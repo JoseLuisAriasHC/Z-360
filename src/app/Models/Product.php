@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\AlturaSuelaProduct;
+use App\Enums\CierreProducto;
+use App\Enums\Genero;
+use App\Enums\TipoProducto;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,6 +24,13 @@ class Product extends Model
         'cierre',
         'altura_suela',
         'plantilla',
+    ];
+
+    protected $casts = [
+        'tipo' => TipoProducto::class,
+        'genero' => Genero::class,
+        'cierre' => CierreProducto::class,
+        'altura_suela' => AlturaSuelaProduct::class,
     ];
 
     public function marca()

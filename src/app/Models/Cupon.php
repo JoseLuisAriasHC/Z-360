@@ -23,5 +23,7 @@ class Cupon extends Model
     protected $casts = [
         'tipo' => TipoCupon::class,
         'fecha_expiracion' => 'datetime',
+        'descuento' => 'float',
+        'uso_maximo' => 'integer',
     ];
 }

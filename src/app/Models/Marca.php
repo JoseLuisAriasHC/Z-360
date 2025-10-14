@@ -17,6 +17,10 @@ class Marca extends Model
         'talla_offset',
     ];
 
+    protected $casts = [
+        'talla_offset' => 'float',
+    ];
+
     public function products()
     {
         return $this->hasMany(Product::class);
