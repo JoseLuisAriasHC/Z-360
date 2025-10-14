@@ -43,6 +43,11 @@ class Order extends Model
         'facturacion_direccion_ciudad',
         'facturacion_direccion_cp',
 
+        // Stripe
+        'pago_id',
+        'pago_estado',
+        'pago_fecha',
+
         'usar_misma_direccion_facturacion',
         'metodo_pago',
         'fecha'

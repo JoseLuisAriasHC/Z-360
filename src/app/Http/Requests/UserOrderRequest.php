@@ -23,10 +23,6 @@ class UserOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // cupón y pago
-            'cupon_codigo'  => ['nullable', 'string', 'max:50'],
-            'metodo_pago'   => ['required', Rule::in(['tarjeta', 'paypal', 'otro'])],
-
             // Datos de ENVÍO
             'envio_nombre'                  => ['required', 'string', 'max:255'],
             'envio_email'                   => ['required', 'email', 'max:255'],
@@ -48,6 +44,9 @@ class UserOrderRequest extends FormRequest
             'facturacion_direccion_piso_info'       => ['nullable', 'string', 'max:255'],
             'facturacion_direccion_ciudad'          => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:100'],
             'facturacion_direccion_cp'              => ['required_if:usar_misma_direccion_facturacion,false', 'string', 'max:10'],
+
+            // cupón
+            'cupon_codigo'  => ['nullable', 'string', 'max:50'],
         ];
     }
 }
