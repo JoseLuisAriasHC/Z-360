@@ -11,6 +11,21 @@ services:
     networks:
       - z360
 
+  frontend:
+    build: ./frontend
+    container_name: z360_frontend
+    volumes:
+      - ./frontend/src:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - z360
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+
   db:
     image: mysql:8.0
     container_name: z360_db
