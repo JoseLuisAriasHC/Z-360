@@ -1,5 +1,5 @@
 <template>
-    <h2>APP global</h2>
+    <h1>Home</h1>
 </template>
 
 <script setup lang="ts">
