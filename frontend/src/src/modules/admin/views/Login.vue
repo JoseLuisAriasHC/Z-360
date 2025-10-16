@@ -1,5 +1,5 @@
-<script setup>
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+<script setup lang="ts">
+import FloatingConfigurator from '@admin/components/sakai/FloatingConfigurator.vue';
 import { ref } from 'vue';
 
 const email = ref('');

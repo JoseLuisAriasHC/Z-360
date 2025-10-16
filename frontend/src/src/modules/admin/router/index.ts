@@ -16,11 +16,11 @@ const adminRoutes: RouteRecordRaw[] = [
         path: '',
         redirect: '/admin/dashboard'
       },
-      {
-        path: 'dashboard',
-        name: 'admin-dashboard',
-        component: () => import('@admin/views/Dashboard.vue')
-      },
+      // {
+      //   path: 'dashboard',
+      //   name: 'admin-dashboard',
+      //   component: () => import('@admin/views/Dashboard.vue')
+      // },
       // Más rutas de admin...
     ]
   }

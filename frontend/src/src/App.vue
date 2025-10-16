@@ -1,8 +1,14 @@
 <template>
-    <h2>APP global</h2>
+  <router-view /> <!-- Aquí se cargan todas tus rutas -->
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+export default {
+  name: 'App',
+};
 </script>
 
-<style scoped></style>
+<style lang="css">
+/* Importa el CSS global que ya tiene Tailwind */
+@import './assets/main.css';
+</style>

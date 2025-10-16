@@ -10,11 +10,11 @@ const webRoutes: RouteRecordRaw[] = [
         name: 'home',
         component: () => import('@web/views/Home.vue')
       },
-      {
-        path: 'about',
-        name: 'about',
-        component: () => import('@web/views/About.vue')
-      },
+      // {
+      //   path: 'about',
+      //   name: 'about',
+      //   component: () => import('@web/views/About.vue')
+      // },
       // Más rutas web...
     ]
   }
