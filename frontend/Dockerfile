@@ -9,7 +9,7 @@ COPY src/package*.json ./
 RUN npm install
 
 # Copiar el resto del código
-COPY . .
+COPY src/. .
 
 # Exponer el puerto de Vite
 EXPOSE 5173

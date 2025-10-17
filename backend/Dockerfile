@@ -29,6 +29,14 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
 
+# Copiar archivos de dependencias y instalar
+COPY src/composer.json src/composer.lock ./
+RUN composer install --no-scripts --no-autoloader
+
+# Copiar el resto de la aplicación
+COPY src/. .
+RUN composer dump-autoload --optimize
+
 # Usar usuario no root para evitar problemas de permisos
 USER devuser
 

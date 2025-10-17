@@ -4,6 +4,7 @@ services:
     container_name: z360_backend
     volumes:
       - ./backend/src:/var/www/html
+      - vendor_data:/var/www/html/vendor
     ports:
       - "8000:8000"
     depends_on:
@@ -16,7 +17,7 @@ services:
     container_name: z360_frontend
     volumes:
       - ./frontend/src:/app
-      - /app/node_modules
+      - node_modules_data:/app/node_modules
     ports:
       - "5173:5173"
     depends_on:
@@ -24,7 +25,7 @@ services:
     networks:
       - z360
     environment:
-      - VITE_API_URL=http://localhost:8000/api
+      - VITE_API_URL=http://backend:8000/api
 
   db:
     image: mysql:8.0
@@ -51,14 +52,16 @@ services:
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
     volumes:
       - ./backend/src:/var/www/html
+      - vendor_data:/var/www/html/vendor
     depends_on:
-      - backend
       - db
     networks:
       - z360
 
 volumes:
   db_mysql:
+  vendor_data:
+  node_modules_data:
 
 networks:
   z360:
