@@ -30,3 +30,5 @@ coverage
 *.tsbuildinfo
 
 .env
+# Archivos Generados Automáticamente por Componentes
+components.d.ts
