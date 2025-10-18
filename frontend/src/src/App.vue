@@ -1,14 +1,7 @@
+<script setup></script>
+
 <template>
-  <router-view /> <!-- Aquí se cargan todas tus rutas -->
+    <router-view />
 </template>
 
-<script lang="ts">
-export default {
-  name: 'App',
-};
-</script>
-
-<style lang="css">
-/* Importa el CSS global que ya tiene Tailwind */
-@import './assets/main.css';
-</style>
+<style scoped></style>
