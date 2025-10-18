@@ -24,8 +24,6 @@ services:
       - backend
     networks:
       - z360
-    environment:
-      - VITE_API_URL=http://backend:8000/api
 
   db:
     image: mysql:8.0

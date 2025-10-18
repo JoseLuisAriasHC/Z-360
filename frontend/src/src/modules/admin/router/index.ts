@@ -5,7 +5,7 @@ const adminRoutes: RouteRecordRaw[] = [
     {
         path: 'login',
         name: 'admin-login',
-        component: () => import('@admin/views/pages/auth/Login.vue'),
+        component: () => import('@admin/views/auth/Login.vue'),
         meta: { requiresAuth: false },
     },
     {
