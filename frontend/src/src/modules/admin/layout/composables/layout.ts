@@ -1,6 +1,36 @@
-import { computed, reactive } from 'vue';
+import { computed, reactive, type ComputedRef } from 'vue';
 
-const layoutConfig = reactive({
+export interface LayoutConfig {
+    preset: string;
+    primary: string;
+    surface: string | null;
+    darkTheme: boolean;
+    menuMode: string;
+}
+
+export interface LayoutState {
+    staticMenuDesktopInactive: boolean;
+    overlayMenuActive: boolean;
+    profileSidebarVisible: boolean;
+    configSidebarVisible: boolean;
+    staticMenuMobileActive: boolean;
+    menuHoverActive: boolean;
+    activeMenuItem: any;
+}
+
+export interface UseLayoutReturn {
+    layoutConfig: LayoutConfig;
+    layoutState: LayoutState;
+    toggleMenu: () => void;
+    isSidebarActive: ComputedRef<boolean>;
+    isDarkTheme: ComputedRef<boolean>;
+    getPrimary: ComputedRef<string>;
+    getSurface: ComputedRef<string | null>;
+    setActiveMenuItem: (item: any) => void;
+    toggleDarkMode: () => void;
+}
+
+const layoutConfig = reactive<LayoutConfig>({
     preset: 'Aura',
     primary: 'emerald',
     surface: null,
@@ -8,7 +38,7 @@ const layoutConfig = reactive({
     menuMode: 'static'
 });
 
-const layoutState = reactive({
+const layoutState = reactive<LayoutState>({
     staticMenuDesktopInactive: false,
     overlayMenuActive: false,
     profileSidebarVisible: false,
@@ -18,19 +48,18 @@ const layoutState = reactive({
     activeMenuItem: null
 });
 
-export function useLayout() {
-    const setActiveMenuItem = (item) => {
+export function useLayout(): UseLayoutReturn {
+    const setActiveMenuItem = (item: any) => {
         layoutState.activeMenuItem = item.value || item;
     };
 
     const toggleDarkMode = () => {
         if (!document.startViewTransition) {
             executeDarkModeToggle();
-
             return;
         }
 
-        document.startViewTransition(() => executeDarkModeToggle(event));
+        document.startViewTransition(() => executeDarkModeToggle());
     };
 
     const executeDarkModeToggle = () => {

@@ -3,20 +3,21 @@
 use App\Http\Controllers\admin\OrderControllerADM;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\ColorControllerADM;
-use App\Http\Controllers\CuponControllerADM;
+use App\Http\Controllers\admin\ColorControllerADM;
+use App\Http\Controllers\admin\CuponControllerADM;
+use App\Http\Controllers\admin\DashboardControllerADM;
 use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\EtiquetaControllerADM;
-use App\Http\Controllers\MarcaControllerADM;
+use App\Http\Controllers\admin\EtiquetaControllerADM;
+use App\Http\Controllers\admin\MarcaControllerADM;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductControllerADM;
-use App\Http\Controllers\ProductDetailControllerADM;
-use App\Http\Controllers\ProductUsageControllerADM;
-use App\Http\Controllers\ProductVariantControllerADM;
-use App\Http\Controllers\TallaControllerADM;
+use App\Http\Controllers\admin\ProductControllerADM;
+use App\Http\Controllers\admin\ProductDetailControllerADM;
+use App\Http\Controllers\admin\ProductUsageControllerADM;
+use App\Http\Controllers\admin\ProductVariantControllerADM;
+use App\Http\Controllers\admin\TallaControllerADM;
 use App\Http\Controllers\UserBrandSizeController;
-use App\Http\Controllers\UserPhotoControllerADM;
-use App\Http\Controllers\WebSettingsControllerADM;
+use App\Http\Controllers\admin\UserPhotoControllerADM;
+use App\Http\Controllers\admin\WebSettingsControllerADM;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -131,6 +132,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::apiResource('marcas', MarcaControllerADM::class);
     // Ruta para las tallas
     Route::apiResource('tallas', TallaControllerADM::class);
+    // Ruta para las metricas del dashboard
+    Route::get('/dashboard/metricas', [DashboardControllerADM::class, 'getMetricas']);
+    // Ruta para obtener los 10 productos más vendidos
+    Route::get('/dashboard/top-ventas', [DashboardControllerADM::class, 'getTopVentasProducts']);
+    // Ruta para obtener la grafica del performance de cada mes
+    Route::get('/dashboard/weekly-performance', [DashboardControllerADM::class, 'getWeeklyPerformance']);
 });
 
 // Ruta del webhook de stripe para capturar los eventos en el proceso de pago que queremos

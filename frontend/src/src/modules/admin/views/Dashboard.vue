@@ -1,22 +1,17 @@
 <script setup>
-import BestSellingWidget from '@admin/components/dashboard/BestSellingWidget.vue';
-import NotificationsWidget from '@admin/components/dashboard/NotificationsWidget.vue';
-import RecentSalesWidget from '@admin/components/dashboard/RecentSalesWidget.vue';
-import RevenueStreamWidget from '@admin/components/dashboard/RevenueStreamWidget.vue';
-import StatsWidget from '@admin/components/dashboard/StatsWidget.vue';
+    import BestSellingWidget from '@admin/components/dashboard/BestSellingWidget.vue';
+    import RevenueStreamWidget from '@admin/components/dashboard/RevenueStreamWidget.vue';
+    import MetricasWidget from '@admin/components/dashboard/metricas/MetricasWidget.vue';
 </script>
 
 <template>
     <div class="grid grid-cols-12 gap-8">
-        <StatsWidget />
-
-        <div class="col-span-12 xl:col-span-6">
-            <RecentSalesWidget />
-            <BestSellingWidget />
-        </div>
-        <div class="col-span-12 xl:col-span-6">
+        <MetricasWidget />
+        <div class="col-span-12 xl:col-span-8">
             <RevenueStreamWidget />
-            <NotificationsWidget />
+        </div>
+        <div class="col-span-12 xl:col-span-4">
+            <BestSellingWidget />
         </div>
     </div>
 </template>
