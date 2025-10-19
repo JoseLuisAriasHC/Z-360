@@ -26,7 +26,6 @@ export interface ApiError {
 
 class AuthService {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
-        debugger;
         const response = await apiClient.post<LoginResponse>('/login', credentials);
         
         if (response.data.success && response.data.token) {
