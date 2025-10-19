@@ -23,35 +23,45 @@ router.beforeEach((to, from, next) => {
     const requiresAuthUser = to.meta.requiresAuthUser as boolean | undefined;
     const isAuthenticated = !!localStorage.getItem('auth_token');
 
-    if (requiresAuthAdmin) {
+    // Protección de rutas de admin que requieren autenticación
+    if (requiresAuthAdmin === true) {
         if (!isAuthenticated) {
-            next({ name: 'admin-login' });
+            if (to.name !== 'admin-login') {
+                next({ name: 'admin-login' });
+                return;
+            }
+            next();
             return;
         }
+        
         const isAdminUser = authService.isAdmin();
         if (!isAdminUser) {
-            next({ name: 'admin-access-denied' });
+            if (to.name !== 'admin-access-denied') {
+                next({ name: 'admin-access-denied' });
+                return;
+            }
+            next();
             return;
         }
     }
 
-    if (requiresAuthAdmin === false && to.name === 'admin-login') {
+    // Si el usuario está autenticado y va a login, redirigir al dashboard
+    if (requiresAuthAdmin === false && isAuthenticated && to.name === 'admin-login') {
         next({ name: 'admin-dashboard' });
         return;
     }
 
-    if (requiresAuthUser) {
+    // Protección de rutas de usuario
+    if (requiresAuthUser === true) {
         if (!isAuthenticated) {
-            next({ name: 'login' });
-            return;
-        }
-        if (isAuthenticated && to.name === 'login') {
-            next({ name: 'dashboard' });
+            if (to.name !== 'login') {
+                next({ name: 'login' });
+                return;
+            }
+            next();
             return;
         }
     }
-
     next();
 });
-
 export default router;
