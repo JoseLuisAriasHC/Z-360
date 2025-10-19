@@ -15,16 +15,16 @@ const adminRoutes: RouteRecordRaw[] = [
         meta: { requiresAuth: false },
     },
     {
-        path: '/',
+        path: '',
         component: AppLayout,
         meta: { requiresAuthAdmin: true },
         children: [
             {
                 path: '',
-                redirect: '/admin/dashboard',
+                redirect: { name: 'admin-dashboard' },
             },
             {
-                path: '/admin/dashboard',
+                path: 'dashboard',
                 name: 'admin-dashboard',
                 component: () => import('@admin/views/Dashboard.vue'),
             },
