@@ -9,6 +9,7 @@
     import Button from 'primevue/button';
     import Toast from 'primevue/toast';
     import FormField from '@admin/components/FormField.vue';
+    import { APP_NAME } from '@/constants/app';
 
     const router = useRouter();
     const authStore = useAuthStore();
@@ -17,7 +18,7 @@
     // Form data
     const email = ref('');
     const password = ref('');
-    const remember = ref(false);
+    // const remember = ref(false);
 
     // Validation errors
     const emailError = ref('');
@@ -50,7 +51,6 @@
             router.push('/admin/dashboard');
         } catch (error: any) {
             const responseData = error.response?.data;
-            console.log(responseData);
 
             if (error.response?.status === 422 && responseData?.errors) {
                 emailError.value = responseData.errors.email ? responseData.errors.email[0] : '';
@@ -97,27 +97,27 @@
                                     fill="var(--primary-color)" />
                             </g>
                         </svg>
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Administarción Z-360</div>
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Administarción {{ APP_NAME }}</div>
                         <span class="text-muted-color font-medium">Inicia sesión para contiuar</span>
                     </div>
 
                     <form @submit.prevent="handleSubmit">
-                        <FormField id="email1" label="Email" :error="emailError">
+                        <FormField id="email" label="Email" :error="emailError">
                             <InputText
-                                id="email1"
+                                id="email"
                                 type="text"
-                                placeholder="Email address"
+                                placeholder="Email"
                                 class="w-full md:w-[30rem]"
                                 :class="{ 'p-invalid': emailError }"
                                 v-model="email"
                                 @input="clearEmailError" />
                         </FormField>
 
-                        <FormField id="password1" label="Password" :error="passwordError">
+                        <FormField id="password" label="Password" :error="passwordError">
                             <Password
-                                id="password1"
+                                id="password"
                                 v-model="password"
-                                placeholder="Password"
+                                placeholder="Contraseña"
                                 :toggleMask="true"
                                 :class="{ 'p-invalid': passwordError }"
                                 fluid
@@ -125,13 +125,13 @@
                                 @input="clearPasswordError" />
                         </FormField>
 
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                        <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
                                 <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Remember me</label>
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
-                        </div>
+                        </div> -->
                         <Button type="submit" label="Iniciar Sesión" :loading="authStore.loading" class="w-full" severity="primary" />
                     </form>
                 </div>

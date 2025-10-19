@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import authService, { type LoginCredentials } from '@/services/authService';
+import authService, { RoleAccessError, type LoginCredentials } from '@/services/authService';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<any>(null);
@@ -23,12 +23,25 @@ export const useAuthStore = defineStore('auth', () => {
 
         try {
             const response = await authService.login(credentials);
-            
+
             user.value = response.data;
             isAuthenticated.value = true;
             return response;
         } catch (err: any) {
-            error.value = err.response?.data?.error || 'Error al iniciar sesión';
+            let errorMessage: string | null = null;
+
+            if (err instanceof RoleAccessError) {
+                errorMessage = err.message;
+            }
+            else if (err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            } else if (err.response?.data?.message) {
+                errorMessage = err.response.data.message;
+            } else {
+                errorMessage = 'Error al iniciar sesión. Verifica tu conexión.';
+            }
+
+            error.value = errorMessage;
             throw err;
         } finally {
             loading.value = false;
