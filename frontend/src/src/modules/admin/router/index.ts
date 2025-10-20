@@ -28,7 +28,22 @@ const adminRoutes: RouteRecordRaw[] = [
                 name: 'admin-dashboard',
                 component: () => import('@admin/views/Dashboard.vue'),
             },
+            {
+                path: 'marcas',
+                name: 'admin-marcas',
+                component: () => import('@admin/views/Marcas.vue'),
+            },
+            {
+                path: 'profile',
+                name: 'admin-profile',
+                component: () => import('@admin/views/Profile.vue'),
+            },
         ],
+    },
+    {
+        path: ':catchAll(.*)',
+        name: 'admin-not-found',
+        component: () => import('@admin/views/NotFound.vue'),
     },
 ];
 
