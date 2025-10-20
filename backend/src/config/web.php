@@ -24,16 +24,4 @@ return [
     */
 
     'paginacion_por_pagina_en_pedidos' => env('PAGINACION_POR_PAGINA_EN_PEDIDOS', 10),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Email del adminitrador por defecto para que le lleguen corres de fallos
-    |--------------------------------------------------------------------------
-    |
-    | Esta opción setea el correo del adminitrador por defecto para que le lleguen notificaciones
-    | en caso de errores en la aplicacion como al envio de un correo en el pedido
-    |
-    */
-
-    'email_admin_default' => env('EMAIL_ADMIN_DEFAULT', 10),
 ];
