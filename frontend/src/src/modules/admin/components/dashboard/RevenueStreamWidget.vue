@@ -105,7 +105,7 @@
         return lineData.value && lineData.value.datasets.length > 0;
     });
 
-    // 1. Función para cargar los datos del backend
+    // Función para cargar los datos del backend
     const fetchData = async () => {
         loading.value = true;
         error.value = null;
@@ -125,7 +125,7 @@
         }
     };
 
-    // 2. Función para configurar opciones de color y asignar datos
+    // Función para configurar opciones de color y asignar datos
     function setColorOptions() {
         // Si aún no tenemos datos, no hacemos nada
         if (!rawChartData.value) return; 
@@ -190,7 +190,7 @@
         };
     }
 
-    // 3. Watcher que reacciona a los cambios de tema O la carga de datos
+    // Watcher que reacciona a los cambios de tema O la carga de datos
     watch(
         [getPrimary, getSurface, isDarkTheme, rawChartData],
         () => {
@@ -199,7 +199,6 @@
         { immediate: true }
     );
     
-    // 4. Llamar a fetchData al montar el componente
     onMounted(() => {
         fetchData();
     });

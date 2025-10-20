@@ -15,7 +15,7 @@
     const props = defineProps<MetricasCardProps>();
 
     const comparisonClass = computed(() => {
-        return props.comparisonPositive ? 'text-green-500' : 'text-red-500';
+        return props.comparisonPositive ? 'text-primary' : 'text-red-500';
     });
 </script>
 <template>
