@@ -1,9 +1,21 @@
-<script setup>
+<script setup lang="ts">
     import { useLayout } from '@/modules/admin/layout/composables/layout';
     import AppConfigurator from './AppConfigurator.vue';
     import { APP_NAME } from '@/constants/app';
+    import authService from '@/services/authService';
+    import { useRouter } from 'vue-router';
 
     const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await authService.logout();
+        router.push({ name: 'admin-login' });
+    };
+
+    const goToProfile = () => {
+        router.push({ name: 'admin-profile' });
+    };
 </script>
 
 <template>
@@ -12,7 +24,7 @@
             <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button>
-            <router-link to="/" class="layout-topbar-logo">
+            <router-link :to="{ name: 'admin-dashboard' }" class="layout-topbar-logo">
                 <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         fill-rule="evenodd"
@@ -71,20 +83,48 @@
                 <i class="pi pi-ellipsis-v"></i>
             </button>
 
+            <!-- Menú de Perfil Desplegable -->
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                        <span>Profile</span>
-                    </button>
+                    <!-- Botón/Trigger del Desplegable -->
+                    <div class="relative">
+                        <button
+                            type="button"
+                            class="layout-topbar-action"
+                            v-styleclass="{
+                                selector: '@next',
+                                enterFromClass: 'hidden',
+                                enterActiveClass: 'animate-scalein',
+                                leaveToClass: 'hidden',
+                                leaveActiveClass: 'animate-fadeout',
+                                hideOnOutsideClick: true,
+                            }">
+                            <i class="pi pi-user"></i>
+                            <span>Perfil</span>
+                        </button>
+
+                        <!-- Dropdown con opciones -->
+                        <ul
+                            class="absolute top-full right-0 z-10 hidden shadow-md list-none m-0 p-2 rounded-md bg-surface-0 dark:bg-surface-700 min-w-[12rem]">
+                            <li>
+                                <router-link
+                                    :to="{ name: 'admin-profile' }"
+                                    @click="goToProfile"
+                                    class="flex items-center p-3 text-color hover:bg-surface-100 dark:hover:bg-surface-600 cursor-pointer transition-colors duration-200 rounded-md no-underline w-full">
+                                    <i class="pi pi-user mr-2"></i>
+                                    <span>Ver Perfil</span>
+                                </router-link>
+                            </li>
+                            <li>
+                                <button
+                                    @click="handleLogout"
+                                    class="flex items-center w-full p-3 text-color hover:bg-surface-100 dark:hover:bg-surface-600 cursor-pointer transition-colors duration-200 rounded-md border-none bg-transparent text-left">
+                                    <i class="pi pi-sign-out mr-2"></i>
+                                    <span>Cerrar Sesión</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
