@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MarcaRequest;
 use App\Models\Marca;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class MarcaControllerADM extends Controller
@@ -59,21 +60,26 @@ class MarcaControllerADM extends Controller
         ]);
     }
 
-    /**
-     * Actualizar una marca.
-     */
     public function update(MarcaRequest $request, Marca $marca)
     {
-        $request->validated();
-
+        $validatedData = $request->validated();
+        $logoPath = null;
         if ($request->hasFile('logo') && $marca->logo && Storage::disk('public')->exists($marca->logo))
             Storage::disk('public')->delete($marca->logo);
 
-        $marca->update([
-            'nombre'        => $request->nombre ?? $marca->nombre,
-            'talla_offset'  => $request->talla_offset ?? $marca->talla_offset,
-            'logo'          => $request->hasFile('logo') ? $request->file('logo')->store('marca_logos', 'public') : $marca->logo,
-        ]);
+        $updateData = [
+            'nombre' => $validatedData['nombre'], 
+            'talla_offset' => $validatedData['talla_offset'],
+        ];
+        
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('marca_logos', 'public');
+            $updateData['logo'] = $logoPath;
+        } else {
+            $updateData['logo'] = $marca->logo;
+        }
+
+        $marca->update($updateData);
 
         return response()->json([
             'success' => true,
@@ -81,7 +87,6 @@ class MarcaControllerADM extends Controller
             'data' => $marca
         ]);
     }
-
     /**
      * Eliminar una marca.
      */
@@ -94,7 +99,7 @@ class MarcaControllerADM extends Controller
             'message' => 'Marca eliminada correctamente'
         ]);
     }
-    
+
     /**
      * Eliminar múltiples marcas.
      * Recibe un array de IDs y los elimina de forma eficiente.

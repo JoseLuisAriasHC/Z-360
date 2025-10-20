@@ -29,15 +29,29 @@ const adminRoutes: RouteRecordRaw[] = [
                 component: () => import('@admin/views/Dashboard.vue'),
             },
             {
+                path: 'profile',
+                name: 'admin-profile',
+                component: () => import('@admin/views/Profile.vue'),
+            },
+            {
                 path: 'marcas',
                 name: 'admin-marcas',
                 component: () => import('@admin/views/Marcas.vue'),
             },
             {
-                path: 'profile',
-                name: 'admin-profile',
-                component: () => import('@admin/views/Profile.vue'),
+                path: 'marcas/new',
+                name: 'admin-marcas-new',
+                component: () => import('@admin/views/MarcaForm.vue'),
+                meta: { requiresAuthAdmin: true, title: 'Crear Marca' },
             },
+            {
+                path: 'marcas/:id',
+                name: 'admin-marcas-edit',
+                component: () => import('@admin/views/MarcaForm.vue'),
+                props: true,
+                meta: { requiresAuthAdmin: true, title: 'Editar Marca' },
+            },
+            // ---------------------------------------------------
         ],
     },
     {

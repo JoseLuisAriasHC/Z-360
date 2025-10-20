@@ -102,29 +102,31 @@
                     </div>
 
                     <form @submit.prevent="handleSubmit">
-                        <FormField id="email" label="Email" :error="emailError">
-                            <InputText
-                                id="email"
-                                type="text"
-                                placeholder="Email"
-                                class="w-full md:w-[30rem]"
-                                :class="{ 'p-invalid': emailError }"
-                                v-model="email"
-                                @input="clearEmailError" />
-                        </FormField>
-
-                        <FormField id="password" label="Password" :error="passwordError">
-                            <Password
-                                id="password"
-                                v-model="password"
-                                placeholder="Contraseña"
-                                :toggleMask="true"
-                                :class="{ 'p-invalid': passwordError }"
-                                fluid
-                                :feedback="false"
-                                @input="clearPasswordError" />
-                        </FormField>
-
+                        <div class="mb-8">
+                            <FormField id="email" label="Email" :error="emailError">
+                                <InputText
+                                    id="email"
+                                    type="text"
+                                    placeholder="Email"
+                                    class="w-full md:w-[30rem]"
+                                    :class="{ 'p-invalid': emailError }"
+                                    v-model="email"
+                                    @input="clearEmailError" />
+                            </FormField>
+                        </div>
+                        <div class="mb-8">
+                            <FormField id="password" label="Password" :error="passwordError">
+                                <Password
+                                    id="password"
+                                    v-model="password"
+                                    placeholder="Contraseña"
+                                    :toggleMask="true"
+                                    :class="{ 'p-invalid': passwordError }"
+                                    fluid
+                                    :feedback="false"
+                                    @input="clearPasswordError" />
+                            </FormField>
+                        </div>
                         <!-- <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
                                 <Checkbox v-model="remember" id="rememberme1" binary class="mr-2"></Checkbox>

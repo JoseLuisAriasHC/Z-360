@@ -1,5 +1,5 @@
 <script setup>
-import { ProductService } from '@admin/service/ProductService';
+import { ProductService } from '@/modules/admin/services/ProductService';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';

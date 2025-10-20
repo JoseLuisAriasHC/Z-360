@@ -1,10 +1,9 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 import router from '@/router';
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
     headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
     },
     withCredentials: false,
@@ -12,11 +11,18 @@ const apiClient: AxiosInstance = axios.create({
 
 // Interceptor para agregar el token a cada petición
 apiClient.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('auth_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        if (config.data instanceof FormData) {
+            delete config.headers['Content-Type'];
+        } else {
+            config.headers['Content-Type'] = 'application/json';
+        }
+
         return config;
     },
     (error) => {
