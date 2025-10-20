@@ -14,7 +14,7 @@ class ProductUsageControllerADM extends Controller
      */
     public function index()
     {
-        $usages = ProductUsage::paginate(config('web.paginacion_por_pagina'));
+        $usages = ProductUsage::all();
         return response()->json([
             'success' => true,
             'data' => $usages

@@ -130,6 +130,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::apiResource('cupones', CuponControllerADM::class)->parameters(['cupones' => 'cupon']);
     // Ruta para las marcas
     Route::apiResource('marcas', MarcaControllerADM::class);
+    Route::post('marcas/delete-multiple', [MarcaControllerADM::class, 'destroyMultiple']);
     // Ruta para las tallas
     Route::apiResource('tallas', TallaControllerADM::class);
     // Ruta para las metricas del dashboard

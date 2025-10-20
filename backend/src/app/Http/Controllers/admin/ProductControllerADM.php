@@ -15,7 +15,7 @@ class ProductControllerADM extends Controller
      */
     public function index()
     {
-        $productos = Product::with('marca')->paginate(config('web.paginacion_por_pagina'));
+        $productos = Product::with('marca')->get();
 
         return ProductResource::collection($productos);
     }

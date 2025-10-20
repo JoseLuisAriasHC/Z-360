@@ -13,8 +13,7 @@ class OrderControllerADM extends Controller
      */
     public function index()
     {
-        $orders = Order::with('user')
-            ->paginate(config('web.paginacion_por_pagina', 10));
+        $orders = Order::with('user')->get();
 
         return response()->json([
             'success' => true,

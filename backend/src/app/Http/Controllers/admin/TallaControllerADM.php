@@ -13,7 +13,7 @@ class TallaControllerADM extends Controller
      */
     public function index()
     {
-        $tallas = Talla::paginate(config('web.paginacion_por_pagina'));
+        $tallas = Talla::all();
         return response()->json([
             'success' => true,
             'data' => $tallas
