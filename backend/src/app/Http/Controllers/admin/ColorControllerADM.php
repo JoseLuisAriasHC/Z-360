@@ -13,7 +13,7 @@ class ColorControllerADM extends Controller
      */
     public function index()
     {
-        $colores = Color::paginate(config('web.paginacion_por_pagina'));
+        $colores = Color::all();
         return response()->json([
             'success' => true,
             'data' => $colores

@@ -14,7 +14,7 @@ class EtiquetaControllerADM extends Controller
      */
     public function index()
     {
-        $etiquetas = Etiqueta::paginate(config('web.paginacion_por_pagina'));
+        $etiquetas = Etiqueta::all();
         return response()->json([
             'success' => true,
             'data' => $etiquetas

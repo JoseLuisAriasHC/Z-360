@@ -13,7 +13,7 @@ class CuponControllerADM extends Controller
      */
     public function index()
     {
-        $cupones = Cupon::paginate(config('web.paginacion_por_pagina'));
+        $cupones = Cupon::all();
         return response()->json([
             'success' => true,
             'data' => $cupones

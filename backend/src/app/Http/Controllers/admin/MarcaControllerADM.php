@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MarcaRequest;
 use App\Models\Marca;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MarcaControllerADM extends Controller
@@ -14,7 +15,7 @@ class MarcaControllerADM extends Controller
      */
     public function index()
     {
-        $marcas = Marca::paginate(config('web.paginacion_por_pagina'));
+        $marcas = Marca::all();
 
         return response()->json([
             'success' => true,
@@ -91,6 +92,32 @@ class MarcaControllerADM extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Marca eliminada correctamente'
+        ]);
+    }
+    
+    /**
+     * Eliminar múltiples marcas.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:marcas,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $marcas = Marca::whereIn('id', $ids)->get();
+        foreach ($marcas as $marca) {
+            if ($marca->logo && Storage::disk('public')->exists($marca->logo)) {
+                Storage::disk('public')->delete($marca->logo);
+            }
+        }
+        $count = Marca::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} marcas eliminadas correctamente."
         ]);
     }
 }

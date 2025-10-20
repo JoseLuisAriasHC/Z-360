@@ -29,7 +29,7 @@ class ProductVariantControllerADM extends Controller
     {
         $variants = ProductVariant::with(['color', 'sizes'])
             ->where('product_id', $productId)
-            ->paginate(config('web.paginacion_por_pagina'));
+            ->get();
 
         return ProductVariantResource::collection($variants);
     }
