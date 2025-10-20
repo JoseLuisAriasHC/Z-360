@@ -25,10 +25,15 @@ interface ResponseDelete {
     message: string;
 }
 
+interface SaveResponseWrapper {
+    success: boolean;
+    message: string;
+    data: Marca;
+}
+
 export const MarcaService = {
     /**
      * Hace la llamada GET /api/admin/marcas
-     * Extrae el array de marcas de response.data.data.data.
      */
     async getMarcas(): Promise<Marca[]> {
         const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('admin/marcas');
@@ -52,22 +57,31 @@ export const MarcaService = {
     },
 
     /**
-     * Función para guardar (Crear/Editar).
-     * Retorna la marca creada/actualizada desde response.data.data.
+     * Función para guardar (Crear/Editar) usando FormData.
+     * CRÍTICO: No establecer manualmente Content-Type, dejar que el navegador lo haga.
+     *
+     * @param formData Contiene los datos de la marca, incluyendo el archivo 'logo'.
+     * @param id ID de la marca para edición (opcional).
+     * @returns La marca creada/actualizada.
      */
-    async saveMarca(marca: Omit<Marca, 'id'> & { id?: number }): Promise<Marca> {
-        if (marca.id) {
-            const response: AxiosResponse<SingleResponseWrapper> = await apiClient.put(`admin/marcas/${marca.id}`, marca);
-            return response.data.data;
+    async saveMarca(formData: FormData, id?: number): Promise<SaveResponseWrapper> {
+        let response: AxiosResponse<SaveResponseWrapper>;
+
+        if (id) {
+            if (!formData.has('_method')) {
+                formData.append('_method', 'PUT');
+            }
+            
+            response = await apiClient.post(`admin/marcas/${id}`, formData);
         } else {
-            const response: AxiosResponse<SingleResponseWrapper> = await apiClient.post('admin/marcas', marca);
-            return response.data.data;
+            response = await apiClient.post('admin/marcas', formData);
         }
+
+        return response.data;
     },
 
     /**
      * Obtiene una marca específica.
-     * Retorna la marca desde response.data.data.
      */
     async getMarca(id: number): Promise<Marca> {
         const response: AxiosResponse<SingleResponseWrapper> = await apiClient.get(`admin/marcas/${id}`);

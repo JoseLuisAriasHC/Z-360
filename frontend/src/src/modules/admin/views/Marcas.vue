@@ -2,7 +2,7 @@
     import { onMounted, ref } from 'vue';
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
-    import { type Marca, MarcaService } from '@admin/service/MarcaService';
+    import { type Marca, MarcaService } from '@/modules/admin/services/MarcaService';
     import noImageSvg from '@/assets/img/no-image.svg';
 
     const marcas = ref<Marca[]>([]);

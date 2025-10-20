@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { FilterMatchMode } from '@primevue/core/api';
-    import { useToast } from 'primevue/usetoast';
     import { ref } from 'vue';
     import { useRouter } from 'vue-router';
 
@@ -34,7 +33,6 @@
     }>();
 
     const router = useRouter();
-    const toast = useToast();
     const dt = ref(); // Referencia al DataTable
     const selectedItems = ref<CrudItem[]>([]);
     const itemToDelete = ref<CrudItem | null>(null);
@@ -52,7 +50,7 @@
         router.push({ name: props.newRouteName });
     }
 
-    /** Redirige al formulario de edición con el ID del elemento. (REQUERIDO POR EL USER) */
+    /** Redirige al formulario de edición con el ID del elemento */
     function editItem(item: CrudItem): void {
         router.push({ name: props.editRouteName, params: { id: item.id } });
     }
