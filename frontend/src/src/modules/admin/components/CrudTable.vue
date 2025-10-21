@@ -24,6 +24,7 @@
         columns: CrudColumn[];
         newRouteName: string;
         editRouteName: string;
+        loading: boolean;
     }>();
 
     // EMITS: Para notificar al componente padre de las acciones
@@ -88,7 +89,58 @@
 
 <template>
     <div class="card">
+        <!-- HEADER: Lo sacamos del DataTable para que siempre sea visible,
+             pero deshabilitamos las acciones cuando hay carga. -->
+        <div class="p-4 border border-surface-200 dark:border-surface-700 rounded-t-xl bg-surface-50 dark:bg-surface-800">
+            <div class="flex flex-wrap gap-2 items-center justify-between">
+                <div class="flex gap-2 items-center mb-3">
+                    <Button :label="`New ${entityName}`" icon="pi pi-plus" severity="primary" @click="openNew" :disabled="props.loading" />
+                    <Button
+                        label="Borrar"
+                        icon="pi pi-trash"
+                        severity="secondary"
+                        @click="confirmDeleteSelected"
+                        :disabled="!selectedItems || !selectedItems.length || props.loading" />
+                    <Divider layout="vertical"><b></b></Divider>
+                    <h3 class="m-0">{{ entityName }}s</h3>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Barra de Búsqueda -->
+                    <IconField>
+                        <InputIcon>
+                            <i class="pi pi-search" />
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" placeholder="Buscar..." :disabled="props.loading" />
+                    </IconField>
+                </div>
+            </div>
+        </div>
+
+        <!-- SKELETON LOADER: Se muestra si loading es true -->
+        <div v-if="props.loading" class="p-4 border border-t-0 border-surface-200 dark:border-surface-700 rounded-b-xl h-full">
+            <template v-for="i in 10" :key="i">
+                <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
+                    <Skeleton width="3rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="10rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="15rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="5rem" height="3rem"></Skeleton>
+                    <Skeleton width="8rem" height="3rem" class="mr-4"></Skeleton>
+                    <Skeleton width="10rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="3rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="10rem" height="1.5rem"></Skeleton>
+                    <Skeleton width="15rem" height="1.5rem"></Skeleton>
+                    <div class="flex ml-auto gap-2">
+                        <Skeleton width="2.5rem" height="2.5rem" shape="circle"></Skeleton>
+                        <Skeleton width="2.5rem" height="2.5rem" shape="circle"></Skeleton>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- DATA TABLE: Se muestra si loading es false -->
         <DataTable
+            v-else
             ref="dt"
             v-model:selection="selectedItems"
             :value="props.data"
@@ -98,35 +150,12 @@
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[5, 10, 25]"
-            :currentPageReportTemplate="`Mostrando del {first} al {last}`">
-            <template #header>
-                <div class="flex flex-wrap gap-2 items-center justify-between">
-                    <div class="flex gap-2 items-center mb-3">
-                        <Button :label="`New ${entityName}`" icon="pi pi-plus" severity="primary" @click="openNew" />
-                        <Button
-                            label="Borrar"
-                            icon="pi pi-trash"
-                            severity="secondary"
-                            @click="confirmDeleteSelected"
-                            :disabled="!selectedItems || !selectedItems.length" />
-                        <Divider layout="vertical"><b></b></Divider>
-
-                        <h3 class="m-0">{{ entityName }}s</h3>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <!-- Barra de Búsqueda -->
-                        <IconField>
-                            <InputIcon>
-                                <i class="pi pi-search" />
-                            </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Buscar..." />
-                        </IconField>
-                    </div>
-                </div>
-            </template>
-
-            <!-- Columnas Genéricas -->
+            :currentPageReportTemplate="`Mostrando del {first} al {last}`"
+            :pt="{
+                // Aplicamos bordes para que continúe el div del header
+                root: { class: 'rounded-t-none border border-t-0 border-surface-200 dark:border-surface-700 rounded-b-xl' },
+            }">
+            <!-- Columnas-->
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable" :style="col.style">
                 <template #body="slotProps">
@@ -146,12 +175,12 @@
             </Column>
         </DataTable>
 
-        <!-- Diálogos de Eliminación (se mantienen modales para confirmación) -->
+        <!-- Diálogos de Eliminación -->
         <Dialog v-model:visible="deleteItemDialog" :style="{ width: '450px' }" header="Confirmar Eliminación" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl text-orange-500" />
                 <span v-if="itemToDelete">
-                    ¿Estás seguro de que quieres eliminar la {{ entityName }}
+                    ¿Estás seguro de que quieres eliminar {{ entityName }}
                     <b>{{ itemToDelete.nombre || itemToDelete.name }}</b>
                     ?
                 </span>

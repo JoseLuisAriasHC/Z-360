@@ -37,8 +37,10 @@ RUN composer install --no-scripts --no-autoloader
 COPY src/. .
 RUN composer dump-autoload --optimize
 
+RUN chown -R devuser:laravelgroup storage bootstrap/cache
+
 # Usar usuario no root para evitar problemas de permisos
 USER devuser
 
 # Comando para arrancar Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000
