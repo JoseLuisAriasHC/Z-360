@@ -25,7 +25,7 @@ class ColorRequest extends FormRequest
         $IdToIgnore = optional($this->route('color'))->id;
         return [
             'nombre'     => ['required', 'string', 'max:100', Rule::unique('colores', 'nombre')->ignore($IdToIgnore)],
-            'codigo_hex' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'codigo_hex' => ['nullable', 'string', 'regex:/^#?[0-9A-Fa-f]{6}$/'],
         ];
     }
 }

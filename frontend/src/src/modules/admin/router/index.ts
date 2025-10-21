@@ -69,6 +69,24 @@ const adminRoutes: RouteRecordRaw[] = [
                 props: true,
                 meta: { requiresAuthAdmin: true, title: 'Editar Talla' },
             },
+            {
+                path: 'colores',
+                name: 'admin-colores',
+                component: () => import('@admin/views/Colores.vue'),
+            },
+            {
+                path: 'colores/new',
+                name: 'admin-colores-new',
+                component: () => import('@admin/views/ColorForm.vue'),
+                meta: { requiresAuthAdmin: true, title: 'Crear Color' },
+            },
+            {
+                path: 'colores/:id',
+                name: 'admin-colores-edit',
+                component: () => import('@admin/views/ColorForm.vue'),
+                props: true,
+                meta: { requiresAuthAdmin: true, title: 'Editar Color' },
+            },
         ],
     },
     {

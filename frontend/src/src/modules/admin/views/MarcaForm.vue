@@ -188,18 +188,17 @@
         <form @submit.prevent="handleSubmit" class="grid grid-cols-12 gap-8">
             <div class="col-span-12 xl:col-span-8">
                 <div class="flex flex-col gap-4 mb-4">
-                    <!-- Campo Nombre -->
                     <FormField id="nombre" label="Nombre" :error="nombreError">
                         <InputText
                             id="nombre"
                             type="text"
                             v-model="marcaState.nombre"
                             :class="{ 'p-invalid': nombreError }"
+                            class="w-full"
                             @input="clearNombreError" />
                     </FormField>
                 </div>
                 <div class="flex flex-col gap-4">
-                    <!-- Campo Offset de Talla -->
                     <FormField id="talla_offset" label="Offset de Talla" :error="tallaOffsetError">
                         <InputNumber
                             id="talla_offset"
@@ -208,6 +207,7 @@
                             :minFractionDigits="1"
                             :maxFractionDigits="1"
                             :class="{ 'p-invalid': tallaOffsetError }"
+                            class="w-full"
                             @update:modelValue="clearTallaOffsetError" />
                     </FormField>
                 </div>
@@ -220,7 +220,7 @@
                             <input ref="fileInputRef" type="file" accept="image/*" @change="onFileChange" class="hidden" id="logo-input" />
                             <label
                                 for="logo-input"
-                                class="inline-flex items-center justify-center px-4 py-2 border border-surface-300 dark:border-surface-600 rounded-md cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                                class="w-full text-center inline-flex items-center justify-center px-4 py-2 border border-surface-300 dark:border-surface-600 rounded-md cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                                 :class="{ 'border-red-500': logoError }">
                                 <i class="pi pi-upload mr-2"></i>
                                 <span>
@@ -243,14 +243,12 @@
                             v-tooltip.top="'Remover logo actual'" />
                     </div>
 
-                    <!-- Previsualización del logo actual -->
-                    <div v-if="currentLogoUrl">
-                        <div class="inline-block">
+                    <div v-if="currentLogoUrl" class="w-full">
+                        <div class="inline-block w-full">
                             <img
                                 :src="currentLogoUrl"
                                 alt="Logo"
-                                class="max-w-full object-contain border border-surface-200 dark:border-surface-700 p-4 rounded-lg"
-                                style="min-width: 8rem; min-height: 8rem" />
+                                class="w-full max-w-full h-auto object-contain border border-surface-200 dark:border-surface-700 p-4 rounded-lg" />
                         </div>
                     </div>
                 </FormField>

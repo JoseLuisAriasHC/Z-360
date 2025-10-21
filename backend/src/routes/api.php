@@ -125,6 +125,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::patch('/web-settings/{clave}', [WebSettingsControllerADM::class, 'update']);
 
     // Ruta para los Colores
+    Route::post('colores/delete-multiple', [ColorControllerADM::class, 'destroyMultiple']);
     Route::apiResource('colores', ColorControllerADM::class)->parameters(['colores' => 'color']);
     // Ruta para los Cupones
     Route::apiResource('cupones', CuponControllerADM::class)->parameters(['cupones' => 'cupon']);
