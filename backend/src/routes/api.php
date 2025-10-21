@@ -128,6 +128,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('colores/delete-multiple', [ColorControllerADM::class, 'destroyMultiple']);
     Route::apiResource('colores', ColorControllerADM::class)->parameters(['colores' => 'color']);
     // Ruta para los Cupones
+    Route::post('cupones/delete-multiple', [CuponControllerADM::class, 'destroyMultiple']);
     Route::apiResource('cupones', CuponControllerADM::class)->parameters(['cupones' => 'cupon']);
     // Ruta para las marcas
     Route::post('marcas/delete-multiple', [MarcaControllerADM::class, 'destroyMultiple']);

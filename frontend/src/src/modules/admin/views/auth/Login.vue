@@ -109,7 +109,7 @@
                                     type="text"
                                     placeholder="Email"
                                     class="w-full md:w-[30rem]"
-                                    :class="{ 'p-invalid': emailError }"
+                                    :invalid="emailError != ''"
                                     v-model="email"
                                     @input="clearEmailError" />
                             </FormField>
@@ -121,7 +121,7 @@
                                     v-model="password"
                                     placeholder="Contraseña"
                                     :toggleMask="true"
-                                    :class="{ 'p-invalid': passwordError }"
+                                    :invalid="passwordError != ''"
                                     fluid
                                     :feedback="false"
                                     @input="clearPasswordError" />

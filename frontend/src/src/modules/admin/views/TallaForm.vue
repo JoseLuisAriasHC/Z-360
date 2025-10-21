@@ -107,13 +107,12 @@
                             id="numero"
                             type="number"
                             v-model="tallaState.numero"
-                            :class="{ 'p-invalid': numeroError }"
+                            :invalid="numeroError != ''"
                             class="w-full"
                             @input="clearNumeroError" />
                     </FormField>
                 </div>
                 <div class="col-span-12">
-                    <!-- Botón Submit -->
                     <div class="flex justify-end mt-4">
                         <Button
                             type="submit"

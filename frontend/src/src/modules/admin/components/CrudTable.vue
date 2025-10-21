@@ -89,8 +89,6 @@
 
 <template>
     <div class="card">
-        <!-- HEADER: Lo sacamos del DataTable para que siempre sea visible,
-             pero deshabilitamos las acciones cuando hay carga. -->
         <div class="p-4 border border-surface-200 dark:border-surface-700 rounded-t-xl bg-surface-50 dark:bg-surface-800">
             <div class="flex flex-wrap gap-2 items-center justify-between">
                 <div class="flex gap-2 items-center mb-3">
@@ -146,6 +144,7 @@
             :value="props.data"
             dataKey="id"
             :paginator="true"
+            :rowHover="true"
             :rows="10"
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"

@@ -41,18 +41,10 @@
     const fileInputRef = ref<HTMLInputElement | null>(null);
     const loading = ref(false);
 
-    // --- MANEJO DE ERRORES ---
-
-    const clearNombreError = () => {
-        if (nombreError.value) nombreError.value = '';
-    };
-
-    const clearTallaOffsetError = () => {
-        if (tallaOffsetError.value) tallaOffsetError.value = '';
-    };
-
-    const clearLogoError = () => {
-        if (logoError.value) logoError.value = '';
+    const clearErrores = (field: keyof MarcaFormState) => {
+        if (field === 'nombre') nombreError.value = '';
+        if (field === 'talla_offset') tallaOffsetError.value = '';
+        if (field === 'logoFile') logoError.value = '';
     };
 
     // --- DATOS Y SUBIDA ---
@@ -101,7 +93,7 @@
             marcaState.value.logoFile = file;
             // Crear una URL temporal para previsualizar la nueva imagen
             currentLogoUrl.value = URL.createObjectURL(file);
-            clearLogoError();
+            clearErrores('logoFile');
         }
     };
 
@@ -115,17 +107,12 @@
             fileInputRef.value.value = '';
         }
 
-        clearLogoError();
+        clearErrores('logoFile');
     };
 
     /** Prepara y envía los datos al servicio API */
     const handleSubmit = async () => {
         loading.value = true;
-
-        // Limpiar errores previos
-        nombreError.value = '';
-        tallaOffsetError.value = '';
-        logoError.value = '';
 
         // Crear FormData para manejar la subida de archivos
         const formData = new FormData();
@@ -193,9 +180,9 @@
                             id="nombre"
                             type="text"
                             v-model="marcaState.nombre"
-                            :class="{ 'p-invalid': nombreError }"
+                            :invalid="nombreError != ''"
                             class="w-full"
-                            @input="clearNombreError" />
+                            @input="clearErrores('nombre')" />
                     </FormField>
                 </div>
                 <div class="flex flex-col gap-4">
@@ -206,9 +193,9 @@
                             mode="decimal"
                             :minFractionDigits="1"
                             :maxFractionDigits="1"
-                            :class="{ 'p-invalid': tallaOffsetError }"
+                            :invalid="tallaOffsetError != ''"
                             class="w-full"
-                            @update:modelValue="clearTallaOffsetError" />
+                            @input="clearErrores('talla_offset')" />
                     </FormField>
                 </div>
             </div>

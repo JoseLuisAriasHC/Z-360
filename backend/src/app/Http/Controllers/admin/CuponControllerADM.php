@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CuponRequest;
 use App\Models\Cupon;
+use Illuminate\Http\Request;
 
 class CuponControllerADM extends Controller
 {
@@ -69,6 +70,26 @@ class CuponControllerADM extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cupón eliminado correctamente'
+        ]);
+    }
+
+    /**
+     * Eliminar múltiples cupones.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:cupones,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = Cupon::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} cupones eliminadas correctamente."
         ]);
     }
 }
