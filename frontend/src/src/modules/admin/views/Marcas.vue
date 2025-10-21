@@ -7,8 +7,9 @@
 
     const marcas = ref<Marca[]>([]);
     const toast = useToast();
+    const backendUrl = import.meta.env.VITE_STORAGE_URL;
+    const isLoading = ref(true);
 
-    // Definición de las columnas de la tabla 'marcas'
     const MARCA_COLUMNS = [
         { field: 'id', header: 'ID', sortable: true, style: 'width: 5rem' },
         { field: 'nombre', header: 'Nombre', sortable: true, style: 'min-width: 15rem' },
@@ -26,6 +27,8 @@
             marcas.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar las marcas.', life: 3000 });
+        } finally {
+            isLoading.value = false;
         }
     };
 
@@ -34,6 +37,7 @@
         try {
             const data = await MarcaService.deleteMarca(id);
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 5000 });
+            isLoading.value = true;
             await fetchMarcas();
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar la marca.', life: 3000 });
@@ -44,6 +48,7 @@
     const handleDeleteSelected = async (ids: number[]) => {
         try {
             const data = await MarcaService.deleteMultipleMarcas(ids);
+            isLoading.value = true;
             await fetchMarcas();
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 5000 });
         } catch (error) {
@@ -53,8 +58,8 @@
 
     const handleImageError = (event: Event) => {
         const imgElement = event.target as HTMLImageElement;
-        imgElement.onerror = null; // Evita un bucle infinito si el no-logo.svg también falla
-        imgElement.src = noImageSvg; // Usa la URL resuelta del SVG importado
+        imgElement.onerror = null;
+        imgElement.src = noImageSvg;
     };
 </script>
 
@@ -68,11 +73,13 @@
                 newRouteName="admin-marcas-new"
                 editRouteName="admin-marcas-edit"
                 @delete-item="handleDelete"
-                @delete-selected="handleDeleteSelected">
+                @delete-selected="handleDeleteSelected"
+                :loading="isLoading"
+                >
                 <!-- Implementación del Slot 'logo-body' para renderizar la imagen -->
                 <template #logo-body="{ data }">
                     <img
-                        :src="data.logo"
+                        :src="backendUrl + '/' + data.logo"
                         :alt="data.nombre + ' Logo'"
                         class="rounded"
                         style="width: 78px; height: 78px; object-fit: contain"

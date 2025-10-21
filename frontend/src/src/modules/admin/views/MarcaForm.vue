@@ -69,7 +69,7 @@
             marcaState.value.talla_offset = parseFloat(data.talla_offset as any);
 
             if (data.logo) {
-                currentLogoUrl.value = data.logo.startsWith('http') ? data.logo : `/storage/${data.logo}`;
+                currentLogoUrl.value = `${import.meta.env.VITE_STORAGE_URL}/${data.logo}`;
             }
         } catch (error) {
             console.error('Error al cargar la marca:', error);
@@ -113,12 +113,12 @@
     const removeLogo = () => {
         marcaState.value.logoFile = null;
         currentLogoUrl.value = null;
-        
+
         // Limpiar el input file
         if (fileInputRef.value) {
             fileInputRef.value.value = '';
         }
-        
+
         clearLogoError();
     };
 
@@ -189,94 +189,89 @@
             <Button icon="pi pi-arrow-left" label="Volver" severity="secondary" @click="goBack" :fluid="false" />
         </div>
 
-        <form @submit.prevent="handleSubmit" class="card flex flex-col gap-4 pt-0">
-            <!-- Campo Nombre -->
-            <FormField id="nombre" label="Nombre" :error="nombreError">
-                <InputText 
-                    id="nombre" 
-                    type="text" 
-                    v-model="marcaState.nombre" 
-                    :class="{ 'p-invalid': nombreError }" 
-                    @input="clearNombreError" 
-                />
-            </FormField>
+        <form @submit.prevent="handleSubmit" class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 xl:col-span-8">
+                <div class="flex flex-col gap-4 mb-4">
+                    <!-- Campo Nombre -->
+                    <FormField id="nombre" label="Nombre" :error="nombreError">
+                        <InputText
+                            id="nombre"
+                            type="text"
+                            v-model="marcaState.nombre"
+                            :class="{ 'p-invalid': nombreError }"
+                            @input="clearNombreError" />
+                    </FormField>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <!-- Campo Offset de Talla -->
+                    <FormField id="talla_offset" label="Offset de Talla" :error="tallaOffsetError">
+                        <InputNumber
+                            id="talla_offset"
+                            v-model="marcaState.talla_offset"
+                            mode="decimal"
+                            :minFractionDigits="1"
+                            :maxFractionDigits="1"
+                            :class="{ 'p-invalid': tallaOffsetError }"
+                            @update:modelValue="clearTallaOffsetError" />
+                    </FormField>
+                </div>
+            </div>
 
-            <!-- Campo Offset de Talla -->
-            <FormField id="talla_offset" label="Offset de Talla" :error="tallaOffsetError">
-                <InputNumber
-                    id="talla_offset"
-                    v-model="marcaState.talla_offset"
-                    mode="decimal"
-                    :minFractionDigits="1"
-                    :maxFractionDigits="1"
-                    :class="{ 'p-invalid': tallaOffsetError }"
-                    @update:modelValue="clearTallaOffsetError" 
-                />
-            </FormField>
+            <div class="col-span-12 xl:col-span-4">
+                <FormField id="logo" label="Logo" :error="logoError">
+                    <div class="flex items-start gap-2 mb-4">
+                        <div class="flex flex-col gap-2 flex-grow">
+                            <input ref="fileInputRef" type="file" accept="image/*" @change="onFileChange" class="hidden" id="logo-input" />
+                            <label
+                                for="logo-input"
+                                class="inline-flex items-center justify-center px-4 py-2 border border-surface-300 dark:border-surface-600 rounded-md cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                                :class="{ 'border-red-500': logoError }">
+                                <i class="pi pi-upload mr-2"></i>
+                                <span>
+                                    {{ marcaState.logoFile ? marcaState.logoFile.name : currentLogoUrl ? 'Cambiar Logo' : 'Seleccionar Logo' }}
+                                </span>
+                            </label>
+                            <small class="text-surface-600 dark:text-surface-400">
+                                Formatos aceptados: JPG, PNG, GIF, SVG, WEBP (recomendado: 2MB)
+                            </small>
+                        </div>
 
-            <!-- Campo Logo con Input File Nativo -->
-            <FormField id="logo" label="Logo" :error="logoError">
-                <!-- Previsualización del logo actual -->
-                <div v-if="currentLogoUrl" class="mb-4">
-                    <p class="text-sm text-surface-600 dark:text-surface-400 mb-2">Logo Actual:</p>
-                    <div class="relative inline-block">
-                        <img
-                            :src="currentLogoUrl"
-                            alt="Logo"
-                            class="max-h-32 max-w-full object-contain border border-surface-200 dark:border-surface-700 p-2 rounded-lg" 
-                        />
                         <Button
-                            v-if="marcaState.logoFile"
-                            icon="pi pi-times"
+                            v-if="currentLogoUrl"
+                            icon="pi pi-trash"
                             severity="danger"
                             rounded
-                            text
-                            class="absolute top-1 right-1"
+                            outlined
+                            class="h-[42px] w-[42px] flex-shrink-0"
                             @click="removeLogo"
-                            v-tooltip.top="'Remover logo'"
-                        />
+                            v-tooltip.top="'Remover logo actual'" />
                     </div>
-                </div>
 
-                <!-- Input file nativo estilizado -->
-                <div class="flex flex-col gap-2">
-                    <input
-                        ref="fileInputRef"
-                        type="file"
-                        accept="image/*"
-                        @change="onFileChange"
-                        class="hidden"
-                        id="logo-input"
-                    />
-                    <label
-                        for="logo-input"
-                        class="inline-flex items-center justify-center px-4 py-2 border border-surface-300 dark:border-surface-600 rounded-md cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
-                        :class="{ 'border-red-500': logoError }"
-                    >
-                        <i class="pi pi-upload mr-2"></i>
-                        <span>{{ marcaState.logoFile ? marcaState.logoFile.name : (currentLogoUrl ? 'Cambiar Logo' : 'Seleccionar Logo') }}</span>
-                    </label>
-                    <small class="text-surface-600 dark:text-surface-400">
-                        Formatos aceptados: JPG, PNG, GIF, SVG, WEBP (máx. 2MB)
-                    </small>
-                </div>
-            </FormField>
+                    <!-- Previsualización del logo actual -->
+                    <div v-if="currentLogoUrl">
+                        <div class="inline-block">
+                            <img
+                                :src="currentLogoUrl"
+                                alt="Logo"
+                                class="max-w-full object-contain border border-surface-200 dark:border-surface-700 p-4 rounded-lg"
+                                style="min-width: 8rem; min-height: 8rem" />
+                        </div>
+                    </div>
+                </FormField>
+            </div>
 
-            <!-- Botón Submit -->
-            <div class="flex justify-end mt-4">
-                <Button
-                    type="submit"
-                    :label="isEditMode ? 'Guardar Cambios' : 'Crear Marca'"
-                    :loading="loading"
-                    severity="primary"
-                    icon="pi pi-check"
-                    :disabled="loading" 
-                />
+            <div class="col-span-12">
+                <!-- Botón Submit -->
+                <div class="flex justify-end mt-4">
+                    <Button
+                        type="submit"
+                        :label="isEditMode ? 'Guardar Cambios' : 'Crear Marca'"
+                        :loading="loading"
+                        severity="primary"
+                        icon="pi pi-check"
+                        :disabled="loading" />
+                </div>
             </div>
         </form>
     </div>
 </template>
-
-<style scoped>
-/* Estilos adicionales si son necesarios */
-</style>
