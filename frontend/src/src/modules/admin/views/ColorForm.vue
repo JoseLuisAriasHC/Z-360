@@ -27,15 +27,12 @@
 
     // Referencias para manejar errores de validación del backend (422)
     const nombreError = ref('');
-    const codigo_hexError = ref('');
+    const codigoHexError = ref('');
     const loading = ref(false);
 
-    const clearnombreError = () => {
-        if (nombreError.value) nombreError.value = '';
-    };
-
-    const clearCodigoHex = () => {
-        if (codigo_hexError.value) codigo_hexError.value = '';
+    const clearErrores = (field: keyof ColorFormState) => {
+        if (field === 'nombre') nombreError.value = '';
+        if (field === 'codigo_hex') codigoHexError.value = '';
     };
 
     const loadColorData = async (id: number) => {
@@ -56,8 +53,6 @@
     /** Prepara y envía los datos al servicio API */
     const handleSubmit = async () => {
         loading.value = true;
-        clearnombreError();
-        clearCodigoHex();
 
         const formData = new FormData();
         formData.append('nombre', colorState.value.nombre);
@@ -72,7 +67,7 @@
 
             if (error.response?.status === 422 && responseData?.errors) {
                 nombreError.value = responseData.errors.nombre ? responseData.errors.nombre[0] : '';
-                codigo_hexError.value = responseData.errors.codigo_hexError ? responseData.errors.codigo_hex[0] : '';
+                codigoHexError.value = responseData.errors.codigoHexError ? responseData.errors.codigo_hex[0] : '';
                 toast.add({
                     severity: 'error',
                     summary: 'Error de Validación',
@@ -116,18 +111,18 @@
                             id="nombre"
                             type="text"
                             v-model="colorState.nombre"
-                            :class="{ 'p-invalid': nombreError }"
+                            :invalid="nombreError != ''"
                             class="w-full"
-                            @input="clearnombreError" />
+                            @input="clearErrores('nombre')" />
                     </FormField>
                 </div>
                 <div class="flex flex-col gap-2">
-                    <FormField id="codigo_hex" label="Codigo hexadecimal" :error="codigo_hexError">
+                    <FormField id="codigo_hex" label="Codigo hexadecimal" :error="codigoHexError">
                         <ColorPicker
                             style="width: 2rem"
                             v-model="colorState.codigo_hex"
-                            :class="{ 'p-invalid': codigo_hexError }"
-                            @input="clearCodigoHex" />
+                            :invalid="codigoHexError != ''"
+                            @input="clearErrores('codigo_hex')" />
                     </FormField>
                 </div>
                 <div class="col-span-12">

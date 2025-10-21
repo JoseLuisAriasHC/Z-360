@@ -19,7 +19,7 @@
         },
         {
             label: 'Marketing',
-            items: [{ label: 'Cupones', icon: 'pi pi-fw pi-ticket', to: { name: 'admin-dashboard' } }],
+            items: [{ label: 'Cupones', icon: 'pi pi-fw pi-ticket', to: { name: 'admin-cupones' } }],
         },
         {
             label: 'Configuración',
