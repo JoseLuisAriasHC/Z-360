@@ -51,7 +51,24 @@ const adminRoutes: RouteRecordRaw[] = [
                 props: true,
                 meta: { requiresAuthAdmin: true, title: 'Editar Marca' },
             },
-            // ---------------------------------------------------
+            {
+                path: 'tallas',
+                name: 'admin-tallas',
+                component: () => import('@admin/views/Tallas.vue'),
+            },
+            {
+                path: 'tallas/new',
+                name: 'admin-tallas-new',
+                component: () => import('@admin/views/TallaForm.vue'),
+                meta: { requiresAuthAdmin: true, title: 'Crear Talla' },
+            },
+            {
+                path: 'tallas/:id',
+                name: 'admin-tallas-edit',
+                component: () => import('@admin/views/TallaForm.vue'),
+                props: true,
+                meta: { requiresAuthAdmin: true, title: 'Editar Talla' },
+            },
         ],
     },
     {

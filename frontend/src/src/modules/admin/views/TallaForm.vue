@@ -1,0 +1,131 @@
+<script setup lang="ts">
+    import { ref, onMounted, computed } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import { useToast } from 'primevue/usetoast';
+    import { type Talla, TallaService } from '@admin/services/TallaService';
+    import FormField from '@admin/components/FormField.vue';
+
+    // --- PROPS Y HOOKS ---
+    const route = useRoute();
+    const router = useRouter();
+    const toast = useToast();
+
+    const tallaId = computed<number | null>(() => {
+        const idParam = route.params.id;
+        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam) : null;
+    });
+
+    const isEditMode = computed(() => tallaId.value !== null);
+
+    interface TallaFormState extends Omit<Talla, 'id' | 'numero'> {
+        numero: string;
+    }
+    const tallaState = ref<TallaFormState & { id?: number }>({
+        id: tallaId.value || undefined,
+        numero: '0.0',
+    });
+
+    // Referencias para manejar errores de validación del backend (422)
+    const numeroError = ref('');
+    const loading = ref(false);
+
+    const clearNumeroError = () => {
+        if (numeroError.value) numeroError.value = '';
+    };
+
+    const loadTallaData = async (id: number) => {
+        loading.value = true;
+        try {
+            const data = await TallaService.getTalla(id);
+            tallaState.value.id = data.id;
+            tallaState.value.numero = data.numero.toString();
+        } catch (error) {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la talla.', life: 3000 });
+            router.push({ name: 'admin-tallas' });
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    /** Prepara y envía los datos al servicio API */
+    const handleSubmit = async () => {
+        loading.value = true;
+        numeroError.value = '';
+
+        const formData = new FormData();
+        formData.append('numero', tallaState.value.numero.toString());
+
+        try {
+            const data = await TallaService.saveTalla(formData, tallaState.value.id);
+            toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
+            router.push({ name: 'admin-tallas' });
+        } catch (error: any) {
+            const responseData = error.response?.data;
+
+            if (error.response?.status === 422 && responseData?.errors) {
+                numeroError.value = responseData.errors.numero ? responseData.errors.numero[0] : '';
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error de Validación',
+                    detail: 'Por favor, corrige los errores en el formulario.',
+                    life: 5000,
+                });
+            } else {
+                const detail = responseData?.message || 'Error desconocido al guardar la talla.';
+                toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
+                console.error('Error al enviar formulario:', error);
+            }
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const goBack = () => {
+        router.push({ name: 'admin-tallas' });
+    };
+
+    onMounted(() => {
+        if (isEditMode.value && tallaId.value) {
+            loadTallaData(tallaId.value);
+        }
+    });
+</script>
+
+<template>
+    <div class="card flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+            <h5 class="text-xl font-bold">
+                {{ isEditMode ? 'Editar Talla' : 'Crear Nueva Talla' }}
+            </h5>
+            <Button icon="pi pi-arrow-left" label="Volver" severity="secondary" @click="goBack" :fluid="false" />
+        </div>
+
+        <form @submit.prevent="handleSubmit" class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 xl:col-span-8">
+                <div class="flex flex-col gap-4 mb-4">
+                    <FormField id="numero" label="Numero" :error="numeroError">
+                        <InputText
+                            id="numero"
+                            type="number"
+                            v-model="tallaState.numero"
+                            :class="{ 'p-invalid': numeroError }"
+                            @input="clearNumeroError" />
+                    </FormField>
+                </div>
+            </div>
+
+            <div class="col-span-12">
+                <!-- Botón Submit -->
+                <div class="flex justify-end mt-4">
+                    <Button
+                        type="submit"
+                        :label="isEditMode ? 'Guardar Cambios' : 'Crear Marca'"
+                        :loading="loading"
+                        severity="primary"
+                        icon="pi pi-check"
+                        :disabled="loading" />
+                </div>
+            </div>
+        </form>
+    </div>
+</template>

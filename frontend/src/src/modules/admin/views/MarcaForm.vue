@@ -3,9 +3,6 @@
     import { useRoute, useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type Marca, MarcaService } from '@admin/services/MarcaService';
-    import InputText from 'primevue/inputtext';
-    import InputNumber from 'primevue/inputnumber';
-    import Button from 'primevue/button';
     import FormField from '@admin/components/FormField.vue';
 
     // --- PROPS Y HOOKS ---
@@ -72,7 +69,6 @@
                 currentLogoUrl.value = `${import.meta.env.VITE_STORAGE_URL}/${data.logo}`;
             }
         } catch (error) {
-            console.error('Error al cargar la marca:', error);
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la marca.', life: 3000 });
             router.push({ name: 'admin-marcas' });
         } finally {
