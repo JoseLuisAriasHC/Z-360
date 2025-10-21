@@ -17,6 +17,7 @@ apiClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
+        // El interceptor elimina la cabecera Content-Type para que el navegador la genere automáticamente, incluyendo el boundary necesario para los archivos.
         if (config.data instanceof FormData) {
             delete config.headers['Content-Type'];
         } else {

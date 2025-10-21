@@ -22,13 +22,14 @@ class TallaRequest extends FormRequest
      */
     public function rules(): array
     {
+        $IdToIgnore = optional($this->route('talla'))->id;
         return [
             'numero' => [
                 'required',
                 'numeric',
                 'min:0',
                 'max:99.9',
-                Rule::unique('tallas', 'numero')->ignore($this->route('talla')->id),
+                Rule::unique('tallas', 'numero')->ignore($IdToIgnore),
                 'regex:/^\d{1,2}(\.\d)?$/',
             ],
         ];

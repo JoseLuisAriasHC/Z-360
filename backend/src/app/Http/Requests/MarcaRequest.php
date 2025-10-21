@@ -22,8 +22,9 @@ class MarcaRequest extends FormRequest
      */
     public function rules(): array
     {
+        $IdToIgnore = optional($this->route('marca'))->id;
         return [
-            'nombre'       => ['required', 'string', 'max:100', Rule::unique('marcas', 'nombre')->ignore($this->route('marca')?->id)],
+            'nombre'       => ['required', 'string', 'max:100', Rule::unique('marcas', 'nombre')->ignore($IdToIgnore)],
             'logo'         => ['nullable', 'image'],
             'talla_offset' => ['nullable', 'numeric', 'between:-99.99,99.99'],
         ];

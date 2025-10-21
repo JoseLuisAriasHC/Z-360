@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TallaRequest;
 use App\Models\Talla;
+use Illuminate\Http\Request;
 
 class TallaControllerADM extends Controller
 {
@@ -68,7 +69,27 @@ class TallaControllerADM extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Marca eliminada correctamente'
+            'message' => 'Talla eliminada correctamente'
+        ]);
+    }
+
+    /**
+     * Eliminar múltiples tallas.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:tallas,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = Talla::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} tallas eliminadas correctamente."
         ]);
     }
 }

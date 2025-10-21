@@ -132,6 +132,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('marcas/delete-multiple', [MarcaControllerADM::class, 'destroyMultiple']);
     Route::apiResource('marcas', MarcaControllerADM::class);
     // Ruta para las tallas
+    Route::post('tallas/delete-multiple', [TallaControllerADM::class, 'destroyMultiple']);
     Route::apiResource('tallas', TallaControllerADM::class);
     // Ruta para las metricas del dashboard
     Route::get('/dashboard/metricas', [DashboardControllerADM::class, 'getMetricas']);

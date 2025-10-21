@@ -6,8 +6,6 @@ export interface Marca {
     nombre: string;
     logo: string;
     talla_offset: number;
-    created_at?: string;
-    updated_at?: string;
 }
 
 interface SingleResponseWrapper {
@@ -58,7 +56,6 @@ export const MarcaService = {
 
     /**
      * Función para guardar (Crear/Editar) usando FormData.
-     * CRÍTICO: No establecer manualmente Content-Type, dejar que el navegador lo haga.
      *
      * @param formData Contiene los datos de la marca, incluyendo el archivo 'logo'.
      * @param id ID de la marca para edición (opcional).

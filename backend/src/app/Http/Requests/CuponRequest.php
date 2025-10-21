@@ -22,8 +22,9 @@ class CuponRequest extends FormRequest
      */
     public function rules(): array
     {
+        $IdToIgnore = optional($this->route('cupon'))->id;
         return [
-            'codigo'           => ['required', 'string', 'max:50', Rule::unique('cupones', 'codigo')->ignore(optional($this->route('cupon'))->id)],
+            'codigo'           => ['required', 'string', 'max:50', Rule::unique('cupones', 'codigo')->ignore($IdToIgnore)],
             'descuento'        => ['required', 'numeric', 'min:0'],
             'tipo'             => ['required', Rule::in(['porcentaje', 'fijo'])],
             'fecha_expiracion' => ['required', 'date', 'after:today'],

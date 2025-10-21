@@ -167,7 +167,7 @@
             </Column>
 
             <!-- Columna de Acciones -->
-            <Column :exportable="false" style="min-width: 12rem" header="">
+            <Column :exportable="false" style="width: 10rem" header="">
                 <template #body="slotProps">
                     <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
                     <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteItem(slotProps.data)" />
@@ -181,7 +181,7 @@
                 <i class="pi pi-exclamation-triangle !text-3xl text-orange-500" />
                 <span v-if="itemToDelete">
                     ¿Estás seguro de que quieres eliminar {{ entityName }}
-                    <b>{{ itemToDelete.nombre || itemToDelete.name }}</b>
+                    <b>{{ itemToDelete.nombre || itemToDelete.name || itemToDelete.numero || itemToDelete.id}}</b>
                     ?
                 </span>
             </div>
