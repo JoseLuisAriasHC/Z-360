@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ColorRequest;
 use App\Models\Color;
+use Illuminate\Http\Request;
 
 class ColorControllerADM extends Controller
 {
@@ -50,6 +51,7 @@ class ColorControllerADM extends Controller
      */
     public function update(ColorRequest $request, Color $color)
     {
+
         $color->update($request->validated());
 
         return response()->json([
@@ -68,6 +70,26 @@ class ColorControllerADM extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Color eliminado correctamente'
+        ]);
+    }
+
+    /**
+     * Eliminar múltiples colores.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:colores,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = Color::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} colores eliminadas correctamente."
         ]);
     }
 }

@@ -2,27 +2,28 @@
     import { onMounted, ref } from 'vue';
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
-    import { type Talla, TallaService } from '@/modules/admin/services/TallaService';
+    import { type Color, ColorService } from '@/modules/admin/services/ColorService';
 
-    const tallas = ref<Talla[]>([]);
+    const colores = ref<Color[]>([]);
     const toast = useToast();
     const isLoading = ref(true);
 
     const COLUMNAS = [
         { field: 'id', header: 'ID', sortable: true },
-        { field: 'numero', header: 'Numero', sortable: true },
+        { field: 'nombre', header: 'Numero', sortable: true },
+        { field: 'codigo_hex', header: 'Codigo Hex', sortable: true },
     ];
 
     onMounted(() => {
-        fetchTallas();
+        fetchColores();
     });
 
-    const fetchTallas = async () => {
+    const fetchColores = async () => {
         try {
-            const data = await TallaService.getTallas();
-            tallas.value = [...data];
+            const data = await ColorService.getColores();
+            colores.value = [...data];
         } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar las tallas.', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar las colores.', life: 3000 });
         } finally {
             isLoading.value = false;
         }
@@ -30,10 +31,10 @@
 
     const handleDelete = async (id: number) => {
         try {
-            const data = await TallaService.deleteTalla(id);
+            const data = await ColorService.deleteColor(id);
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 5000 });
             isLoading.value = true;
-            await fetchTallas();
+            await fetchColores();
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar la talla.', life: 3000 });
         }
@@ -41,12 +42,13 @@
 
     const handleDeleteSelected = async (ids: number[]) => {
         try {
-            const data = await TallaService.deleteMultipleTallas(ids);
+            debugger;
+            const data = await ColorService.deleteMultipleColores(ids);
             isLoading.value = true;
-            await fetchTallas();
+            await fetchColores();
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 5000 });
         } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar las tallas seleccionadas.', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar las colores seleccionadas.', life: 3000 });
         }
     };
 </script>
@@ -55,16 +57,19 @@
     <div class="grid">
         <div class="col-12">
             <CrudTable
-                :data="tallas"
-                entityName="Talla"
+                :data="colores"
+                entityName="Color"
                 :columns="COLUMNAS"
-                newRouteName="admin-tallas-new"
-                editRouteName="admin-tallas-edit"
+                newRouteName="admin-colores-new"
+                editRouteName="admin-colores-edit"
                 @delete-item="handleDelete"
                 @delete-selected="handleDeleteSelected"
                 :loading="isLoading">
-                <template #numero="{ data }">
-                    {{ Number(data.numero).toFixed(2) }}
+                <template #codigo_hex="{ data }">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-lg flex-shrink-0" :style="{ backgroundColor: data.codigo_hex }"></div>
+                        <span>{{ data.codigo_hex }}</span>
+                    </div>
                 </template>
             </CrudTable>
         </div>

@@ -14,7 +14,7 @@
                 { label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', to: { name: 'admin-dashboard' } },
                 { label: 'Marcas', icon: 'pi pi-fw pi-tag', to: { name: 'admin-marcas' } },
                 { label: 'Tallas', icon: 'pi pi-sort-alt', to: { name: 'admin-tallas' } },
-                { label: 'Colores', icon: 'pi pi-fw pi-palette', to: { name: 'admin-dashboard' } },
+                { label: 'Colores', icon: 'pi pi-fw pi-palette', to: { name: 'admin-colores' } },
             ],
         },
         {
