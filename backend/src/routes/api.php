@@ -120,8 +120,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoControllerADM::class, 'eliminarNoAprobadas']);
 
     // Rutas para las configuraciones de la aplicacion (IVA, Coste de envio, cuando es gratis el coste de envio, etc) 
-    Route::get('/web-settings', [WebSettingsControllerADM::class, 'index']);
-    Route::get('/web-settings/{web_settings}', [WebSettingsControllerADM::class, 'show']);
+    Route::get('/web-settings/empresa', [WebSettingsControllerADM::class, 'getEmpresaSettings']);
+    Route::get('/web-settings/envio', [WebSettingsControllerADM::class, 'getEnvioSettings']);
+    Route::get('/web-settings/ecommerce', [WebSettingsControllerADM::class, 'getEcommerceSettings']);
+    Route::patch('/web-settings/save-empresa', [WebSettingsControllerADM::class, 'saveEmpresaSettings']);
+    Route::patch('/web-settings/save-envio', [WebSettingsControllerADM::class, 'saveEnvioSettings']);
+    Route::patch('/web-settings/save-ecommerce', [WebSettingsControllerADM::class, 'saveEcommerceSettings']);
     Route::patch('/web-settings/{clave}', [WebSettingsControllerADM::class, 'update']);
 
     // Ruta para los Colores

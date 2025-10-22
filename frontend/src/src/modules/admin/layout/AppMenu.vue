@@ -23,7 +23,7 @@
         },
         {
             label: 'Configuración',
-            items: [{ label: 'Parámetros Generales', icon: 'pi pi-fw pi-cog', to: { name: 'admin-dashboard' } }],
+            items: [{ label: 'Parámetros Generales', icon: 'pi pi-fw pi-cog', to: { name: 'admin-parametros-generales' } }],
         },
     ]);
 </script>

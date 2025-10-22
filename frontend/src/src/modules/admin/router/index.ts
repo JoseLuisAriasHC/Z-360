@@ -97,6 +97,11 @@ const adminRoutes: RouteRecordRaw[] = [
                 component: () => import('@admin/views/CuponForm.vue'),
                 props: true,
             },
+            {
+                path: 'parametros-generales',
+                name: 'admin-parametros-generales',
+                component: () => import('@admin/views/ParametrosGenerales.vue'),
+            },
         ],
     },
     {
