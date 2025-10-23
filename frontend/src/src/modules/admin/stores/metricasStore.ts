@@ -33,7 +33,6 @@ export const useMetricStore = defineStore('metrics', () => {
             metrics.value = response.data.data;
         } catch (err: any) {
             error.value = 'Error al cargar las métricas del dashboard.';
-            console.error('Metrics loading error:', err);
         } finally {
             loading.value = false;
         }

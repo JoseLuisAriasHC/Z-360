@@ -117,7 +117,6 @@
                 rawChartData.value = { labels: [], datasets: [] };
             }
         } catch (e) {
-            console.error("Error al cargar el rendimiento semanal:", e);
             error.value = 'No se pudo cargar la información de rendimiento semanal.';
             rawChartData.value = { labels: [], datasets: [] };
         } finally {

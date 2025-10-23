@@ -33,6 +33,22 @@ const adminRoutes: RouteRecordRaw[] = [
                 name: 'admin-profile',
                 component: () => import('@admin/views/Profile.vue'),
             },
+                        {
+                path: 'productos',
+                name: 'admin-productos',
+                component: () => import('@admin/views/Productos.vue'),
+            },
+            {
+                path: 'productos/new',
+                name: 'admin-productos-new',
+                component: () => import('@admin/views/ProductoForm.vue'),
+            },
+            {
+                path: 'productos/:id',
+                name: 'admin-productos-edit',
+                component: () => import('@admin/views/ProductoForm.vue'),
+                props: true,
+                },
             {
                 path: 'marcas',
                 name: 'admin-marcas',
@@ -47,6 +63,38 @@ const adminRoutes: RouteRecordRaw[] = [
                 path: 'marcas/:id',
                 name: 'admin-marcas-edit',
                 component: () => import('@admin/views/MarcaForm.vue'),
+                props: true,
+            },
+            {
+                path: 'etiquetas',
+                name: 'admin-etiquetas',
+                component: () => import('@admin/views/Etiquetas.vue'),
+            },
+            {
+                path: 'etiquetas/new',
+                name: 'admin-etiquetas-new',
+                component: () => import('@admin/views/EtiquetaForm.vue'),
+            },
+            {
+                path: 'etiquetas/:id',
+                name: 'admin-etiquetas-edit',
+                component: () => import('@admin/views/EtiquetaForm.vue'),
+                props: true,
+            },
+            {
+                path: 'tipos-uso',
+                name: 'admin-tipos-uso',
+                component: () => import('@admin/views/TiposUso.vue'),
+            },
+            {
+                path: 'tipos-uso/new',
+                name: 'admin-tipos-uso-new',
+                component: () => import('@admin/views/TiposUsoForm.vue'),
+            },
+            {
+                path: 'tipos-uso/:id',
+                name: 'admin-tipos-uso-edit',
+                component: () => import('@admin/views/TiposUsoForm.vue'),
                 props: true,
             },
             {

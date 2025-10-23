@@ -2,7 +2,7 @@
     import { ref, onMounted, computed } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
-    import { type Color, ColorService } from '@admin/services/ColorService';
+    import { type Etiqueta, EtiquetaService } from '@admin/services/EtiquetaService';
     import FormField from '@admin/components/FormField.vue';
 
     // --- PROPS Y HOOKS ---
@@ -10,41 +10,36 @@
     const router = useRouter();
     const toast = useToast();
 
-    const colorId = computed<number | null>(() => {
+    const etiquetaId = computed<number | null>(() => {
         const idParam = route.params.id;
         return Array.isArray(idParam) ? null : idParam ? parseInt(idParam) : null;
     });
 
-    const isEditMode = computed(() => colorId.value !== null);
-    const documentStyle = getComputedStyle(document.documentElement);
+    const isEditMode = computed(() => etiquetaId.value !== null);
 
-    interface ColorFormState extends Omit<Color, 'id'> {}
-    const colorState = ref<ColorFormState & { id?: number }>({
-        id: colorId.value || undefined,
-        nombre: '',
-        codigo_hex: documentStyle.getPropertyValue('--p-primary-500'),
+    interface EtiquetaFormState extends Omit<Etiqueta, 'id'> {}
+    const etiquetaState = ref<EtiquetaFormState & { id?: number }>({
+        id: etiquetaId.value || undefined,
+        nombre: ''
     });
 
     // Referencias para manejar errores de validación del backend (422)
     const nombreError = ref('');
-    const codigoHexError = ref('');
     const loading = ref(false);
 
-    const clearErrores = (field: keyof ColorFormState) => {
+    const clearErrores = (field: keyof EtiquetaFormState) => {
         if (field === 'nombre') nombreError.value = '';
-        if (field === 'codigo_hex') codigoHexError.value = '';
     };
 
     const loadData = async (id: number) => {
         loading.value = true;
         try {
-            const data = await ColorService.getColor(id);
-            colorState.value.id = data.id;
-            colorState.value.nombre = data.nombre;
-            colorState.value.codigo_hex = data.codigo_hex;
+            const data = await EtiquetaService.getEtiqueta(id);
+            etiquetaState.value.id = data.id;
+            etiquetaState.value.nombre = data.nombre;
         } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el color.', life: 3000 });
-            router.push({ name: 'admin-colores' });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la etiqueta.', life: 3000 });
+            router.push({ name: 'admin-etiquetas' });
         } finally {
             loading.value = false;
         }
@@ -53,21 +48,20 @@
     /** Prepara y envía los datos al servicio API */
     const handleSubmit = async () => {
         loading.value = true;
+        nombreError.value = '';
 
         const formData = new FormData();
-        formData.append('nombre', colorState.value.nombre);
-        formData.append('codigo_hex', colorState.value.codigo_hex);
+        formData.append('nombre', etiquetaState.value.nombre);
 
         try {
-            const data = await ColorService.saveColor(formData, colorState.value.id);
+            const data = await EtiquetaService.saveEtiqueta(formData, etiquetaState.value.id);
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
-            router.push({ name: 'admin-colores' });
+            router.push({ name: 'admin-etiquetas' });
         } catch (error: any) {
             const responseData = error.response?.data;
 
             if (error.response?.status === 422 && responseData?.errors) {
                 nombreError.value = responseData.errors.nombre ? responseData.errors.nombre[0] : '';
-                codigoHexError.value = responseData.errors.codigoHexError ? responseData.errors.codigo_hex[0] : '';
                 toast.add({
                     severity: 'error',
                     summary: 'Error de Validación',
@@ -75,7 +69,7 @@
                     life: 5000,
                 });
             } else {
-                const detail = responseData?.message || 'Error desconocido al guardar el color.';
+                const detail = responseData?.message || 'Error desconocido al guardar la Etiqueta.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
             }
         } finally {
@@ -84,12 +78,12 @@
     };
 
     const goBack = () => {
-        router.push({ name: 'admin-colores' });
+        router.push({ name: 'admin-etiquetas' });
     };
 
     onMounted(() => {
-        if (isEditMode.value && colorId.value) {
-            loadData(colorId.value);
+        if (isEditMode.value && etiquetaId.value) {
+            loadData(etiquetaId.value);
         }
     });
 </script>
@@ -100,7 +94,7 @@
             <form @submit.prevent="handleSubmit" class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl flex items-center justify-between">
                     <h5 class="text-xl font-bold">
-                        {{ isEditMode ? 'Editar Color' : 'Crear Nueva Color' }}
+                        {{ isEditMode ? 'Editar Etiqueta' : 'Crear Nueva Etiqueta' }}
                     </h5>
                     <Button icon="pi pi-arrow-left" label="Volver" severity="secondary" @click="goBack" :fluid="false" />
                 </div>
@@ -109,27 +103,17 @@
                         <InputText
                             id="nombre"
                             type="text"
-                            v-model="colorState.nombre"
+                            v-model="etiquetaState.nombre"
                             :invalid="nombreError != ''"
                             class="w-full"
                             @input="clearErrores('nombre')" />
                     </FormField>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <FormField id="codigo_hex" label="Codigo hexadecimal" :error="codigoHexError">
-                        <ColorPicker
-                            style="width: 2rem"
-                            v-model="colorState.codigo_hex"
-                            :invalid="codigoHexError != ''"
-                            @input="clearErrores('codigo_hex')" />
-                    </FormField>
-                </div>
                 <div class="col-span-12">
-                    <!-- Botón Submit -->
                     <div class="flex justify-end mt-4">
                         <Button
                             type="submit"
-                            :label="isEditMode ? 'Guardar Cambios' : 'Crear Color'"
+                            :label="isEditMode ? 'Guardar Cambios' : 'Crear Etiqueta'"
                             :loading="loading"
                             severity="primary"
                             icon="pi pi-check"

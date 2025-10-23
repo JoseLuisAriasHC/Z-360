@@ -81,8 +81,9 @@ Route::prefix('orders')->group(function () {
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
     // Rutas para el Producto Base
-    Route::apiResource('products', ProductControllerADM::class);
+    Route::post('products/delete-multiple', [ProductControllerADM::class, 'destroyMultiple']);
     Route::get('/products/search', [ProductControllerADM::class, 'search']);
+    Route::apiResource('products', ProductControllerADM::class);
 
     // Rutas para las variantes de los productos
     Route::get('/products/{product}/variants', [ProductVariantControllerADM::class, 'index']);
@@ -96,12 +97,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::put('products/{product}/details', [ProductDetailControllerADM::class, 'update']);
 
     // Ruta para las etiquetas de un producto
-    Route::apiResource('etiquetas', EtiquetaControllerADM::class);
+    Route::post('etiquetas/delete-multiple', [EtiquetaControllerADM::class, 'destroyMultiple']);
     Route::post('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'asignarEtiquetas']);
     Route::delete('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'eliminarEtiquetas']);
     Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaControllerADM::class, 'limpiarEtiqueta']);
+    Route::apiResource('etiquetas', EtiquetaControllerADM::class);
 
     // Ruta para los usos de un producto
+    Route::post('usages/delete-multiple', [ProductUsageControllerADM::class, 'destroyMultiple']);
     Route::apiResource('usages', ProductUsageControllerADM::class);
     Route::get('products/{product}/usages', [ProductUsageControllerADM::class, 'showProductUsages']);
     Route::post('products/{product}/usages', [ProductUsageControllerADM::class, 'asignarUsos']);

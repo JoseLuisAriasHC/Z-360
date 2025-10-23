@@ -115,4 +115,24 @@ class ProductControllerADM extends Controller
             'message' => 'Producto eliminado correctamente'
         ]);
     }
+
+    /**
+     * Eliminar múltiples productos.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:products,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = Product::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} productos eliminadas correctamente."
+        ]);
+    }
 }

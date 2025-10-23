@@ -11,8 +11,10 @@
         {
             label: 'Productos',
             items: [
-                { label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', to: { name: 'admin-dashboard' } },
-                { label: 'Marcas', icon: 'pi pi-fw pi-tag', to: { name: 'admin-marcas' } },
+                { label: 'Productos', icon: 'pi pi-fw pi-shopping-bag', to: { name: 'admin-productos' } },
+                { label: 'Marcas', icon: 'pi pi-crown', to: { name: 'admin-marcas' } },
+                { label: 'Etiquetas', icon: 'pi pi-fw pi-tag', to: { name: 'admin-etiquetas' } },
+                { label: 'Tipos de uso', icon: 'pi pi-flag', to: { name: 'admin-tipos-uso' } },
                 { label: 'Tallas', icon: 'pi pi-sort-alt', to: { name: 'admin-tallas' } },
                 { label: 'Colores', icon: 'pi pi-fw pi-palette', to: { name: 'admin-colores' } },
             ],

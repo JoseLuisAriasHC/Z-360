@@ -123,4 +123,24 @@ class EtiquetaControllerADM extends Controller
             'message' => "Etiqueta '{$etiqueta->nombre}' eliminada de todos los productos"
         ]);
     }
+
+    /**
+     * Eliminar múltiples etiquetas.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:etiquetas,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = Etiqueta::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} etiquetas eliminadas correctamente."
+        ]);
+    }
 }

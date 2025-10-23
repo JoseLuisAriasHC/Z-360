@@ -29,11 +29,11 @@
     const numeroError = ref('');
     const loading = ref(false);
 
-    const clearNumeroError = () => {
-        if (numeroError.value) numeroError.value = '';
+    const clearErrores = (field: keyof TallaFormState) => {
+        if (field === 'numero') numeroError.value = '';
     };
 
-    const loadTallaData = async (id: number) => {
+    const loadData = async (id: number) => {
         loading.value = true;
         try {
             const data = await TallaService.getTalla(id);
@@ -73,7 +73,6 @@
             } else {
                 const detail = responseData?.message || 'Error desconocido al guardar la talla.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
-                console.error('Error al enviar formulario:', error);
             }
         } finally {
             loading.value = false;
@@ -86,7 +85,7 @@
 
     onMounted(() => {
         if (isEditMode.value && tallaId.value) {
-            loadTallaData(tallaId.value);
+            loadData(tallaId.value);
         }
     });
 </script>
@@ -109,14 +108,14 @@
                             v-model="tallaState.numero"
                             :invalid="numeroError != ''"
                             class="w-full"
-                            @input="clearNumeroError" />
+                            @input="clearErrores('numero')" />
                     </FormField>
                 </div>
                 <div class="col-span-12">
                     <div class="flex justify-end mt-4">
                         <Button
                             type="submit"
-                            :label="isEditMode ? 'Guardar Cambios' : 'Crear Marca'"
+                            :label="isEditMode ? 'Guardar Cambios' : 'Crear Talla'"
                             :loading="loading"
                             severity="primary"
                             icon="pi pi-check"

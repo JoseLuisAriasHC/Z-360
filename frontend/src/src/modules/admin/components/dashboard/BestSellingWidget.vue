@@ -46,7 +46,6 @@ const fetchTopProducts = async () => {
             topProducts.value = [];
         }
     } catch (e) {
-        console.error("Error fetching top products:", e);
         error.value = 'No se pudo cargar el listado de productos más vendidos.';
         topProducts.value = [];
     } finally {
