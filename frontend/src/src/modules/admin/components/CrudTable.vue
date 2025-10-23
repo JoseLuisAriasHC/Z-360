@@ -1,15 +1,16 @@
 <script setup lang="ts">
-    import { FilterMatchMode } from '@primevue/core/api';
-    import { ref } from 'vue';
+    // Importaciones necesarias de PrimeVue
+    import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
+    import { onMounted, ref } from 'vue';
     import { useRouter } from 'vue-router';
 
-    // Definición de tipos para la estructura de columnas y el item genérico
     interface CrudColumn {
         field: string;
         header: string;
         sortable: boolean;
         style?: string;
         bodyTemplate?: string; // Nombre del slot para renderizado personalizado
+        filtrable?: boolean;
     }
 
     interface CrudItem {
@@ -40,8 +41,32 @@
     const deleteItemDialog = ref(false);
     const deleteSelectedDialog = ref(false);
 
-    const filters = ref({
+    // con DataTableFilterMeta de PrimeVue y la inicialización. (Errores 1 y 2)
+    const filters = ref<any>({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
+
+    /**
+     * Inicializa el objeto de filtros para la tabla, cubriendo el filtro global
+     * y todos los campos de las columnas para permitir filtros por menú.
+     */
+    const initFilters = () => {
+        const initialFilters: Record<string, any> = {
+            global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        };
+
+        props.columns.forEach((col) => {
+            if (col.filtrable) {
+                initialFilters[col.field] = {};
+            }
+        });
+
+        filters.value = initialFilters;
+    };
+
+    // Inicializa los filtros al montar el componente
+    onMounted(() => {
+        initFilters();
     });
 
     // --- LÓGICA DE ACCIÓN DE FILAS ---
@@ -146,8 +171,8 @@
             :paginator="true"
             :rowHover="true"
             :rows="10"
-            :filters="filters"
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            v-model:filters="filters"
+            filterDisplay="menu"
             :rowsPerPageOptions="[5, 10, 25]"
             :currentPageReportTemplate="`Mostrando del {first} al {last}`"
             :pt="{
@@ -156,12 +181,24 @@
             }">
             <!-- Columnas-->
             <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-            <Column v-for="col in columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable" :style="col.style">
+            <Column
+                v-for="col in columns"
+                :key="col.field"
+                :field="col.field"
+                :header="col.header"
+                :sortable="col.sortable"
+                :style="col.style"
+                :showFilterMatchModes="false"
+                :showFilterMenu="col.filtrable ?? false">
                 <template #body="slotProps">
-                    <!-- Se utiliza el nombre del slot de la columna, o el campo por defecto -->
                     <slot :name="col.bodyTemplate || col.field" :data="slotProps.data">
                         {{ slotProps.data[col.field] }}
                     </slot>
+                </template>
+
+                <!-- Slot para el filtro personalizado -->
+                <template #filter="{ filterModel }">
+                    <slot :name="`filter-${col.field}`" :filterModel="filterModel"></slot>
                 </template>
             </Column>
 
@@ -180,7 +217,7 @@
                 <i class="pi pi-exclamation-triangle !text-3xl text-orange-500" />
                 <span v-if="itemToDelete">
                     ¿Estás seguro de que quieres eliminar {{ entityName }}
-                    <b>{{ itemToDelete.nombre || itemToDelete.name || itemToDelete.numero || itemToDelete.id}}</b>
+                    <b>{{ itemToDelete.nombre || itemToDelete.name || itemToDelete.numero || itemToDelete.id }}</b>
                     ?
                 </span>
             </div>
