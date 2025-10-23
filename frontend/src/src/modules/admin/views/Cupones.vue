@@ -3,7 +3,9 @@
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
     import { type Cupon, CuponService } from '@/modules/admin/services/CuponService';
-import { formatDate } from '@/utils/utils';
+    import { formatDate } from '@/utils/utils';
+    import { SEVERITY_MAP, TIPOS_VALORES, type Tipo } from '@/constants/cupones';
+    import { DEFAULT_SEVERITY_TAG_FILTER_ADM } from '@/constants/app';
 
     const cupones = ref<Cupon[]>([]);
     const toast = useToast();
@@ -13,7 +15,7 @@ import { formatDate } from '@/utils/utils';
         { field: 'id', header: 'ID', sortable: true },
         { field: 'codigo', header: 'Cupon', sortable: true },
         { field: 'descuento', header: 'Descuento', sortable: true },
-        { field: 'tipo', header: 'Tipo', sortable: true },
+        { field: 'tipo', header: 'Tipo', sortable: true, filtrable: true },
         { field: 'fecha_expiracion', header: 'Fecha de expiración', sortable: true },
         { field: 'uso_maximo', header: 'Numero de usos', sortable: true },
     ];
@@ -55,6 +57,9 @@ import { formatDate } from '@/utils/utils';
         }
     };
 
+    function getSeverity(type: Tipo): string {
+        return SEVERITY_MAP[type as keyof typeof SEVERITY_MAP] || DEFAULT_SEVERITY_TAG_FILTER_ADM;
+    }
 </script>
 
 <template>
@@ -72,11 +77,24 @@ import { formatDate } from '@/utils/utils';
                 <template #descuento="{ data }">
                     {{ Number(data.descuento).toFixed(2) }}
                 </template>
+
                 <template #fecha_expiracion="{ data }">
                     <span v-if="data.fecha_expiracion">
                         {{ formatDate(data.fecha_expiracion) }}
                     </span>
                     <span v-else class="text-gray-500">N/A</span>
+                </template>
+
+                <template #tipo="{ data }">
+                    <Tag :value="data.tipo" :severity="getSeverity(data.tipo)" />
+                </template>
+
+                <template #filter-tipo="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="TIPOS_VALORES" placeholder="Seleccionar Tipo" showClear class="w-full">
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Select>
                 </template>
             </CrudTable>
         </div>

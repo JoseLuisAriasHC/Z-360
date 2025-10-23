@@ -4,25 +4,8 @@
     import CrudTable from '@admin/components/CrudTable.vue';
     import { type Producto, ProductoService } from '@/modules/admin/services/ProductoService';
     import noImageSvg from '@/assets/img/no-image.svg';
-
-    function getSeverity(status) {
-        switch (status) {
-            case 'unqualified':
-                return 'danger';
-
-            case 'qualified':
-                return 'success';
-
-            case 'new':
-                return 'info';
-
-            case 'negotiation':
-                return 'warn';
-
-            case 'renewal':
-                return null;
-        }
-    }
+    import { GENEROS_VALORES, TIPOS_VALORES, type Genero, type Tipo, type Cierre, CIERRE_VALORES, SEVERITY_MAP } from '@/constants/productos';
+    import { DEFAULT_SEVERITY_TAG_FILTER_ADM } from '@/constants/app';
 
     const backendUrl = import.meta.env.VITE_STORAGE_URL;
     const toast = useToast();
@@ -33,9 +16,9 @@
         { field: 'id', header: 'ID', sortable: true },
         { field: 'nombre', header: 'Nombre', sortable: true },
         { field: 'marca', header: 'Marca', sortable: true },
-        { field: 'tipo', header: 'Tipo', sortable: true },
-        { field: 'genero', header: 'Genero', sortable: true },
-        { field: 'cierre', header: 'Tipo de cierre', sortable: true },
+        { field: 'tipo', header: 'Tipo', sortable: true, filtrable: true },
+        { field: 'genero', header: 'Genero', sortable: true, filtrable: true },
+        { field: 'cierre', header: 'Tipo de cierre', sortable: true, filtrable: true },
         { field: 'stock', header: 'Stock', sortable: true },
     ];
 
@@ -81,6 +64,10 @@
         imgElement.onerror = null;
         imgElement.src = noImageSvg;
     };
+
+    function getSeverity(type: Genero | Tipo | Cierre): string {
+        return SEVERITY_MAP[type as keyof typeof SEVERITY_MAP] || DEFAULT_SEVERITY_TAG_FILTER_ADM;
+    }
 </script>
 
 <template>
@@ -103,6 +90,42 @@
                         style="width: 78px; height: 78px; object-fit: contain"
                         v-tooltip="data.marca.nombre"
                         @error="handleImageError" />
+                </template>
+
+                <template #tipo="{ data }">
+                    <Tag :value="data.tipo" :severity="getSeverity(data.tipo)" />
+                </template>
+
+                <template #filter-tipo="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="TIPOS_VALORES" placeholder="Seleccionar Tipo" showClear class="w-full">
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Select>
+                </template>
+
+                <template #genero="{ data }">
+                    <Tag :value="data.genero" :severity="getSeverity(data.genero)" />
+                </template>
+
+                <template #filter-genero="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="GENEROS_VALORES" placeholder="Seleccionar Género" showClear class="w-full">
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Select>
+                </template>
+
+                <template #cierre="{ data }">
+                    <Tag :value="data.cierre" :severity="getSeverity(data.cierre)" />
+                </template>
+
+                <template #filter-cierre="{ filterModel }">
+                    <Select v-model="filterModel.value" :options="CIERRE_VALORES" placeholder="Seleccionar Cierre" showClear class="w-full">
+                        <template #option="slotProps">
+                            <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                        </template>
+                    </Select>
                 </template>
             </CrudTable>
         </div>
