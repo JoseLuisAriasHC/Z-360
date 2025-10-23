@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductVariantRequest;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\ProductVariant;
+use App\Models\VariantSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Drivers\Imagick\Driver;
@@ -114,35 +115,40 @@ class ProductVariantControllerADM extends Controller
             'colores.*'  => 'exists:colores,id',
             'tallas'     => 'required|array|min:1',
             'tallas.*'   => 'exists:tallas,id',
+            'precio'   => 'sometimes|numeric|min:0',
         ]);
 
         $productId = $request->input('product_id');
         $colores   = $request->input('colores');
         $tallas    = $request->input('tallas');
+        $precio    = $request->input('precio');
 
         DB::transaction(function () use ($productId, $colores, $tallas) {
             foreach ($colores as $colorId) {
-                $existVariant = ProductVariant::where('product_id', $productId)
+                $variant = ProductVariant::where('product_id', $productId)
                     ->where('color_id', $colorId)
                     ->first();
-                if ($existVariant) {
-                    continue;
+                if (!$variant) {
+                    $variant = ProductVariant::create([
+                        'product_id'        => $productId,
+                        'color_id'          => $colorId,
+                        'precio'            => $precio ?? 0,
+                        'descuento'         => null,
+                        'imagen_principal'  => null,
+                        'imagen_principal_jpeg' => null,
+                    ]);
                 }
 
-                $variant = ProductVariant::create([
-                    'product_id'        => $productId,
-                    'color_id'          => $colorId,
-                    'precio'            => 0,
-                    'descuento'         => null,
-                    'imagen_principal'  => null,
-                    'imagen_principal_jpeg' => null,
-                ]);
-
                 foreach ($tallas as $tallaId) {
-                    $variant->sizes()->create([
-                        'talla_id'   => $tallaId,
-                        'stock'      => 0,
-                    ]);
+                    $existVariantSize = VariantSize::where('product_variant_id', $variant->id)
+                        ->where('color_id', $colorId)
+                        ->first();
+                    if (!$existVariantSize) {
+                        $variant->sizes()->create([
+                            'talla_id'   => $tallaId,
+                            'stock'      => 0,
+                        ]);
+                    }
                 }
             }
         });

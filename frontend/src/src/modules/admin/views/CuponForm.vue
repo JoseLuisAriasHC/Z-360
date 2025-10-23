@@ -53,11 +53,7 @@
         loading.value = true;
         try {
             const data = await CuponService.getCupon(id);
-            // Asignación de datos (convertir number a string para el formulario)
-            cuponState.value.id = data.id;
-            cuponState.value.codigo = data.codigo;
-            cuponState.value.descuento = data.descuento;
-            cuponState.value.tipo = data.tipo;
+            cuponState.value = data
             if (data.fecha_expiracion) {
                 cuponState.value.fecha_expiracion = new Date(data.fecha_expiracion);
             } else {
