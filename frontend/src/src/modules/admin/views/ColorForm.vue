@@ -39,9 +39,7 @@
         loading.value = true;
         try {
             const data = await ColorService.getColor(id);
-            colorState.value.id = data.id;
-            colorState.value.nombre = data.nombre;
-            colorState.value.codigo_hex = data.codigo_hex;
+            colorState.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el color.', life: 3000 });
             router.push({ name: 'admin-colores' });

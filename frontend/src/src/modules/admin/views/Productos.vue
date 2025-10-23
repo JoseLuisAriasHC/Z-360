@@ -2,14 +2,14 @@
     import { onMounted, ref } from 'vue';
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
-    import { type Producto, ProductoService } from '@/modules/admin/services/ProductoService';
+    import { type ProductoVM, ProductoService } from '@/modules/admin/services/ProductoService';
     import noImageSvg from '@/assets/img/no-image.svg';
     import { GENEROS_VALORES, TIPOS_VALORES, type Genero, type Tipo, type Cierre, CIERRE_VALORES, SEVERITY_MAP } from '@/constants/productos';
     import { DEFAULT_SEVERITY_TAG_FILTER_ADM } from '@/constants/app';
 
     const backendUrl = import.meta.env.VITE_STORAGE_URL;
     const toast = useToast();
-    const productos = ref<Producto[]>([]);
+    const productos = ref<ProductoVM[]>([]);
     const isLoading = ref(true);
 
     const COLUMNAS = [
@@ -97,7 +97,7 @@
                 </template>
 
                 <template #filter-tipo="{ filterModel }">
-                    <Select v-model="filterModel.value" :options="TIPOS_VALORES" placeholder="Seleccionar Tipo" showClear class="w-full">
+                    <Select v-model="filterModel.value" :options="[...TIPOS_VALORES]" placeholder="Seleccionar Tipo" showClear class="w-full">
                         <template #option="slotProps">
                             <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
                         </template>
@@ -109,7 +109,7 @@
                 </template>
 
                 <template #filter-genero="{ filterModel }">
-                    <Select v-model="filterModel.value" :options="GENEROS_VALORES" placeholder="Seleccionar Género" showClear class="w-full">
+                    <Select v-model="filterModel.value" :options="[...GENEROS_VALORES]" placeholder="Seleccionar Género" showClear class="w-full">
                         <template #option="slotProps">
                             <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
                         </template>
@@ -121,7 +121,7 @@
                 </template>
 
                 <template #filter-cierre="{ filterModel }">
-                    <Select v-model="filterModel.value" :options="CIERRE_VALORES" placeholder="Seleccionar Cierre" showClear class="w-full">
+                    <Select v-model="filterModel.value" :options="[...CIERRE_VALORES]" placeholder="Seleccionar Cierre" showClear class="w-full">
                         <template #option="slotProps">
                             <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
                         </template>

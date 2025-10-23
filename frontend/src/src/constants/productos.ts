@@ -1,18 +1,22 @@
-export const GENEROS_VALORES = ['hombre', 'mujer', 'unisex'];
+// --- Constantes de Arrays (fuente de verdad) ---
+
+export const GENEROS_VALORES = ['hombre', 'mujer', 'unisex'] as const;
+export const TIPOS_VALORES = ['urbanas', 'deportivas', 'botas', 'sandalias'] as const;
+export const CIERRE_VALORES = ['Cordones', 'Velcro', 'Cierre rapido', 'Zipper', 'Slip-on'] as const;
+export const ALTURA_SUELA_VALORES = ['baja', 'alta', 'media'] as const;
+
 export type Genero = (typeof GENEROS_VALORES)[number];
-
-export const TIPOS_VALORES = ['urbanas', 'deportivas', 'botas', 'sandalias'];
 export type Tipo = (typeof TIPOS_VALORES)[number];
-
-export const CIERRE_VALORES = ['Cordones', 'Velcro', 'Cierre rapido', 'Zipper', 'Slip-on'];
 export type Cierre = (typeof CIERRE_VALORES)[number];
+export type AlturaSuela = (typeof ALTURA_SUELA_VALORES)[number];
 
+// --- Mapeo de Severidad ---
 
 type SeverableValue = Genero | Tipo | Cierre;
 
 export const SEVERITY_MAP: Record<SeverableValue, string> = {
     // === primary ===
-    hombre: 'primary',
+    hombre: 'primary', // Las comillas son opcionales si no hay espacios
     urbanas: 'primary',
     Cordones: 'primary',
 
@@ -24,7 +28,7 @@ export const SEVERITY_MAP: Record<SeverableValue, string> = {
     // === info ===
     unisex: 'info',
     botas: 'info',
-    'Cierre rapido': 'info',
+    'Cierre rapido': 'info', // Las comillas son necesarias por el espacio
 
     // === danger ===
     sandalias: 'danger',

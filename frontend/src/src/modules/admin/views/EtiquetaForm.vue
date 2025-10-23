@@ -35,8 +35,7 @@
         loading.value = true;
         try {
             const data = await EtiquetaService.getEtiqueta(id);
-            etiquetaState.value.id = data.id;
-            etiquetaState.value.nombre = data.nombre;
+            etiquetaState.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la etiqueta.', life: 3000 });
             router.push({ name: 'admin-etiquetas' });
