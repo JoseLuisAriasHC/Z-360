@@ -49,7 +49,7 @@
         if (field === 'fecha_expiracion') fechaExpiracionError.value = '';
     };
 
-    const loadCuponData = async (id: number) => {
+    const loadData = async (id: number) => {
         loading.value = true;
         try {
             const data = await CuponService.getCupon(id);
@@ -117,7 +117,6 @@
             } else {
                 const detail = responseData?.message || 'Error desconocido al guardar el cupón.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
-                console.error('Error al enviar formulario:', error);
             }
         } finally {
             loading.value = false;
@@ -130,7 +129,7 @@
 
     onMounted(() => {
         if (isEditMode.value && cuponId.value) {
-            loadCuponData(cuponId.value);
+            loadData(cuponId.value);
         }
     });
 </script>

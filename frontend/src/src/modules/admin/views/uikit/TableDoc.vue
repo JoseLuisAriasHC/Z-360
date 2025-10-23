@@ -9,10 +9,7 @@ const customers2 = ref(null);
 const customers3 = ref(null);
 const filters1 = ref(null);
 const loading1 = ref(null);
-const balanceFrozen = ref(false);
 const products = ref(null);
-const expandedRows = ref([]);
-const statuses = reactive(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
 const representatives = reactive([
     { name: 'Amy Elsner', image: 'amyelsner.png' },
     { name: 'Anna Fali', image: 'annafali.png' },
@@ -25,25 +22,6 @@ const representatives = reactive([
     { name: 'Stephen Shaw', image: 'stephenshaw.png' },
     { name: 'XuXue Feng', image: 'xuxuefeng.png' }
 ]);
-
-function getOrderSeverity(order) {
-    switch (order.status) {
-        case 'DELIVERED':
-            return 'success';
-
-        case 'CANCELLED':
-            return 'danger';
-
-        case 'PENDING':
-            return 'warn';
-
-        case 'RETURNED':
-            return 'info';
-
-        default:
-            return null;
-    }
-}
 
 function getSeverity(status) {
     switch (status) {
@@ -60,22 +38,6 @@ function getSeverity(status) {
             return 'warn';
 
         case 'renewal':
-            return null;
-    }
-}
-
-function getStockSeverity(product) {
-    switch (product.inventoryStatus) {
-        case 'INSTOCK':
-            return 'success';
-
-        case 'LOWSTOCK':
-            return 'warn';
-
-        case 'OUTOFSTOCK':
-            return 'danger';
-
-        default:
             return null;
     }
 }
@@ -107,14 +69,6 @@ function initFilters1() {
     };
 }
 
-function expandAll() {
-    expandedRows.value = products.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
-}
-
-function collapseAll() {
-    expandedRows.value = null;
-}
-
 function formatCurrency(value) {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
@@ -127,18 +81,7 @@ function formatDate(value) {
     });
 }
 
-function calculateCustomerTotal(name) {
-    let total = 0;
-    if (customers3.value) {
-        for (let customer of customers3.value) {
-            if (customer.representative.name === name) {
-                total++;
-            }
-        }
-    }
 
-    return total;
-}
 </script>
 
 <template>
@@ -265,119 +208,6 @@ function calculateCustomerTotal(name) {
         </DataTable>
     </div>
 
-    <div class="card">
-        <div class="font-semibold text-xl mb-4">Frozen Columns</div>
-        <ToggleButton v-model="balanceFrozen" onIcon="pi pi-lock" offIcon="pi pi-lock-open" onLabel="Balance" offLabel="Balance" />
-
-        <DataTable :value="customers2" scrollable scrollHeight="400px" class="mt-6">
-            <Column field="name" header="Name" style="min-width: 200px" frozen class="font-bold"></Column>
-            <Column field="id" header="Id" style="min-width: 100px"></Column>
-            <Column field="name" header="Name" style="min-width: 200px"></Column>
-            <Column field="country.name" header="Country" style="min-width: 200px"></Column>
-            <Column field="date" header="Date" style="min-width: 200px"></Column>
-            <Column field="company" header="Company" style="min-width: 200px"></Column>
-            <Column field="status" header="Status" style="min-width: 200px"></Column>
-            <Column field="activity" header="Activity" style="min-width: 200px"></Column>
-            <Column field="representative.name" header="Representative" style="min-width: 200px"></Column>
-            <Column field="balance" header="Balance" style="min-width: 200px" alignFrozen="right" :frozen="balanceFrozen">
-                <template #body="{ data }">
-                    <span class="font-bold">{{ formatCurrency(data.balance) }}</span>
-                </template>
-            </Column>
-        </DataTable>
-    </div>
-
-    <div class="card">
-        <div class="font-semibold text-xl mb-4">Row Expansion</div>
-        <DataTable v-model:expandedRows="expandedRows" :value="products" dataKey="id" tableStyle="min-width: 60rem">
-            <template #header>
-                <div class="flex flex-wrap justify-end gap-2">
-                    <Button text icon="pi pi-plus" label="Expand All" @click="expandAll" />
-                    <Button text icon="pi pi-minus" label="Collapse All" @click="collapseAll" />
-                </div>
-            </template>
-            <Column expander style="width: 5rem" />
-            <Column field="name" header="Name"></Column>
-            <Column header="Image">
-                <template #body="slotProps">
-                    <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.image" class="shadow-lg" width="64" />
-                </template>
-            </Column>
-            <Column field="price" header="Price">
-                <template #body="slotProps">
-                    {{ formatCurrency(slotProps.data.price) }}
-                </template>
-            </Column>
-            <Column field="category" header="Category"></Column>
-            <Column field="rating" header="Reviews">
-                <template #body="slotProps">
-                    <Rating :modelValue="slotProps.data.rating" readonly />
-                </template>
-            </Column>
-            <Column header="Status">
-                <template #body="slotProps">
-                    <Tag :value="slotProps.data.inventoryStatus" :severity="getStockSeverity(slotProps.data)" />
-                </template>
-            </Column>
-            <template #expansion="slotProps">
-                <div class="p-4">
-                    <h5>Orders for {{ slotProps.data.name }}</h5>
-                    <DataTable :value="slotProps.data.orders">
-                        <Column field="id" header="Id" sortable></Column>
-                        <Column field="customer" header="Customer" sortable></Column>
-                        <Column field="date" header="Date" sortable></Column>
-                        <Column field="amount" header="Amount" sortable>
-                            <template #body="slotProps">
-                                {{ formatCurrency(slotProps.data.amount) }}
-                            </template>
-                        </Column>
-                        <Column field="status" header="Status" sortable>
-                            <template #body="slotProps">
-                                <Tag :value="slotProps.data.status.toLowerCase()" :severity="getOrderSeverity(slotProps.data)" />
-                            </template>
-                        </Column>
-                        <Column headerStyle="width:4rem">
-                            <template #body>
-                                <Button icon="pi pi-search" />
-                            </template>
-                        </Column>
-                    </DataTable>
-                </div>
-            </template>
-        </DataTable>
-    </div>
-
-    <div class="card">
-        <div class="font-semibold text-xl mb-4">Grouping</div>
-        <DataTable :value="customers3" rowGroupMode="subheader" groupRowsBy="representative.name" sortMode="single" sortField="representative.name" :sortOrder="1" scrollable scrollHeight="400px" tableStyle="min-width: 50rem">
-            <template #groupheader="slotProps">
-                <div class="flex items-center gap-2">
-                    <img :alt="slotProps.data.representative.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${slotProps.data.representative.image}`" width="32" style="vertical-align: middle" />
-                    <span>{{ slotProps.data.representative.name }}</span>
-                </div>
-            </template>
-            <Column field="representative.name" header="Representative"></Column>
-            <Column field="name" header="Name" style="min-width: 200px"></Column>
-            <Column field="country" header="Country" style="min-width: 200px">
-                <template #body="slotProps">
-                    <div class="flex items-center gap-2">
-                        <img alt="flag" src="https://primefaces.org/cdn/primevue/images/flag/flag_placeholder.png" :class="`flag flag-${slotProps.data.country.code}`" style="width: 24px" />
-                        <span>{{ slotProps.data.country.name }}</span>
-                    </div>
-                </template>
-            </Column>
-            <Column field="company" header="Company" style="min-width: 200px"></Column>
-            <Column field="status" header="Status" style="min-width: 200px">
-                <template #body="slotProps">
-                    <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data.status)" />
-                </template>
-            </Column>
-            <Column field="date" header="Date" style="min-width: 200px"></Column>
-            <template #groupfooter="slotProps">
-                <div class="flex justify-end font-bold w-full">Total Customers: {{ calculateCustomerTotal(slotProps.data.representative.name) }}</div>
-            </template>
-        </DataTable>
-    </div>
 </template>
 
 <style scoped lang="scss">

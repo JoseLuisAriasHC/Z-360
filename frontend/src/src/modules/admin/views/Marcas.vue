@@ -5,9 +5,9 @@
     import { type Marca, MarcaService } from '@/modules/admin/services/MarcaService';
     import noImageSvg from '@/assets/img/no-image.svg';
 
-    const marcas = ref<Marca[]>([]);
-    const toast = useToast();
     const backendUrl = import.meta.env.VITE_STORAGE_URL;
+    const toast = useToast();
+    const marcas = ref<Marca[]>([]);
     const isLoading = ref(true);
 
     const MARCA_COLUMNS = [

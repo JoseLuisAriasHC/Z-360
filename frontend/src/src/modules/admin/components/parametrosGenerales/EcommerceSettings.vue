@@ -99,7 +99,6 @@
             } else {
                 const detail = responseData?.message || 'Error desconocido al guardar los parametros del ecommerce.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
-                console.error('Error al enviar formulario:', error);
             }
         } finally {
             loading.value = false;

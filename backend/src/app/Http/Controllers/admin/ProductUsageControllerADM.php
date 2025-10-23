@@ -110,4 +110,24 @@ class ProductUsageControllerADM extends Controller
             'data' => $product->usages
         ]);
     }
+
+    /**
+     * Eliminar múltiples tipos de uso.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:product_usages,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = ProductUsage::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} tipos de uso eliminadas correctamente."
+        ]);
+    }
 }

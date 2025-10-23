@@ -19,7 +19,7 @@ class ProductResource extends JsonResource
             'nombre'    => $this->nombre,
             'marca'     => [
                 'nombre'    => $this->marca->nombre,
-                'logo'  => $this->marca->logo,
+                'logo'      => $this->marca->logo,
             ],
             'tipo'      => $this->tipo,
             'genero'    => $this->genero,
