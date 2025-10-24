@@ -38,7 +38,7 @@
             colorState.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el color.', life: 3000 });
-            router.push({ name: 'admin-colores' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }

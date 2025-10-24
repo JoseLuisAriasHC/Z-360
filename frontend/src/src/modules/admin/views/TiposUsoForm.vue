@@ -35,7 +35,7 @@
             tipoUsoState.value.nombre = data.nombre;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el tipo de uso.', life: 3000 });
-            router.push({ name: 'admin-tipos-uso' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }

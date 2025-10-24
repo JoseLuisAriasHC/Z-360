@@ -37,7 +37,7 @@
             tallaState.value.numero = data.numero.toString();
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la talla.', life: 3000 });
-            router.push({ name: 'admin-tallas' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }

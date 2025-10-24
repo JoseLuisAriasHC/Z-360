@@ -103,16 +103,12 @@ export const EtiquetaService = {
     },
 
     /**
-     * Función para guardar usando FormData.
-     *
-     * @param formData Contiene los datos de la Etiqueta
      * @param idProducto idProducto del producto
      * @returns Las etiquetas del producto
      */
     async saveEtiquetasDelProducto(payload: EtiquetasPayload, idProducto: number): Promise<SaveAllResponseWrapper> {
         let response: AxiosResponse<SaveAllResponseWrapper>;
         response = await apiClient.post(`admin/products/${idProducto}/etiquetas`, payload);
-
         return response.data;
     },
 };

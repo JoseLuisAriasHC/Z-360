@@ -33,7 +33,7 @@ const adminRoutes: RouteRecordRaw[] = [
                 name: 'admin-profile',
                 component: () => import('@admin/views/Profile.vue'),
             },
-                        {
+            {
                 path: 'productos',
                 name: 'admin-productos',
                 component: () => import('@admin/views/Productos.vue'),
@@ -48,7 +48,7 @@ const adminRoutes: RouteRecordRaw[] = [
                 name: 'admin-productos-edit',
                 component: () => import('@admin/views/ProductoForm.vue'),
                 props: true,
-                },
+            },
             {
                 path: 'marcas',
                 name: 'admin-marcas',
@@ -153,7 +153,7 @@ const adminRoutes: RouteRecordRaw[] = [
         ],
     },
     {
-        path: ':catchAll(.*)',
+        path: ':catchAll(.*)*',
         name: 'admin-not-found',
         component: () => import('@admin/views/NotFound.vue'),
     },

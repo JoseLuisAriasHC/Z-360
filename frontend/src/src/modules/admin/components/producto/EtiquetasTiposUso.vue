@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import Etiquetas from '@admin/components/producto/Etiquetas.vue';
+    import TiposUso from '@admin/components/producto/TiposUso.vue';
     const props = defineProps<{
         productoId: number | null;
     }>();
@@ -11,7 +12,9 @@
             <div class="col-span-12">
                 <Etiquetas :producto-id="props.productoId" />
             </div>
-            <div class="col-span-12"></div>
+            <div class="col-span-12">
+                <TiposUso :producto-id="props.productoId" />
+            </div>
         </div>
     </TabPanel>
 </template>

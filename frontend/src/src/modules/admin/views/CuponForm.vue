@@ -58,7 +58,7 @@
             cuponState.value.uso_maximo = data.uso_maximo;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el cupón.', life: 3000 });
-            router.push({ name: 'admin-cupones' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }

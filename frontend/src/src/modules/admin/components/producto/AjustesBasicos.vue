@@ -13,27 +13,16 @@
     const toast = useToast();
 
     const props = defineProps<{
-        productoId: number | null;
+        productoState: ProductoFormState & { id?: number };
         isEditMode: boolean;
     }>();
 
     interface ProductoFormState extends Omit<Producto, 'id'> {}
-    const productoState = ref<ProductoFormState & { id?: number }>({
-        id: props.productoId || undefined,
-        nombre: '0.0',
-        marca_id: 0,
-        tipo: 'urbanas',
-        descripcion: '',
-        cierre: 'Cordones',
-        altura_suela: 'media',
-        plantilla: '',
-        genero: 'unisex',
-    });
 
     const marcas = ref<Marca[]>([]);
     const loading = ref(false);
     const currentLogoUrl = computed<string>(() => {
-        const marcaId = productoState.value.marca_id;
+        const marcaId = props.productoState.marca_id;
         const currentMarca = marcas.value.find((m) => m.id === marcaId);
 
         if (currentMarca && currentMarca.logo) {
@@ -61,19 +50,6 @@
         if (field === 'genero') generoError.value = '';
     };
 
-    const loadData = async (id: number) => {
-        loading.value = true;
-        try {
-            const data = await ProductoService.getProducto(id);
-            productoState.value = data;
-        } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la talla.', life: 3000 });
-            router.push({ name: 'admin-tallas' });
-        } finally {
-            loading.value = false;
-        }
-    };
-
     const loadMarcaData = async () => {
         try {
             const data = await MarcaService.getMarcas();
@@ -81,20 +57,20 @@
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar las marcas.', life: 3000 });
         } finally {
-            // isLoading.value = false;
+            loading.value = false;
         }
     };
 
     function getFomrData(): FormData {
         const formData = new FormData();
-        formData.append('nombre', productoState.value.nombre);
-        formData.append('marca_id', productoState.value.marca_id.toString());
-        formData.append('tipo', productoState.value.tipo);
-        formData.append('descripcion', productoState.value.descripcion);
-        formData.append('cierre', productoState.value.cierre);
-        formData.append('altura_suela', productoState.value.altura_suela);
-        formData.append('plantilla', productoState.value.plantilla);
-        formData.append('genero', productoState.value.genero);
+        formData.append('nombre', props.productoState.nombre);
+        formData.append('marca_id', props.productoState.marca_id.toString());
+        formData.append('tipo', props.productoState.tipo);
+        formData.append('descripcion', props.productoState.descripcion);
+        formData.append('cierre', props.productoState.cierre);
+        formData.append('altura_suela', props.productoState.altura_suela);
+        formData.append('plantilla', props.productoState.plantilla);
+        formData.append('genero', props.productoState.genero);
 
         return formData;
     }
@@ -115,8 +91,11 @@
         const formData = getFomrData();
 
         try {
-            const data = await ProductoService.saveProducto(formData, productoState.value.id);
+            const data = await ProductoService.saveProducto(formData, props.productoState.id);
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
+            if (!props.isEditMode) {
+                router.push({ name: 'admin-productos-edit', params: { id: data.data.id } });
+            }
         } catch (error: any) {
             const responseData = error.response?.data;
             saveErrors(responseData);
@@ -132,7 +111,8 @@
                 const detail = responseData?.message || 'Error desconocido al guardar la talla.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
             }
-        } finally {
+        } 
+        finally {
             loading.value = false;
         }
     };
@@ -145,9 +125,6 @@
 
     onMounted(() => {
         loadMarcaData();
-        if (props.isEditMode && props.productoId) {
-            loadData(props.productoId);
-        }
     });
 </script>
 
@@ -158,10 +135,11 @@
                 <FormField id="marca" label="Marca" :error="marcaIdError">
                     <Select
                         id="marca"
-                        v-model="productoState.marca_id"
+                        v-model="props.productoState.marca_id"
                         :options="marcas"
                         placeholder="Seleccionar Marca"
                         showClear
+                        filter
                         class="w-full"
                         optionLabel="nombre"
                         optionValue="id"
@@ -174,23 +152,23 @@
                     @error="handleImageError" />
             </div>
             <div class="col-span-12 xl:col-span-8">
-                <FormField id="nombre" label="Nombre" :error="nombreError" v-model="productoState.nombre">
+                <FormField id="nombre" label="Nombre" :error="nombreError" v-model="props.productoState.nombre">
                     <InputText
                         id="nombre"
                         type="text"
-                        v-model="productoState.nombre"
+                        v-model="props.productoState.nombre"
                         :invalid="nombreError != ''"
                         class="w-full"
                         @input="clearErrores('nombre')" />
                 </FormField>
 
-                <FormField id="descripcion" label="Descripción" :error="descripcionError" v-model="productoState.descripcion">
+                <FormField id="descripcion" label="Descripción" :error="descripcionError" v-model="props.productoState.descripcion">
                     <Textarea
                         id="descripcion"
                         class="w-full"
                         size="large"
                         rows="5"
-                        v-model="productoState.descripcion"
+                        v-model="props.productoState.descripcion"
                         :invalid="descripcionError != ''"
                         @input="clearErrores('descripcion')" />
                 </FormField>
@@ -198,7 +176,7 @@
                     <FormField id="altura_suela" label="Altura de la suela" :error="alturaSuelaError" class="col-span-12 xl:col-span-6">
                         <Select
                             id="altura_suela"
-                            v-model="productoState.altura_suela"
+                            v-model="props.productoState.altura_suela"
                             :options="[...ALTURA_SUELA_VALORES]"
                             placeholder="Seleccionar Altura de la Suela"
                             :invalid="alturaSuelaError != ''"
@@ -210,7 +188,7 @@
                     <FormField id="cierre" label="Tiopo de cierre" :error="cierreError" class="col-span-12 xl:col-span-6">
                         <Select
                             id="cierre"
-                            v-model="productoState.cierre"
+                            v-model="props.productoState.cierre"
                             :options="[...CIERRE_VALORES]"
                             placeholder="Seleccionar Tipo de cierre"
                             :invalid="cierreError != ''"
@@ -224,7 +202,7 @@
                     <FormField id="tipo" label="Tipo" :error="tipoError" class="col-span-12 xl:col-span-6">
                         <Select
                             id="tipo"
-                            v-model="productoState.tipo"
+                            v-model="props.productoState.tipo"
                             :options="[...TIPOS_VALORES]"
                             placeholder="Seleccionar Tipo"
                             :invalid="tipoError != ''"
@@ -236,7 +214,7 @@
                     <FormField id="genero" label="Genero" :error="generoError" class="col-span-12 xl:col-span-6">
                         <Select
                             id="genero"
-                            v-model="productoState.genero"
+                            v-model="props.productoState.genero"
                             :options="[...GENEROS_VALORES]"
                             placeholder="Seleccionar Genero"
                             :invalid="generoError != ''"
@@ -246,11 +224,11 @@
                     </FormField>
                 </div>
 
-                <FormField id="plantilla" label="Plantilla" :error="plantillaError" v-model="productoState.plantilla">
+                <FormField id="plantilla" label="Plantilla" :error="plantillaError" v-model="props.productoState.plantilla">
                     <InputText
                         id="plantilla"
                         type="text"
-                        v-model="productoState.plantilla"
+                        v-model="props.productoState.plantilla"
                         :invalid="plantillaError != ''"
                         class="w-full"
                         @input="clearErrores('plantilla')" />

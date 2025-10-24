@@ -57,7 +57,7 @@
             }
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la marca.', life: 3000 });
-            router.push({ name: 'admin-marcas' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }
