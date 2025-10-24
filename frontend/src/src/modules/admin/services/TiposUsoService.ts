@@ -27,12 +27,30 @@ interface SaveResponseWrapper {
     data: TiposUso;
 }
 
+interface SaveAllResponseWrapper {
+    success: boolean;
+    message: string;
+    data: TiposUso[];
+}
+
+type TiposUsoPayload = {
+    usages: number[];
+};
+
 export const TiposUsoService = {
     /**
      * Hace la llamada GET /api/admin/usages
      */
     async getTiposUsos(): Promise<TiposUso[]> {
         const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('admin/usages');
+        return response.data.data;
+    },
+
+    /**
+     * Obtiene una Etiqueta específica.
+     */
+    async getTipoUso(id: number): Promise<TiposUso> {
+        const response: AxiosResponse<SingleResponseWrapper> = await apiClient.get(`admin/usages/${id}`);
         return response.data.data;
     },
 
@@ -66,7 +84,7 @@ export const TiposUsoService = {
             if (!formData.has('_method')) {
                 formData.append('_method', 'PUT');
             }
-            
+
             response = await apiClient.post(`admin/usages/${id}`, formData);
         } else {
             response = await apiClient.post('admin/usages', formData);
@@ -76,10 +94,21 @@ export const TiposUsoService = {
     },
 
     /**
-     * Obtiene una Etiqueta específica.
+     * Obtiene los tipos de uso de ese producto
      */
-    async getTipoUso(id: number): Promise<TiposUso> {
-        const response: AxiosResponse<SingleResponseWrapper> = await apiClient.get(`admin/usages/${id}`);
+    async getTipoUsoByIdProducto(idProducto: number): Promise<TiposUso[]> {
+        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get(`admin/products/${idProducto}/usages`);
         return response.data.data;
+    },
+
+    /**
+     * @param idProducto idProducto del producto
+     * @returns Las etiquetas del producto
+     */
+    async saveEtiquetasDelProducto(payload: TiposUsoPayload, idProducto: number): Promise<SaveAllResponseWrapper> {
+        let response: AxiosResponse<SaveAllResponseWrapper>;
+        response = await apiClient.post(`admin/products/${idProducto}/usages`, payload);
+
+        return response.data;
     },
 };

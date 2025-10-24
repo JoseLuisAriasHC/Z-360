@@ -64,7 +64,13 @@ function itemClick(event, item) {
 }
 
 function checkActiveRoute(item) {
-    return route.name === item.to.name;
+    const menuRouteName = item.to.name;
+    const currentRouteName = route.name;
+    if (typeof currentRouteName === 'string' && typeof menuRouteName === 'string') {
+        return currentRouteName.startsWith(menuRouteName);
+    }
+    
+    return false;
 }
 </script>
 

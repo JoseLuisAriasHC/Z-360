@@ -2,7 +2,7 @@
     import { ref, onMounted, computed, inject, type Ref } from 'vue';
     import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
-    import { type Etiqueta, EtiquetaService } from '@admin/services/EtiquetaService';
+    import { type TiposUso, TiposUsoService } from '@admin/services/TiposUsoService';
     import FormField from '@admin/components/FormField.vue';
 
     const router = useRouter();
@@ -14,26 +14,25 @@
 
     const productoValido = inject<Ref<boolean>>('productoValido', ref(true));
     const loading = ref(false);
-    const etiquetasError = ref('');
+    const tipoUsoError = ref('');
 
-
-    const etiquetasDisponibles = ref<Etiqueta[]>([]);
-    const etiquetasSeleccionadas = ref<Etiqueta[]>([]);
-    const etiquetaIdsSelecionadas = computed<number[]>(() => {
-        if (!etiquetasSeleccionadas.value) {
+    const tiposUsoDisponibles = ref<TiposUso[]>([]);
+    const tiposUsoSeleccionadas = ref<TiposUso[]>([]);
+    const TiposUsoIdsSelecionados = computed<number[]>(() => {
+        if (!tiposUsoSeleccionadas.value) {
             return [];
         }
-        return etiquetasSeleccionadas.value.map((etiqueta) => etiqueta.id);
+        return tiposUsoSeleccionadas.value.map((uso) => uso.id);
     });
 
-    const loadEtiquetasData = async () => {
+    const loadTiposUsoData = async () => {
         loading.value = true;
 
         try {
-            const data = await EtiquetaService.getEtiquetas();
-            etiquetasDisponibles.value = data;
+            const data = await TiposUsoService.getTiposUsos();
+            tiposUsoDisponibles.value = data;
         } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar las etiquetas.', life: 3000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar los tipos de uso.', life: 3000 });
             router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
@@ -44,10 +43,10 @@
         loading.value = true;
 
         try {
-            const data = await EtiquetaService.getEtiquetasByIdProduct(id);
-            etiquetasSeleccionadas.value = data;
+            const data = await TiposUsoService.getTipoUsoByIdProducto(id);
+            tiposUsoSeleccionadas.value = data;
         } catch (error) {
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar las etiquetas del producto', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar las etiquetas del producto', life: 3000 });
             router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
@@ -58,22 +57,19 @@
         loading.value = true;
 
         const payload = {
-            etiquetas: etiquetaIdsSelecionadas.value,
+            usages: TiposUsoIdsSelecionados.value,
         };
 
-        
-        
         try {
             if (props.productoId) {
-                console.log(payload);
-                const data = await EtiquetaService.saveEtiquetasDelProducto(payload, props.productoId);
+                const data = await TiposUsoService.saveEtiquetasDelProducto(payload, props.productoId);
                 toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
             }
         } catch (error: any) {
             const responseData = error.response?.data;
 
             if (error.response?.status === 422 && responseData?.errors) {
-                etiquetasError.value = responseData.errors.etiquetas ? responseData.errors.etiquetas[0] : '';
+                tipoUsoError.value = responseData.errors.etiquetas ? responseData.errors.etiquetas[0] : '';
                 toast.add({
                     severity: 'error',
                     summary: 'Error de Validación',
@@ -81,7 +77,7 @@
                     life: 5000,
                 });
             } else {
-                const detail = responseData?.message || 'Error desconocido al guardar las etiquetas del producto.';
+                const detail = responseData?.message || 'Error desconocido al guardar los tipos de uso del producto.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
             }
         } finally {
@@ -90,8 +86,8 @@
     };
 
     onMounted(() => {
-        loadEtiquetasData();
-        if (props.productoId && productoValido.value) {
+        loadTiposUsoData();
+        if (props.productoId && productoValido) {
             loadData(props.productoId);
         }
     });
@@ -99,26 +95,26 @@
 
 <template>
     <div class="p-8 border border-surface-200 dark:border-surface-700 p-8 rounded-lg drop-shadow-md">
-        <div class="font-semibold text-xl mb-4">Etiquetas del producto</div>
+        <div class="font-semibold text-xl mb-4">Tipos de uso del producto</div>
         <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
-                <FormField id="etiquetas" label="" :error="etiquetasError">
+                <FormField id="etiquetas" label="" :error="tipoUsoError">
                     <MultiSelect
                         id="etiquetas"
-                        v-model="etiquetasSeleccionadas"
-                        :options="etiquetasDisponibles"
+                        v-model="tiposUsoSeleccionadas"
+                        :options="tiposUsoDisponibles"
                         filter
                         showClear
                         optionLabel="nombre"
-                        placeholder="Selecciona Etiquetas"
+                        placeholder="Selecciona el tipo de uso"
                         class="w-full"
-                        @input="etiquetasError = ''">
+                        @input="tipoUsoError = ''">
                         <template #value="slotProps">
                             <div class="" v-for="option of slotProps.value" :key="option">
                                 <Tag :value="option.nombre" severity="primary" class="m-2" />
                             </div>
                             <template v-if="!slotProps.value || slotProps.value.length === 0">
-                                <div class="p-1">Selecciona Etiquetas</div>
+                                <div class="p-1">Selecciona el tipo de uso</div>
                             </template>
                         </template>
                     </MultiSelect>

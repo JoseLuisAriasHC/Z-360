@@ -95,15 +95,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('etiquetas/delete-multiple', [EtiquetaControllerADM::class, 'destroyMultiple']);
     Route::get('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'getEtiquetasByProduct']);
     Route::post('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'asignarEtiquetas']);
-    Route::delete('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'eliminarEtiquetasByProduct']);
     Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaControllerADM::class, 'limpiarEtiqueta']);
     Route::apiResource('etiquetas', EtiquetaControllerADM::class);
 
     // Ruta para los usos de un producto
     Route::post('usages/delete-multiple', [ProductUsageControllerADM::class, 'destroyMultiple']);
-    Route::apiResource('usages', ProductUsageControllerADM::class);
     Route::get('products/{product}/usages', [ProductUsageControllerADM::class, 'showProductUsages']);
     Route::post('products/{product}/usages', [ProductUsageControllerADM::class, 'asignarUsos']);
+    Route::apiResource('usages', ProductUsageControllerADM::class);
 
     // Rutas para el Producto Base
     Route::post('products/delete-multiple', [ProductControllerADM::class, 'destroyMultiple']);

@@ -92,7 +92,7 @@ class EtiquetaControllerADM extends Controller
     public function asignarEtiquetas(Request $request, Product $product)
     {
         $request->validate([
-            'etiquetas' => 'required|array',
+            'etiquetas' => 'present|array',
             'etiquetas.*' => 'exists:etiquetas,id',
         ]);
 
@@ -102,22 +102,6 @@ class EtiquetaControllerADM extends Controller
             'success' => true,
             'message' => 'Etiquetas asignadas correctamente',
             'data' => $product->etiquetas
-        ]);
-    }
-
-    public function eliminarEtiquetasByProduct(Request $request, Product $product)
-    {
-        $request->validate([
-            'etiquetas' => 'required|array',
-            'etiquetas.*' => 'exists:etiquetas,id',
-        ]);
-
-        $product->etiquetas()->detach($request->etiquetas);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Etiquetas eliminadas correctamente',
-            'data' => $product->load('etiquetas')
         ]);
     }
 

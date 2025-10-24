@@ -87,7 +87,7 @@ class ProductUsageControllerADM extends Controller
     public function asignarUsos(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'usages' => 'required|array',
+            'usages' => 'present|array',
             'usages.*' => 'exists:product_usages,id'
         ]);
 
@@ -96,7 +96,7 @@ class ProductUsageControllerADM extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Usos asignados correctamente',
-            'data' => $product->load('usages')
+            'data' => $product->usages
         ]);
     }
 

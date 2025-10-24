@@ -1,10 +1,12 @@
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, inject, type Ref } from 'vue';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type ProductoDetalle, ProductoDetalleService } from '@admin/services/ProductoDetalleService';
     import FormField from '@admin/components/FormField.vue';
 
     // --- PROPS Y HOOKS ---
+    const router = useRouter();
     const toast = useToast();
 
     const props = defineProps<{
@@ -20,6 +22,7 @@
         cuidados: '',
     });
 
+    const productoValido = inject<Ref<boolean>>('productoValido', ref(true));
     // Referencias para manejar errores de validación del backend (422)
     const loading = ref(false);
     const parteSuperiorError = ref('');
@@ -41,6 +44,7 @@
             detalleState.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar los detalles del producto.', life: 3000 });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }
@@ -92,7 +96,7 @@
     };
 
     onMounted(() => {
-        if (props.productoId) {
+        if (props.productoId && productoValido.value) {
             loadData(props.productoId);
         }
     });
@@ -114,11 +118,7 @@
                 </FormField>
             </div>
             <div class="col-span-12 xl:col-span-8">
-                <FormField
-                    id="nombre"
-                    label="Parte Superior del calzado"
-                    :error="parteSuperiorError"
-                    v-model="detalleState.parte_superior">
+                <FormField id="nombre" label="Parte Superior del calzado" :error="parteSuperiorError" v-model="detalleState.parte_superior">
                     <InputText
                         id="nombre"
                         type="text"
@@ -128,11 +128,7 @@
                         @input="clearErrores('parte_superior')" />
                 </FormField>
 
-                <FormField
-                    id="parte_inferior"
-                    label="Parte Inferior del calzado"
-                    :error="parteInferiorError"
-                    v-model="detalleState.parte_inferior">
+                <FormField id="parte_inferior" label="Parte Inferior del calzado" :error="parteInferiorError" v-model="detalleState.parte_inferior">
                     <InputText
                         id="parte_inferior"
                         type="text"

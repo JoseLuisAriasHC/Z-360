@@ -34,7 +34,7 @@
             etiquetaState.value = data;
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la etiqueta.', life: 3000 });
-            router.push({ name: 'admin-etiquetas' });
+            router.push({ name: 'admin-not-found' });
         } finally {
             loading.value = false;
         }
