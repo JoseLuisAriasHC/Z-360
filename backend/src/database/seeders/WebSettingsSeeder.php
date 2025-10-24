@@ -86,5 +86,7 @@ class WebSettingsSeeder extends Seeder
                 'updated_at'  => now(),
             ],
         ]);
+
+        $this->command->info('Ajustes de la WEB creados');
     }
 }

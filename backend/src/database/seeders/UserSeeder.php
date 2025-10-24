@@ -30,5 +30,7 @@ class UserSeeder extends Seeder
             'telefono' => '987654321',
             'rol' => 'cliente',
         ]);
+
+        $this->command->info('Usuarios creados');
     }
 }

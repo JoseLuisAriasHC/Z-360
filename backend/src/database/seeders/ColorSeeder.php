@@ -33,5 +33,6 @@ class ColorSeeder extends Seeder
         foreach ($colores as $color) {
             Color::create($color);
         }
+        $this->command->info('Colores creado');
     }
 }
