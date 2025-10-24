@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type Producto, ProductoService } from '@admin/services/ProductoService';
     import FormField from '@admin/components/FormField.vue';
@@ -9,20 +9,17 @@
     import { ALTURA_SUELA_VALORES, CIERRE_VALORES, GENEROS_VALORES, TIPOS_VALORES } from '@/constants/productos';
 
     // --- PROPS Y HOOKS ---
-    const route = useRoute();
     const router = useRouter();
     const toast = useToast();
 
-    const productoId = computed<number | null>(() => {
-        const idParam = route.params.id;
-        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam as string) : null;
-    });
-
-    const isEditMode = computed(() => productoId.value !== null);
+    const props = defineProps<{
+        productoId: number | null;
+        isEditMode: boolean;
+    }>();
 
     interface ProductoFormState extends Omit<Producto, 'id'> {}
     const productoState = ref<ProductoFormState & { id?: number }>({
-        id: productoId.value || undefined,
+        id: props.productoId || undefined,
         nombre: '0.0',
         marca_id: 0,
         tipo: 'urbanas',
@@ -33,7 +30,6 @@
         genero: 'unisex',
     });
 
-    // Referencias para manejar errores de validación del backend (422)
     const marcas = ref<Marca[]>([]);
     const loading = ref(false);
     const currentLogoUrl = computed<string>(() => {
@@ -104,7 +100,7 @@
     }
 
     function saveErrors(responseData: any) {
-        nombreError.value = responseData.errors.numero ? responseData.errors.numero[0] : '';
+        nombreError.value = responseData.errors.nombre ? responseData.errors.nombre[0] : '';
         marcaIdError.value = responseData.errors.marca_id ? responseData.errors.marca_id[0] : '';
         tipoError.value = responseData.errors.tipo ? responseData.errors.tipo[0] : '';
         descripcionError.value = responseData.errors.descripcion ? responseData.errors.descripcion[0] : '';
@@ -147,14 +143,10 @@
         imgElement.src = noImageSvg;
     };
 
-    const goBack = () => {
-        router.push({ name: 'admin-productos' });
-    };
-
     onMounted(() => {
         loadMarcaData();
-        if (isEditMode.value && productoId.value) {
-            loadData(productoId.value);
+        if (props.isEditMode && props.productoId) {
+            loadData(props.productoId);
         }
     });
 </script>
@@ -162,14 +154,6 @@
 <template>
     <TabPanel value="general">
         <form @submit.prevent="handleSubmit" class="card grid grid-cols-12 gap-8">
-            <div class="col-span-12 xl:col-span-12">
-                <div class="font-semibold text-xl flex items-center justify-between">
-                    <h5 class="text-xl font-bold">
-                        {{ isEditMode ? 'Editar Producto' : 'Crear Nuevo Producto' }}
-                    </h5>
-                    <Button icon="pi pi-arrow-left" label="Volver" severity="secondary" @click="goBack" :fluid="false" />
-                </div>
-            </div>
             <div class="col-span-12 xl:col-span-4">
                 <FormField id="marca" label="Marca" :error="marcaIdError">
                     <Select
@@ -207,6 +191,7 @@
                         size="large"
                         rows="5"
                         v-model="productoState.descripcion"
+                        :invalid="descripcionError != ''"
                         @input="clearErrores('descripcion')" />
                 </FormField>
                 <div class="grid grid-cols-12 gap-8">
@@ -216,6 +201,7 @@
                             v-model="productoState.altura_suela"
                             :options="[...ALTURA_SUELA_VALORES]"
                             placeholder="Seleccionar Altura de la Suela"
+                            :invalid="alturaSuelaError != ''"
                             showClear
                             class="w-full"
                             @input="clearErrores('altura_suela')" />
@@ -227,6 +213,7 @@
                             v-model="productoState.cierre"
                             :options="[...CIERRE_VALORES]"
                             placeholder="Seleccionar Tipo de cierre"
+                            :invalid="cierreError != ''"
                             showClear
                             class="w-full"
                             @input="clearErrores('cierre')" />
@@ -240,6 +227,7 @@
                             v-model="productoState.tipo"
                             :options="[...TIPOS_VALORES]"
                             placeholder="Seleccionar Tipo"
+                            :invalid="tipoError != ''"
                             showClear
                             class="w-full"
                             @input="clearErrores('tipo')" />
@@ -251,6 +239,7 @@
                             v-model="productoState.genero"
                             :options="[...GENEROS_VALORES]"
                             placeholder="Seleccionar Genero"
+                            :invalid="generoError != ''"
                             showClear
                             class="w-full"
                             @input="clearErrores('genero')" />
@@ -272,7 +261,7 @@
                 <div class="flex justify-end mt-4">
                     <Button
                         type="submit"
-                        :label="isEditMode ? 'Guardar Cambios' : 'Crear Talla'"
+                        :label="props.isEditMode ? 'Guardar Cambios' : 'Crear Producto'"
                         :loading="loading"
                         severity="primary"
                         icon="pi pi-check"

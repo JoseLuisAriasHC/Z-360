@@ -42,7 +42,6 @@
 
     const handleDeleteSelected = async (ids: number[]) => {
         try {
-            debugger;
             const data = await ColorService.deleteMultipleColores(ids);
             isLoading.value = true;
             await fetchColores();

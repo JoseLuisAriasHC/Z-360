@@ -81,6 +81,14 @@ class EtiquetaControllerADM extends Controller
         ]);
     }
 
+    public function getEtiquetasByProduct(Product $product)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $product->etiquetas
+        ]);
+    }
+
     public function asignarEtiquetas(Request $request, Product $product)
     {
         $request->validate([
@@ -88,17 +96,16 @@ class EtiquetaControllerADM extends Controller
             'etiquetas.*' => 'exists:etiquetas,id',
         ]);
 
-        // Agrega las etiquetas pasadas al producto, sin eliminar las que ya tiene, y sin duplicar las existentes
         $product->etiquetas()->syncWithoutDetaching($request->etiquetas);
 
         return response()->json([
             'success' => true,
             'message' => 'Etiquetas asignadas correctamente',
-            'data' => $product->load('etiquetas')
+            'data' => $product->etiquetas
         ]);
     }
 
-    public function eliminarEtiquetas(Request $request, Product $product)
+    public function eliminarEtiquetasByProduct(Request $request, Product $product)
     {
         $request->validate([
             'etiquetas' => 'required|array',
