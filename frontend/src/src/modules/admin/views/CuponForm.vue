@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type Cupon, CuponService } from '@admin/services/CuponService';
     import FormField from '@admin/components/FormField.vue';
+    import { getParamId } from '@/utils/utils';
 
     const getOneWeekFromNow = (): Date => {
         const date = new Date();
@@ -12,15 +13,10 @@
     };
 
     // --- PROPS Y HOOKS ---
-    const route = useRoute();
     const router = useRouter();
     const toast = useToast();
 
-    const cuponId = computed<number | null>(() => {
-        const idParam = route.params.id;
-        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam as string) : null;
-    });
-
+    const cuponId = getParamId();
     const isEditMode = computed(() => cuponId.value !== null);
 
     interface CuponFormState extends Omit<Cupon, 'id'> {}
@@ -53,7 +49,7 @@
         loading.value = true;
         try {
             const data = await CuponService.getCupon(id);
-            cuponState.value = data
+            cuponState.value = data;
             if (data.fecha_expiracion) {
                 cuponState.value.fecha_expiracion = new Date(data.fecha_expiracion);
             } else {
@@ -90,7 +86,6 @@
         formData.append('uso_maximo', cuponState.value.uso_maximo.toString());
 
         try {
-            debugger;
             const data = await CuponService.saveCupon(formData, cuponState.value.id);
             toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
             router.push({ name: 'admin-cupones' });

@@ -27,12 +27,30 @@ interface SaveResponseWrapper {
     data: Etiqueta;
 }
 
+interface SaveAllResponseWrapper {
+    success: boolean;
+    message: string;
+    data: Etiqueta[];
+}
+
+type EtiquetasPayload = {
+    etiquetas: number[];
+};
+
 export const EtiquetaService = {
     /**
      * Hace la llamada GET /api/admin/etiquetas
      */
     async getEtiquetas(): Promise<Etiqueta[]> {
         const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('admin/etiquetas');
+        return response.data.data;
+    },
+
+    /**
+     * Obtiene una Etiqueta específica.
+     */
+    async getEtiqueta(id: number): Promise<Etiqueta> {
+        const response: AxiosResponse<SingleResponseWrapper> = await apiClient.get(`admin/etiquetas/${id}`);
         return response.data.data;
     },
 
@@ -66,7 +84,7 @@ export const EtiquetaService = {
             if (!formData.has('_method')) {
                 formData.append('_method', 'PUT');
             }
-            
+
             response = await apiClient.post(`admin/etiquetas/${id}`, formData);
         } else {
             response = await apiClient.post('admin/etiquetas', formData);
@@ -76,10 +94,25 @@ export const EtiquetaService = {
     },
 
     /**
-     * Obtiene una Etiqueta específica.
+     * Obtiene las etiquetas específicas en base la producto
+     * products/{product}/etiquetas
      */
-    async getEtiqueta(id: number): Promise<Etiqueta> {
-        const response: AxiosResponse<SingleResponseWrapper> = await apiClient.get(`admin/etiquetas/${id}`);
+    async getEtiquetasByIdProduct(idProducto: number): Promise<Etiqueta[]> {
+        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get(`admin/products/${idProducto}/etiquetas`);
         return response.data.data;
+    },
+
+    /**
+     * Función para guardar usando FormData.
+     *
+     * @param formData Contiene los datos de la Etiqueta
+     * @param idProducto idProducto del producto
+     * @returns Las etiquetas del producto
+     */
+    async saveEtiquetasDelProducto(payload: EtiquetasPayload, idProducto: number): Promise<SaveAllResponseWrapper> {
+        let response: AxiosResponse<SaveAllResponseWrapper>;
+        response = await apiClient.post(`admin/products/${idProducto}/etiquetas`, payload);
+
+        return response.data;
     },
 };

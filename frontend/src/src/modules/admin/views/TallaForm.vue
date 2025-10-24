@@ -1,20 +1,16 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type Talla, TallaService } from '@admin/services/TallaService';
     import FormField from '@admin/components/FormField.vue';
+    import { getParamId } from '@/utils/utils';
 
     // --- PROPS Y HOOKS ---
-    const route = useRoute();
     const router = useRouter();
     const toast = useToast();
 
-    const tallaId = computed<number | null>(() => {
-        const idParam = route.params.id;
-        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam) : null;
-    });
-
+    const tallaId = getParamId();
     const isEditMode = computed(() => tallaId.value !== null);
 
     interface TallaFormState extends Omit<Talla, 'id' | 'numero'> {

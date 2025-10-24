@@ -1,26 +1,22 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type TiposUso, TiposUsoService } from '@admin/services/TiposUsoService';
     import FormField from '@admin/components/FormField.vue';
+    import { getParamId } from '@/utils/utils';
 
     // --- PROPS Y HOOKS ---
-    const route = useRoute();
     const router = useRouter();
     const toast = useToast();
 
-    const tipoUsoId = computed<number | null>(() => {
-        const idParam = route.params.id;
-        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam) : null;
-    });
-
+    const tipoUsoId = getParamId();
     const isEditMode = computed(() => tipoUsoId.value !== null);
 
     interface TiposUsoFormState extends Omit<TiposUso, 'id'> {}
     const tipoUsoState = ref<TiposUsoFormState & { id?: number }>({
         id: tipoUsoId.value || undefined,
-        nombre: ''
+        nombre: '',
     });
 
     // Referencias para manejar errores de validación del backend (422)

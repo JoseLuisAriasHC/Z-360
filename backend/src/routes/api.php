@@ -80,11 +80,6 @@ Route::prefix('orders')->group(function () {
 */
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
-    // Rutas para el Producto Base
-    Route::post('products/delete-multiple', [ProductControllerADM::class, 'destroyMultiple']);
-    Route::get('/products/search', [ProductControllerADM::class, 'search']);
-    Route::apiResource('products', ProductControllerADM::class);
-
     // Rutas para las variantes de los productos
     Route::get('/products/{product}/variants', [ProductVariantControllerADM::class, 'index']);
     Route::get('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'show']);
@@ -98,8 +93,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
 
     // Ruta para las etiquetas de un producto
     Route::post('etiquetas/delete-multiple', [EtiquetaControllerADM::class, 'destroyMultiple']);
+    Route::get('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'getEtiquetasByProduct']);
     Route::post('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'asignarEtiquetas']);
-    Route::delete('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'eliminarEtiquetas']);
+    Route::delete('/products/{product}/etiquetas', [EtiquetaControllerADM::class, 'eliminarEtiquetasByProduct']);
     Route::delete('/etiquetas/{etiqueta}/limpiar', [EtiquetaControllerADM::class, 'limpiarEtiqueta']);
     Route::apiResource('etiquetas', EtiquetaControllerADM::class);
 
@@ -108,6 +104,11 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::apiResource('usages', ProductUsageControllerADM::class);
     Route::get('products/{product}/usages', [ProductUsageControllerADM::class, 'showProductUsages']);
     Route::post('products/{product}/usages', [ProductUsageControllerADM::class, 'asignarUsos']);
+
+    // Rutas para el Producto Base
+    Route::post('products/delete-multiple', [ProductControllerADM::class, 'destroyMultiple']);
+    Route::get('/products/search', [ProductControllerADM::class, 'search']);
+    Route::apiResource('products', ProductControllerADM::class);
 
     // Rutas para los Pedidos
     Route::prefix('orders')->group(function () {

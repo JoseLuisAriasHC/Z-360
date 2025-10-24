@@ -1,3 +1,6 @@
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+
 // Función genérica para devolver un valor seguro (no nulo/indefinido),
 // usando un valor por defecto si el valor original es nulo o indefinido.
 export const safeValue = <T>(value: T | null | undefined, defaultValue: T): T => value ?? defaultValue;
@@ -12,5 +15,13 @@ export const formatDate = (dateString: string): string => {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
+    });
+};
+
+export const getParamId = () => {
+    return computed<number | null>(() => {
+        const route = useRoute();
+        const idParam = route.params.id;
+        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam as string) : null;
     });
 };

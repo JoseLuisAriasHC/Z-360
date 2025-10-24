@@ -1,21 +1,16 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { type Marca, MarcaService } from '@admin/services/MarcaService';
     import FormField from '@admin/components/FormField.vue';
+    import { getParamId } from '@/utils/utils';
 
     // --- PROPS Y HOOKS ---
-    const route = useRoute();
     const router = useRouter();
     const toast = useToast();
 
-    // Determinar el ID de la marca (será null para creación)
-    const marcaId = computed<number | null>(() => {
-        const idParam = route.params.id;
-        return Array.isArray(idParam) ? null : idParam ? parseInt(idParam) : null;
-    });
-
+    const marcaId = getParamId();
     const isEditMode = computed(() => marcaId.value !== null);
 
     interface MarcaFormState extends Omit<Marca, 'id' | 'logo'> {
