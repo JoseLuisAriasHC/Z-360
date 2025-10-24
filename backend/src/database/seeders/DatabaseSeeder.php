@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TallaSeeder::class,
             ColorSeeder::class,
+            ProductUsageSeeder::class,
+            EtiquetaSeeder::class,
             MarcaSeeder::class,
             WebSettingsSeeder::class,
             UserSeeder::class,

@@ -43,4 +43,19 @@ class ProductFactory extends Factory
             'plantilla' => fake()->word() . ' Foam',
         ];
     }
+
+    /**
+     * Configure the model factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Product $product) {
+            $product->detail()->create([
+                'parte_superior' => $this->faker->optional(0.8, null)->sentence(4),
+                'parte_inferior' => $this->faker->optional(0.8, null)->sentence(4),
+                'suela'          => $this->faker->optional(0.8, null)->sentence(4),
+                'cuidados'       => $this->faker->optional(0.8, null)->paragraph(2),
+            ]);
+        });
+    }
 }

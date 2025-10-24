@@ -28,5 +28,7 @@ class MarcaSeeder extends Seeder
         foreach ($marcas as $marca) {
             Marca::create($marca);
         }
+        $this->command->info('Marcas creadas');
+
     }
 }

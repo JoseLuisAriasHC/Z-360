@@ -25,5 +25,7 @@ class TallaSeeder extends Seeder
                 'numero' => $numero
             ]);
         }
+        $this->command->info('Tallas creadas');
+
     }
 }
