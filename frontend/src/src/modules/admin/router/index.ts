@@ -52,12 +52,12 @@ const adminRoutes: RouteRecordRaw[] = [
             {
                 path: 'variantes-producto/new',
                 name: 'admin-productos-variantes-new',
-                component: () => import('@admin/views/EtiquetaForm.vue'),
+                component: () => import('@admin/views/VariantesForm.vue'),
             },
             {
                 path: 'variantes-producto/:id',
                 name: 'admin-productos-variantes-edit',
-                component: () => import('@admin/views/EtiquetaForm.vue'),
+                component: () => import('@admin/views/VariantesForm.vue'),
                 props: true,
             },
             {

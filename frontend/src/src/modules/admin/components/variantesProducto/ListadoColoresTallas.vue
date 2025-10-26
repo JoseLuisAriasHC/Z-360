@@ -7,11 +7,15 @@
     import FormField from '../FormField.vue';
 
     const emit = defineEmits(['refrescar-tabla']);
+    const op = ref();
     const toast = useToast();
     const productoValido = inject<Ref<boolean>>('productoValido', ref(true));
     const props = defineProps<{
         productoId: number | null;
     }>();
+    const toggle = (event: any) => {
+        op.value.toggle(event);
+    };
 
     const loading = ref(false);
     const tallas = ref<Talla[]>([]);
@@ -52,6 +56,8 @@
         formData.append('product_id', props.productoId?.toString() ?? '');
         formData.append('precio', precio.value.toString());
         formData.append('stock', stock.value.toString());
+        console.log(stock.value);
+
         coloresIDs.forEach((id) => {
             formData.append('colores[]', id.toString());
         });
@@ -108,7 +114,21 @@
 </script>
 
 <template>
-    <div class="font-semibold text-xl p-2">Colores</div>
+    <div class="font-semibold text-xl p-2 flex justify-between">
+        Colores
+        <Button type="button" severity="info" icon="pi pi-info-circle" @click="toggle" />
+        <Popover ref="op">
+            <p>Esta herramineta para generar las variantes de un producto funciona de la siguiente forma:</p>
+            <p>- Debes primero seleccionar los colores y las tallas (al menos una de cada)</p>
+            <p>- Darle al boton Generar Variantes</p>
+            <p>- Se abrira un modal y tendras que poner el precio y el stock (Son opcionales) </p>
+            <hr>
+            <p>Caracteristicas</p>
+            <p>- Si ya existe un producto con ese color y talla, no genera otro ni lo modifica</p>
+            <p>- Por el contrario si existe un producto con ese color pero no la talla, si lo genera</p>
+        </Popover>
+    </div>
+
     <ScrollPanel
         style="width: 100%; height: 30vh"
         :dt="{
@@ -118,7 +138,7 @@
         }"
         :pt="{
             root: {
-                class: 'bg-surface-950 rounded-xl',
+                class: 'bg-surface-100 dark:bg-surface-950 rounded-xl',
             },
         }">
         <div v-for="color of colores" :key="color.id" class="item-check">
@@ -146,7 +166,7 @@
         }"
         :pt="{
             root: {
-                class: 'bg-surface-950 rounded-xl',
+                class: 'bg-surface-100 dark:bg-surface-950 rounded-xl',
             },
         }">
         <div v-for="talla of tallas" :key="talla.id" class="item-check">

@@ -17,6 +17,7 @@ use App\Http\Controllers\admin\ProductVariantControllerADM;
 use App\Http\Controllers\admin\TallaControllerADM;
 use App\Http\Controllers\UserBrandSizeController;
 use App\Http\Controllers\admin\UserPhotoControllerADM;
+use App\Http\Controllers\admin\VariantImageControllerADM;
 use App\Http\Controllers\admin\WebSettingsControllerADM;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('product-variants/delete-multiple', [ProductVariantControllerADM::class, 'destroyMultiple']);
     Route::delete('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'destroy']);
     Route::post('/product-variants/generate', [ProductVariantControllerADM::class, 'generate']);
+    
+    Route::get('/product-variants/{product_variant}/images', [VariantImageControllerADM::class, 'getVariantImages']);
+    Route::post('product-variants/{product_variant}/images', [VariantImageControllerADM::class, 'uploadImages']);
+    Route::delete('/variant-images/{variant_image}', [VariantImageControllerADM::class, 'deleteImage']);
+
+    Route::get('/variant-sizes/{product_variant}/sizes', [VariantImageControllerADM::class, 'getVariantSizes']);
 
     // Rutas para los detalles de un producto
     Route::get('products/{product}/details', [ProductDetailControllerADM::class, 'show']);
