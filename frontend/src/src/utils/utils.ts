@@ -31,3 +31,30 @@ export const handleImageError = (event: Event) => {
     imgElement.onerror = null;
     imgElement.src = noImageSvg;
 };
+
+/**
+ * Formatea una fecha a una cadena ISO 8601 (YYYY-MM-DD HH:MM:SS).
+ * Utiliza este formato para compatibilidad si el backend lo requiere,
+ * aunque se recomienda enviar la cadena ISO completa.
+ * @param fecha - Objeto Date a formatear.
+ * @returns Cadena de fecha y hora formateada.
+ */
+export const formatDateForForm = (fecha: Date | null | undefined): string => {
+    if (fecha instanceof Date && !isNaN(fecha.getTime())) {
+        // Genera el formato no estándar YYYY-MM-DD HH:MM:SS
+        return fecha.toISOString().slice(0, 19).replace('T', ' ');
+    }
+    return '';
+};
+
+/**
+ * Genera una cadena ISO 8601 completa (con Z), el formato más seguro para APIs.
+ * @param fecha - Objeto Date a formatear.
+ * @returns Cadena ISO 8601 completa.
+ */
+export const toISOString = (fecha: Date | null | undefined): string => {
+    if (fecha instanceof Date && !isNaN(fecha.getTime())) {
+        return fecha.toISOString();
+    }
+    return '';
+};

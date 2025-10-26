@@ -40,8 +40,6 @@ class ProductVariantControllerADM extends Controller
      */
     public function show(ProductVariant $productVariant)
     {
-        $productVariant->load(['color', 'sizes', 'images']);
-
         return response()->json([
             'success' => true,
             'data' => $productVariant,
@@ -55,38 +53,26 @@ class ProductVariantControllerADM extends Controller
     {
         DB::transaction(function () use ($request, $productVariant) {
             $request->validated();
-            $manager = new ImageManager(new Driver());
 
             if ($request->hasFile('imagen_principal')) {
                 $this->deleteOldImagenPrincipal($productVariant);
-                $this->saveImagenPrincipal($manager, $request->file('imagen_principal'), $productVariant);
+                $this->saveImagenPrincipal($request->file('imagen_principal'), $productVariant);
             }
 
             $productVariant->update([
-                'precio'            => $request->precio ?? $productVariant->precio,
-                'descuento'         => $request->descuento ?? $productVariant->descuento,
-                'descuento_desde'   => $request->descuento_desde ?? $productVariant->descuento_desde,
-                'descuento_hasta'   => $request->descuento_hasta ?? $productVariant->descuento_hasta,
+                'precio'            => $request->precio,
+                'descuento'         => $request->descuento,
+                'descuento_desde'   => $request->descuento_desde,
+                'descuento_hasta'   => $request->descuento_hasta,
                 'imagen_principal'  => $productVariant->imagen_principal,
                 'imagen_principal_jpeg' => $productVariant->imagen_principal_jpeg,
             ]);
-
-            if ($request->has('tallas')) {
-                $this->updateSizes($productVariant, $request->tallas);
-            }
-
-            if ($request->filled('borrar_imagenes')) {
-                $this->deleteVariantImages($request->borrar_imagenes, $productVariant);
-            }
-
-            if ($request->hasFile('imagenes')) {
-                $this->saveVariantImages($manager, $request->file('imagenes'), $productVariant);
-            }
         });
 
         return response()->json([
             'success' => true,
-            'data' => $productVariant->load(['sizes', 'images', 'color']),
+            'message' => 'Variante del producto actualizado correctamente.',
+            'data' => $productVariant,
         ]);
     }
 
@@ -145,7 +131,7 @@ class ProductVariantControllerADM extends Controller
         $precio    = $request->input('precio');
         $stock    = $request->input('stock');
 
-        DB::transaction(function () use ($productId, $colores, $tallas) {
+        DB::transaction(function () use ($productId, $colores, $tallas, $precio, $stock) {
             foreach ($colores as $colorId) {
                 $variant = ProductVariant::where('product_id', $productId)
                     ->where('color_id', $colorId)
@@ -160,7 +146,6 @@ class ProductVariantControllerADM extends Controller
                         'imagen_principal_jpeg' => null,
                     ]);
                 }
-
                 foreach ($tallas as $tallaId) {
                     $existVariantSize = VariantSize::where('product_variant_id', $variant->id)
                         ->where('talla_id', $tallaId)
@@ -203,8 +188,9 @@ class ProductVariantControllerADM extends Controller
     /**
      * Guardar imagen principal en ambos formatos (WebP + JPEG)
      */
-    private function saveImagenPrincipal(ImageManager $manager, $file, ProductVariant $productVariant): void
+    private function saveImagenPrincipal($file, ProductVariant $productVariant): void
     {
+        $manager = new ImageManager(new Driver());
         $filenameBase = Str::uuid();
 
         foreach (self::SIZES as $sizeName => $tamano) {
@@ -229,48 +215,5 @@ class ProductVariantControllerADM extends Controller
         // Guardar nombres base (sin prefijo de tamaño)
         $productVariant->imagen_principal = "{$filenameBase}.webp";
         $productVariant->imagen_principal_jpeg = "{$filenameBase}.jpg";
-    }
-
-    /**
-     * Guardar imágenes adicionales de variante
-     */
-    private function saveVariantImages(ImageManager $manager, array $files, ProductVariant $productVariant): void
-    {
-        foreach ($files as $file) {
-            $filenameBase = Str::uuid();
-            $img = $manager->read($file->getRealPath());
-
-            $webpPath = "variant_images/{$filenameBase}.webp";
-            Storage::disk('public')->put($webpPath, (string) $img->toWebp());
-
-            $productVariant->images()->create(['path' => "{$filenameBase}.webp"]);
-        }
-    }
-
-    /**
-     * Eliminar imágenes adicionales de variante
-     */
-    private function deleteVariantImages(array $imageIds, ProductVariant $productVariant): void
-    {
-        foreach ($imageIds as $imgId) {
-            $img = $productVariant->images()->find($imgId);
-            if ($img) {
-                Storage::disk('public')->delete("variant_images/{$img->path}");
-                $img->delete();
-            }
-        }
-    }
-
-    /**
-     * Actualizar tallas de la variante
-     */
-    private function updateSizes(ProductVariant $productVariant, array $tallas): void
-    {
-        foreach ($tallas as $talla) {
-            $productVariant->sizes()->updateOrCreate(
-                ['talla_id' => $talla['talla_id']],
-                ['stock' => $talla['stock']]
-            );
-        }
     }
 }
