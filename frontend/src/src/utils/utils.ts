@@ -1,5 +1,6 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import noImageSvg from '@/assets/img/no-image.svg';
 
 // Función genérica para devolver un valor seguro (no nulo/indefinido),
 // usando un valor por defecto si el valor original es nulo o indefinido.
@@ -24,4 +25,9 @@ export const getParamId = () => {
         const idParam = route.params.id;
         return Array.isArray(idParam) ? null : idParam ? parseInt(idParam as string) : null;
     });
+};
+export const handleImageError = (event: Event) => {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.onerror = null;
+    imgElement.src = noImageSvg;
 };

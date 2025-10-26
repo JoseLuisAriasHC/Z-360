@@ -3,7 +3,7 @@
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
     import { type Marca, MarcaService } from '@/modules/admin/services/MarcaService';
-    import noImageSvg from '@/assets/img/no-image.svg';
+    import { handleImageError } from '@/utils/utils';
 
     const backendUrl = import.meta.env.VITE_STORAGE_URL;
     const toast = useToast();
@@ -55,12 +55,6 @@
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar las marcas seleccionadas.', life: 3000 });
         }
     };
-
-    const handleImageError = (event: Event) => {
-        const imgElement = event.target as HTMLImageElement;
-        imgElement.onerror = null;
-        imgElement.src = noImageSvg;
-    };
 </script>
 
 <template>
@@ -74,8 +68,7 @@
                 editRouteName="admin-marcas-edit"
                 @delete-item="handleDelete"
                 @delete-selected="handleDeleteSelected"
-                :loading="isLoading"
-                >
+                :loading="isLoading">
                 <!-- Implementación del Slot 'logo-body' para renderizar la imagen -->
                 <template #logo-body="{ data }">
                     <img

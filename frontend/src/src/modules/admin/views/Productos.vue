@@ -3,9 +3,9 @@
     import { useToast } from 'primevue/usetoast';
     import CrudTable from '@admin/components/CrudTable.vue';
     import { type ProductoVM, ProductoService } from '@/modules/admin/services/ProductoService';
-    import noImageSvg from '@/assets/img/no-image.svg';
     import { GENEROS_VALORES, TIPOS_VALORES, type Genero, type Tipo, type Cierre, CIERRE_VALORES, SEVERITY_MAP } from '@/constants/productos';
     import { DEFAULT_SEVERITY_TAG_FILTER_ADM } from '@/constants/app';
+    import { handleImageError } from '@/utils/utils';
 
     const backendUrl = import.meta.env.VITE_STORAGE_URL;
     const toast = useToast();
@@ -57,12 +57,6 @@
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar los productos seleccionadas.', life: 3000 });
         }
-    };
-
-    const handleImageError = (event: Event) => {
-        const imgElement = event.target as HTMLImageElement;
-        imgElement.onerror = null;
-        imgElement.src = noImageSvg;
     };
 
     function getSeverity(type: Genero | Tipo | Cierre): string {

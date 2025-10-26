@@ -81,9 +81,10 @@ Route::prefix('orders')->group(function () {
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
     // Rutas para las variantes de los productos
-    Route::get('/products/{product}/variants', [ProductVariantControllerADM::class, 'index']);
+    Route::get('/products/{productId}/variants', [ProductVariantControllerADM::class, 'index']);
     Route::get('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'show']);
     Route::put('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'update']);
+    Route::post('product-variants/delete-multiple', [ProductVariantControllerADM::class, 'destroyMultiple']);
     Route::delete('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'destroy']);
     Route::post('/product-variants/generate', [ProductVariantControllerADM::class, 'generate']);
 

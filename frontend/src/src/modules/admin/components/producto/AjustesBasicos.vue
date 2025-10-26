@@ -7,6 +7,7 @@
     import { MarcaService, type Marca } from '@admin/services/MarcaService';
     import noImageSvg from '@/assets/img/no-image.svg';
     import { ALTURA_SUELA_VALORES, CIERRE_VALORES, GENEROS_VALORES, TIPOS_VALORES } from '@/constants/productos';
+    import { handleImageError } from '@/utils/utils';
 
     // --- PROPS Y HOOKS ---
     const router = useRouter();
@@ -30,6 +31,7 @@
         }
         return noImageSvg;
     });
+    
     const nombreError = ref('');
     const marcaIdError = ref('');
     const tipoError = ref('');
@@ -111,16 +113,9 @@
                 const detail = responseData?.message || 'Error desconocido al guardar la talla.';
                 toast.add({ severity: 'error', summary: 'Error al guardar', detail, life: 3000 });
             }
-        } 
-        finally {
+        } finally {
             loading.value = false;
         }
-    };
-
-    const handleImageError = (event: Event) => {
-        const imgElement = event.target as HTMLImageElement;
-        imgElement.onerror = null;
-        imgElement.src = noImageSvg;
     };
 
     onMounted(() => {
