@@ -18,6 +18,16 @@ class VariantSize extends Model
         'sku',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function (VariantSize $size) {
+            if (empty($size->sku)) {
+                $size->sku = strtoupper("SKU-{$size->product_variant_id}-{$size->talla_id}");
+            }
+        });
+    }
+
     public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
@@ -26,14 +36,5 @@ class VariantSize extends Model
     public function talla()
     {
         return $this->belongsTo(Talla::class);
-    }
-
-    public function setSkuAttribute($value)
-    {
-        if (!$value && $this->product_variant_id && $this->talla_id) {
-            $this->attributes['sku'] = strtoupper("SKU-{$this->product_variant_id}-{$this->talla_id}");
-        } else {
-            $this->attributes['sku'] = $value;
-        }
     }
 }

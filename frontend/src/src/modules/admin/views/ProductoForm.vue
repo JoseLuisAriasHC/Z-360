@@ -7,6 +7,7 @@
     import { getParamId } from '@/utils/utils';
     import { computed, onMounted, ref, provide } from 'vue';
     import { ProductoService, type Producto } from '../services/ProductoService';
+    import VariantesProducto from '../components/producto/VariantesProducto.vue';
 
     const router = useRouter();
     const toast = useToast();
@@ -84,7 +85,7 @@
         </div>
 
         <!-- Mostrar contenido solo si terminó de cargar y es válido -->
-        <Tabs v-else-if="productoValido" value="general" scrollable>
+        <Tabs v-else-if="productoValido" value="general" scrollable lazy>
             <TabList>
                 <Tab value="general">Ajustes básicos</Tab>
                 <Tab value="variantes_producto" :disabled="!isEditMode">Variantes del producto</Tab>
@@ -93,8 +94,9 @@
             </TabList>
             <TabPanels>
                 <AjustesBasicos :producto-state="productoState" :is-edit-mode="isEditMode" />
-                <Detalles :producto-id="productoId" :disabled="!isEditMode" lazy />
-                <EtiquetasTiposUso :producto-id="productoId" :disabled="!isEditMode" lazy />
+                <VariantesProducto :producto-id="productoId" :disabled="!isEditMode" />
+                <Detalles :producto-id="productoId" :disabled="!isEditMode" />
+                <EtiquetasTiposUso :producto-id="productoId" :disabled="!isEditMode" />
             </TabPanels>
         </Tabs>
 

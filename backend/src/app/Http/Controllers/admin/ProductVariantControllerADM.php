@@ -105,6 +105,26 @@ class ProductVariantControllerADM extends Controller
     }
 
     /**
+     * Eliminar múltiples tallas.
+     * Recibe un array de IDs y los elimina de forma eficiente.
+     */
+    public function destroyMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:product_variants,id',
+        ]);
+
+        $ids = $validated['ids'];
+        $count = ProductVariant::destroy($ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} Variantes eliminadas correctamente."
+        ]);
+    }
+
+    /**
      * Generar los productos variables de un producto
      */
     public function generate(Request $request)
@@ -116,12 +136,14 @@ class ProductVariantControllerADM extends Controller
             'tallas'     => 'required|array|min:1',
             'tallas.*'   => 'exists:tallas,id',
             'precio'   => 'sometimes|numeric|min:0',
+            'stock'   => 'sometimes|numeric|min:0',
         ]);
 
         $productId = $request->input('product_id');
         $colores   = $request->input('colores');
         $tallas    = $request->input('tallas');
         $precio    = $request->input('precio');
+        $stock    = $request->input('stock');
 
         DB::transaction(function () use ($productId, $colores, $tallas) {
             foreach ($colores as $colorId) {
@@ -141,12 +163,12 @@ class ProductVariantControllerADM extends Controller
 
                 foreach ($tallas as $tallaId) {
                     $existVariantSize = VariantSize::where('product_variant_id', $variant->id)
-                        ->where('color_id', $colorId)
+                        ->where('talla_id', $tallaId)
                         ->first();
                     if (!$existVariantSize) {
                         $variant->sizes()->create([
                             'talla_id'   => $tallaId,
-                            'stock'      => 0,
+                            'stock'      => $stock ?? 0,
                         ]);
                     }
                 }
