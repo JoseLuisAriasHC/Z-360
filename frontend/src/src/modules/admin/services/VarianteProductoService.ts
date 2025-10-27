@@ -47,11 +47,11 @@ export interface VarianteImage {
     path: string;
 }
 
-export interface VarianteSize {
+export interface VarianteTalla {
     id: number;
     product_variant_id: number;
     talla_id: number;
-    talla: Talla
+    talla: Talla;
     stock: number;
     sku: string;
 }
@@ -66,9 +66,15 @@ interface AllResponseImageWrapper {
     data: VarianteImage[];
 }
 
-interface AllResponseSizeWrapper {
+interface AllResponseTallaWrapper {
     success: boolean;
-    data: VarianteSize[];
+    data: VarianteTalla[];
+}
+
+interface SaveResponsTallaeWrapper {
+    success: boolean;
+    message: string;
+    data: VarianteTalla;
 }
 
 interface AllResponseWrapper {
@@ -155,8 +161,27 @@ export const VarianteProductoService = {
         return response.data;
     },
 
-    async getVariantSizes(idVariante: number): Promise<VarianteSize[]> {
-        const response: AxiosResponse<AllResponseSizeWrapper> = await apiClient.get(`/variant-sizes/${idVariante}/sizes`);
+    async getVariantesTallas(idVariante: number): Promise<VarianteTalla[]> {
+        const response: AxiosResponse<AllResponseTallaWrapper> = await apiClient.get(`admin/variant-sizes/${idVariante}/sizes`);
         return response.data.data;
+    },
+
+    async updateVarianteTalla(formData: FormData, idVarianteTalla: number): Promise<SaveResponsTallaeWrapper> {
+        formData.append('_method', 'PUT');
+        const response: AxiosResponse<SaveResponsTallaeWrapper> = await apiClient.post(`admin/variant-sizes/${idVarianteTalla}`, formData);
+
+        return response.data;
+    },
+
+    async createVarianteTalla(formData: FormData, idVariante: number): Promise<SaveResponsTallaeWrapper> {
+        let response: AxiosResponse<SaveResponsTallaeWrapper>;
+        response = await apiClient.post(`admin/variant-sizes/${idVariante}/create`, formData);
+
+        return response.data;
+    },
+
+    async deleteVariantTalla(idVarianteTalla: number): Promise<ResponseDelete> {
+        const response: AxiosResponse<ResponseDelete> = await apiClient.delete(`admin/variant-sizes/${idVarianteTalla}`);
+        return response.data;
     },
 };
