@@ -120,14 +120,7 @@
                     </template>
 
                     <template #stock="{ data }">
-                        <Tag
-                            :severity="getSeverity(data.stock)"
-                            :value="data.stock"
-                            :dt="{
-                                root: {
-                                    fontSize: '1.2rem',
-                                },
-                            }" />
+                        <Tag :severity="getSeverity(data.stock)" :value="data.stock" />
                     </template>
 
                     <template #descuento="{ data }">
