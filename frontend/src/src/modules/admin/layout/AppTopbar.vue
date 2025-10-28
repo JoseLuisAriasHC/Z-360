@@ -103,10 +103,9 @@
                             <span>Perfil</span>
                         </button>
 
-                        <!-- Dropdown con opciones -->
                         <ul
                             class="absolute top-full right-0 z-10 hidden shadow-md list-none m-0 p-2 rounded-md bg-surface-0 dark:bg-surface-700 min-w-[12rem]">
-                            <li>
+                            <!-- <li>
                                 <router-link
                                     :to="{ name: 'admin-profile' }"
                                     @click="goToProfile"
@@ -114,7 +113,7 @@
                                     <i class="pi pi-user mr-2"></i>
                                     <span>Ver Perfil</span>
                                 </router-link>
-                            </li>
+                            </li> -->
                             <li>
                                 <button
                                     @click="handleLogout"

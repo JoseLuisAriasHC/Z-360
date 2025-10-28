@@ -3,11 +3,16 @@
     import VaraintesImagenes from '@admin/components/VariantesForm/VaraintesImagenes.vue';
     import Tallas from '@admin/components/VariantesForm/Tallas.vue';
     import { useRouter } from 'vue-router';
+    import { ref } from 'vue';
 
     const router = useRouter();
+    const idProducto = ref<number>(0);
 
+    function handleLoadIdProdcto(id: number) {
+        idProducto.value = id;
+    }
     const goBack = () => {
-        router.push({ name: 'admin-cupones' });
+        router.push({ name: 'admin-productos-edit', params: { id: idProducto.value } });
     };
 </script>
 
@@ -20,7 +25,7 @@
         <hr />
         <VaraintesImagenes />
         <hr />
-        <Form />
+        <Form @id-producto="handleLoadIdProdcto" />
         <hr />
         <Tallas />
     </div>

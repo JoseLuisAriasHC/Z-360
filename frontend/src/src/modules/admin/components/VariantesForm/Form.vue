@@ -9,6 +9,9 @@
     // --- PROPS Y HOOKS ---
     const router = useRouter();
     const toast = useToast();
+    const emit = defineEmits<{
+        (e: 'idProducto', dato: number): void;
+    }>();
 
     const varainteId = getParamId();
     const imagen_principal_file = ref<File | null>(null);
@@ -54,6 +57,7 @@
             if (varianteState.value.imagen_principal) {
                 varianteState.value.imagen_principal = `${import.meta.env.VITE_STORAGE_URL}/product_variants/M_${data.imagen_principal}`;
             }
+            emit('idProducto', data.product_id);
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la variante del producto.', life: 3000 });
             router.push({ name: 'admin-not-found' });
