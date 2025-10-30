@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import adminRoutes from '@admin/router';
+import webRoutes from '@web/router';
 import authService from '@/services/authService';
+import { THEME_CONFIG_KEY } from '@/constants/localStorage';
 const typedAdminRoutes: RouteRecordRaw[] = adminRoutes as unknown as RouteRecordRaw[];
+const typedWebRoutes: RouteRecordRaw[] = webRoutes as unknown as RouteRecordRaw[];
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,18 +13,24 @@ const router = createRouter({
             path: '/admin',
             children: typedAdminRoutes,
         },
-        // {
-        //     path: '/',
-        //     children: webRoutes,
-        // },
+        {
+            path: '/',
+            children: typedWebRoutes,
+        },
     ],
 });
 
 // Guard global para proteger rutas de admin
 router.beforeEach((to, from, next) => {
+    
     const requiresAuthAdmin = to.meta.requiresAuthAdmin as boolean | undefined;
     const requiresAuthUser = to.meta.requiresAuthUser as boolean | undefined;
     const isAuthenticated = !!localStorage.getItem('auth_token');
+    
+    // Limpiar configuracion del admin
+    if (!to.path.startsWith('/admin')) {
+        if (localStorage.getItem(THEME_CONFIG_KEY)) localStorage.removeItem(THEME_CONFIG_KEY);
+    }
 
     // Protección de rutas de admin que requieren autenticación
     if (requiresAuthAdmin === true) {
@@ -33,11 +42,11 @@ router.beforeEach((to, from, next) => {
             next();
             return;
         }
-        
+
         const isAdminUser = authService.isAdmin();
         if (!isAdminUser) {
             if (to.name !== 'admin-access-denied') {
-                next({ name: 'admin-access-denied' });
+                next({ name: 'not-found' });
                 return;
             }
             next();
