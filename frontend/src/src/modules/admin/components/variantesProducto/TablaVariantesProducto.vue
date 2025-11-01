@@ -7,7 +7,7 @@
 
     const toast = useToast();
 
-    const backendUrl = import.meta.env.VITE_STORAGE_URL;
+    const backendUrl = `${import.meta.env.VITE_STORAGE_URL}/product_variants/S_`;
     const props = defineProps<{
         productoId: number | null;
     }>();
@@ -101,8 +101,8 @@
                     :loading="isLoading">
                     <template #imagen_principal="{ data }">
                         <img
-                            :src="backendUrl + '/' + data.imagen_principal"
-                            :alt="data.nombre + ' Logo'"
+                            :src="backendUrl + data.imagen_principal"
+                            :alt="data.nombre + ' Imagen'"
                             class="rounded"
                             style="width: 78px; height: 78px; object-fit: contain"
                             @error="handleImageError" />

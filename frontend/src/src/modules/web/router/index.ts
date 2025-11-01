@@ -17,6 +17,17 @@ const webRoutes: RouteRecordRaw[] = [
                 component: () => import('@web/views/Carrito.vue'),
             },
             {
+                path: 'productos/:genero/:criterioBusqueda',
+                name: 'productos',
+                component: () => import('@web/views/Productos.vue'),
+            },
+            {
+                path: 'productos/:id',
+                name: 'producto-detalles',
+                component: () => import('@web/views/Productos.vue'),
+                props: true,
+            },
+            {
                 path: ':catchAll(.*)*',
                 name: 'not-found',
                 component: () => import('@web/views/NotFound.vue'),

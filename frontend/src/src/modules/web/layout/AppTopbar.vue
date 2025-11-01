@@ -3,9 +3,21 @@
     import { useRouter } from 'vue-router';
     import MujerCalzadoMasVendido from '@/assets/img/navBar/mujer_calzado_mas_vendidos.webp';
     import MujerRebajas from '@/assets/img/navBar/mujer_calzado_rebajas.webp';
+    import type { Genero, CriterioBusqueda } from '@/constants/productos';
 
     const router = useRouter();
     const cartItemCount = ref(3);
+
+    // Función de navegación reutilizable con tipado estricto
+    const navigateToProducts = (genero: Genero, criterioBusqueda: CriterioBusqueda) => {
+        router.push({
+            name: 'productos',
+            params: {
+                genero: genero.toLowerCase(),
+                criterioBusqueda: criterioBusqueda.toLowerCase().replace(/ /g, '-'),
+            },
+        });
+    };
 
     const items = ref([
         {
@@ -17,13 +29,31 @@
                             {
                                 image: 'https://primefaces.org/cdn/primevue/images/uikit/uikit-system.png',
                                 label: 'Más vendidos',
+                                command: () => navigateToProducts('hombre', 'top-ventas'),
                             },
                         ],
                     },
                 ],
                 [
                     {
-                        items: [{ label: 'Zapatillas Urbanas' }, { label: 'Zapatillas Deportivas' }, { label: 'Botas' }, { label: 'Sandalias' }],
+                        items: [
+                            {
+                                label: 'Zapatillas Urbanas',
+                                command: () => navigateToProducts('hombre', 'urbanas'),
+                            },
+                            {
+                                label: 'Zapatillas Deportivas',
+                                command: () => navigateToProducts('hombre', 'deportivas'),
+                            },
+                            {
+                                label: 'Botas',
+                                command: () => navigateToProducts('hombre', 'botas'),
+                            },
+                            {
+                                label: 'Sandalias',
+                                command: () => navigateToProducts('hombre', 'sandalias'),
+                            },
+                        ],
                     },
                 ],
                 [
@@ -32,12 +62,64 @@
                             {
                                 image: 'https://primefaces.org/cdn/primevue/images/uikit/uikit-system.png',
                                 label: 'Rebajas',
+                                command: () => navigateToProducts('hombre', 'ofertas'),
                             },
                         ],
                     },
                 ],
             ],
         },
+
+        {
+            label: 'Unisex',
+            items: [
+                [
+                    {
+                        items: [
+                            {
+                                image: MujerCalzadoMasVendido,
+                                label: 'Más vendidos',
+                                command: () => navigateToProducts('mujer', 'top-ventas'),
+                            },
+                        ],
+                    },
+                ],
+                [
+                    {
+                        items: [
+                            {
+                                label: 'Zapatillas Urbanas',
+                                command: () => navigateToProducts('unisex', 'urbanas'),
+                            },
+                            {
+                                label: 'Zapatillas Deportivas',
+                                command: () => navigateToProducts('unisex', 'deportivas'),
+                            },
+                            {
+                                label: 'Botas',
+                                command: () => navigateToProducts('unisex', 'botas'),
+                            },
+                            {
+                                label: 'Sandalias',
+                                command: () => navigateToProducts('unisex', 'sandalias'),
+                            },
+                        ],
+                    },
+                ],
+                [
+                    {
+                        items: [
+                            {
+                                image: MujerRebajas,
+                                label: 'Rebajas',
+                                command: () => navigateToProducts('unisex', 'ofertas'),
+                            },
+                        ],
+                    },
+                ],
+            ],
+        },
+
         {
             label: 'Mujer',
             items: [
@@ -47,13 +129,31 @@
                             {
                                 image: MujerCalzadoMasVendido,
                                 label: 'Más vendidos',
+                                command: () => navigateToProducts('mujer', 'top-ventas'),
                             },
                         ],
                     },
                 ],
                 [
                     {
-                        items: [{ label: 'Zapatillas Urbanas' }, { label: 'Zapatillas Deportivas' }, { label: 'Botas' }, { label: 'Sandalias' }],
+                        items: [
+                            {
+                                label: 'Zapatillas Urbanas',
+                                command: () => navigateToProducts('mujer', 'urbanas'),
+                            },
+                            {
+                                label: 'Zapatillas Deportivas',
+                                command: () => navigateToProducts('mujer', 'deportivas'),
+                            },
+                            {
+                                label: 'Botas',
+                                command: () => navigateToProducts('mujer', 'botas'),
+                            },
+                            {
+                                label: 'Sandalias',
+                                command: () => navigateToProducts('mujer', 'sandalias'),
+                            },
+                        ],
                     },
                 ],
                 [
@@ -62,6 +162,7 @@
                             {
                                 image: MujerRebajas,
                                 label: 'Rebajas',
+                                command: () => navigateToProducts('mujer', 'ofertas'),
                             },
                         ],
                     },
