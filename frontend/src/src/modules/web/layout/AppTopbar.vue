@@ -5,6 +5,7 @@
     import MujerRebajas from '@/assets/img/navBar/mujer_calzado_rebajas.webp';
 
     const router = useRouter();
+    const cartItemCount = ref(3);
 
     const items = ref([
         {
@@ -122,9 +123,15 @@
                 <div class="layout-topbar-menu">
                     <div class="layout-topbar-menu-content">
                         <!-- Botón/Trigger del Desplegable -->
-                        <div class="relative">
-                            <Button icon="pi pi-user" aria-label="User" severity="secondary" rounded size="large" />
-                            <Button icon="pi pi-shopping-cart" class="ml-3" aria-label="Carrito" severity="secondary" rounded size="large" />
+                        <div class="flex gap-3">
+                            <router-link :to="{ name: 'carrito' }">
+                                <Button icon="pi pi-user" aria-label="User" severity="secondary" rounded size="large" />
+                            </router-link>
+                            <router-link :to="{ name: 'carrito' }">
+                                <OverlayBadge value="2" severity="contrast">
+                                    <Button icon="pi pi-shopping-cart" aria-label="Carrito" severity="secondary" rounded size="large" />
+                                </OverlayBadge>
+                            </router-link>
                         </div>
                     </div>
                 </div>

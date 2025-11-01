@@ -4,12 +4,24 @@
 </script>
 
 <template>
-    <div class="layout-wrapper">
+    <div class="layout-wrapper bg-background-light">
         <app-topbar></app-topbar>
-        <div class="p-0 bg-gray-100 min-h-screen font-sans">
+        <div class="main p-0 min-h-screen font-sans bg-background-light">
             <router-view></router-view>
         </div>
+
         <app-footer></app-footer>
-        <div class="layout-mask animate-fadein"></div>
     </div>
 </template>
+
+<style scoped>
+    .main {
+        padding-top: 3rem;
+    }
+
+    @media (min-width: 1280px) {
+        .main {
+            padding-top: 6.7rem;
+        }
+    }
+</style>
