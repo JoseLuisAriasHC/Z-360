@@ -20,6 +20,7 @@ use App\Http\Controllers\admin\UserPhotoControllerADM;
 use App\Http\Controllers\admin\VariantImageControllerADM;
 use App\Http\Controllers\admin\VariantSizeControllerADM;
 use App\Http\Controllers\admin\WebSettingsControllerADM;
+use App\Http\Controllers\ProductListController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +38,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::prefix('products')->group(function () {
+    Route::get('/top-ventas', [ProductListController::class, 'topVentas']);
+    Route::get('/ofertas', [ProductListController::class, 'ofertas']);
+    Route::get('/novedades', [ProductListController::class, 'novedades']);
+    Route::get('/listado', [ProductListController::class, 'listado']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas para el carrito
@@ -89,7 +97,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('product-variants/delete-multiple', [ProductVariantControllerADM::class, 'destroyMultiple']);
     Route::delete('/product-variants/{product_variant}', [ProductVariantControllerADM::class, 'destroy']);
     Route::post('/product-variants/generate', [ProductVariantControllerADM::class, 'generate']);
-    
+
     Route::get('/product-variants/{product_variant}/images', [VariantImageControllerADM::class, 'getVariantImages']);
     Route::post('product-variants/{product_variant}/images', [VariantImageControllerADM::class, 'uploadImages']);
     Route::delete('/variant-images/{variant_image}', [VariantImageControllerADM::class, 'deleteImage']);

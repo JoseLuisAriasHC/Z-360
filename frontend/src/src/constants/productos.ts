@@ -5,6 +5,12 @@ export const TIPOS_VALORES = ['urbanas', 'deportivas', 'botas', 'sandalias'] as 
 export const CIERRE_VALORES = ['Cordones', 'Velcro', 'Cierre rapido', 'Zipper', 'Slip-on'] as const;
 export const ALTURA_SUELA_VALORES = ['baja', 'alta', 'media'] as const;
 
+// Criterios de busqueda
+export const CRITERIOS_ESPECIALES_VALORES = ['ofertas', 'top-ventas', 'novedades'] as const;
+export type CriterioEspecial = (typeof CRITERIOS_ESPECIALES_VALORES)[number];
+export type CriterioBusqueda = Tipo | CriterioEspecial;
+
+
 export type Genero = (typeof GENEROS_VALORES)[number];
 export type Tipo = (typeof TIPOS_VALORES)[number];
 export type Cierre = (typeof CIERRE_VALORES)[number];

@@ -11,6 +11,7 @@
     const toast = useToast();
     const emit = defineEmits<{
         (e: 'idProducto', dato: number): void;
+        (e: 'idColor', dato: number): void;
     }>();
 
     const varainteId = getParamId();
@@ -52,12 +53,15 @@
         try {
             const data = await VarianteProductoService.getVariante(id);
             varianteState.value = data;
-            varianteState.value.descuento_desde = new Date(data.descuento_desde);
-            varianteState.value.descuento_hasta = new Date(data.descuento_hasta);
+            if (data.descuento_desde) {
+                varianteState.value.descuento_desde = new Date(data.descuento_desde);
+                varianteState.value.descuento_hasta = new Date(data.descuento_hasta);
+            }
             if (varianteState.value.imagen_principal) {
                 varianteState.value.imagen_principal = `${import.meta.env.VITE_STORAGE_URL}/product_variants/M_${data.imagen_principal}`;
             }
             emit('idProducto', data.product_id);
+            emit('idColor', data.color_id);
         } catch (error) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la variante del producto.', life: 3000 });
             router.push({ name: 'admin-not-found' });
@@ -68,8 +72,10 @@
 
     function getFormData() {
         const formData = new FormData();
-        formData.append('precio', varianteState.value.precio.toString());
-        formData.append('descuento', varianteState.value.descuento.toString());
+        formData.append('precio', varianteState.value.precio?.toString() == undefined ? '' : varianteState.value.precio?.toString());
+        console.log(varianteState.value.precio?.toString());
+        
+        formData.append('descuento', varianteState.value.descuento?.toString() == undefined ? '' : varianteState.value.descuento?.toString());
         formData.append('descuento_desde', formatDateForForm(varianteState.value.descuento_desde));
         formData.append('descuento_hasta', formatDateForForm(varianteState.value.descuento_hasta));
         if (imagen_principal_file.value && varianteState.value.imagen_principal) {
@@ -151,8 +157,8 @@
 </script>
 
 <template>
-    <form @submit.prevent="handleSubmit" class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 xl:col-span-9">
+    <form @submit.prevent="handleSubmit" class="grid grid-cols-12 gap-8 mt-4">
+        <div class="col-span-12 xl:col-span-8">
             <FormField id="precio" label="Precio" :error="precioError">
                 <InputNumber
                     v-model="varianteState.precio"
@@ -179,7 +185,7 @@
                     currency="EUR"
                     :minFractionDigits="2"
                     :maxFractionDigits="5"
-                    :invalid="precioError != ''"
+                    :invalid="descuentoError != ''"
                     @input="clearErrores('descuento')" />
             </FormField>
             <div class="grid grid-cols-12 gap-8">
@@ -238,7 +244,7 @@
                 </div>
             </FormField>
         </div>
-        <div class="col-span-12 xl:col-span-3">
+        <div class="col-span-12 xl:col-span-4">
             <div v-if="varianteState.imagen_principal" class="w-full">
                 <div class="inline-block w-full">
                     <img
@@ -250,7 +256,7 @@
         </div>
         <div class="col-span-12">
             <!-- Botón Submit -->
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mb-4">
                 <Button type="submit" label="Guardar Cambios" :loading="loading" severity="primary" icon="pi pi-check" :disabled="loading" />
             </div>
         </div>
