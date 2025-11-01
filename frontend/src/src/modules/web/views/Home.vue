@@ -8,7 +8,6 @@
         <CaruselDestacados />
     </div>
     <SeccionColeccion />
-        <app-footer></app-footer>
 </template>
 
 <style scoped></style>

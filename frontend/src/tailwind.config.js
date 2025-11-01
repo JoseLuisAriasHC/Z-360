@@ -15,8 +15,10 @@ export default {
                 'surface-dark': '#1F1F1F',
                 'text-light': '#1A1A1A',
                 'text-dark': '#E5E5E5',
-                'text-muted-light': '#666666',
-                'text-muted-dark': '#999999',
+                'muted-light': '#666666',
+                'muted-dark': '#999999',
+                'naranja': '#FF5000',
+                'muted-border': '#e5e7eb'
             },
             fontFamily: {
                 display: ['Roboto', 'sans-serif'],
