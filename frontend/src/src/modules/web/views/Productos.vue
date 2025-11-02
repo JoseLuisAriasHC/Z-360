@@ -1,12 +1,10 @@
 <script setup lang="ts">
     import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
-    // Asumo que estas importaciones son correctas en tu proyecto
     import { ProductService, type Producto, type ProductsResponseWrapper } from '@web/services/ProductoService';
     import type { Genero, CriterioBusqueda } from '@/constants/productos';
     import CardProducto from '@web/components/CardProducto.vue';
 
-    // --- Estado Reactivo ---
     const route = useRoute();
     const products = ref<Producto[]>([]);
     const pagination = ref<ProductsResponseWrapper['pagination'] | null>(null);
@@ -15,9 +13,6 @@
     const hasMorePages = ref(true);
     const error = ref<string | null>(null);
 
-    // --- Propiedades Computadas para Parámetros de Ruta y Título ---
-
-    /** Mapeo de parámetros de ruta a tipos estrictos de forma reactiva. */
     const currentGenero = computed(() => route.params.genero as Genero);
     const currentCriterio = computed(() => route.params.criterioBusqueda as CriterioBusqueda);
 
@@ -28,13 +23,6 @@
         return `Resultados para ${genero} en ${criterioDisplay}`;
     });
 
-    // --- Lógica de Carga de Datos ---
-
-    /**
-     * Carga productos de la API para la página actual.
-     * @param pageToLoad Número de página a cargar.
-     * @param reset Si es verdadero, vacía la lista de productos antes de cargar (para nuevas búsquedas).
-     */
     const loadProducts = async (pageToLoad: number, reset: boolean = false) => {
         // Si la carga ya está en curso O no hay más páginas para cargar (y no es la primera página), salimos.
         if (isLoading.value || (pageToLoad > 1 && !hasMorePages.value)) return;
@@ -47,22 +35,16 @@
             pagination.value = null;
             currentPage.value = 1;
             hasMorePages.value = true;
-            // Opcional: Podrías añadir un estado temporal aquí para mostrar un esqueleto mientras se carga la primera página de la nueva ruta.
         }
 
         try {
-            // Usamos los valores reactivos (computed)
             const response = await ProductService.getProducts(currentGenero.value, currentCriterio.value, pageToLoad);
 
-            // Actualizar el estado
             if (reset) {
                 products.value = response.data;
             } else {
-                // Concatenar nuevos productos para scroll infinito
                 products.value.push(...response.data);
             }
-
-            console.log(products);
 
             pagination.value = response.pagination;
             currentPage.value = response.pagination.current_page;
@@ -75,54 +57,59 @@
         }
     };
 
-    /**
-     * Función para cargar la siguiente página, utilizada por el scroll handler.
-     */
-    const loadNextPage = () => {
-        if (hasMorePages.value && !isLoading.value) {
+    const loadMoreTrigger = ref<HTMLElement | null>(null);
+    let observer: IntersectionObserver | null = null;
+
+    const setupIntersectionObserver = () => {
+        debugger;
+        if (!loadMoreTrigger.value) return;
+
+        observer = new IntersectionObserver(
+            (entries) => {
+                const target = entries[0];
+                if (target.isIntersecting && hasMorePages.value && !isLoading.value && products.value.length > 0) {
+                    loadProducts(currentPage.value + 1);
+                }
+            },
+            {
+                rootMargin: '300px',
+            }
+        );
+
+        observer.observe(loadMoreTrigger.value);
+    };
+
+    const handleScroll = () => {
+        debugger;
+        const SCROLL_THRESHOLD = 300;
+
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.documentElement.offsetHeight;
+        const scrollPosition = window.scrollY + viewportHeight;
+
+        const nearBottom = scrollPosition >= documentHeight - SCROLL_THRESHOLD;
+
+        if (nearBottom && hasMorePages.value && !isLoading.value) {
             loadProducts(currentPage.value + 1);
         }
     };
 
-    // --- Lógica de Scroll Infinito ---
-
-    /**
-     * Handler que se ejecuta al hacer scroll en la ventana.
-     * Llama a loadNextPage si se está cerca del final de la página.
-     */
-    const handleScroll = () => {
-        // Calcular si el usuario está cerca del final de la página (e.g., a 200px del final)
-        // Se usa 200px como margen para empezar a cargar antes de llegar al final
-        const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200;
-
-        if (nearBottom) {
-            loadNextPage();
-        }
-    };
-
-    // --- Ciclo de Vida y Observadores ---
-
-    // 1. Cargar la primera página al montar el componente
     onMounted(() => {
-        // Añadir listener de scroll para infinite scrolling
-        window.addEventListener('scroll', handleScroll);
         loadProducts(1, true);
+        setTimeout(setupIntersectionObserver, 100);
     });
 
-    // 2. Limpiar listener de scroll al desmontar
     onUnmounted(() => {
-        window.removeEventListener('scroll', handleScroll);
+        if (observer) {
+            observer.disconnect();
+        }
     });
 
-    // 3. Observar los parámetros de ruta para recargar la lista
     watch(
-        // Observamos un array de las props que nos interesan
         () => [route.params.genero, route.params.criterioBusqueda],
         () => {
-            // Cuando los parámetros cambien, reiniciamos la lista (reset: true) y cargamos la página 1.
             loadProducts(1, true);
         }
-        // No necesitamos immediate: true porque onMounted ya llama a loadProducts(1, true)
     );
 </script>
 
@@ -151,10 +138,13 @@
             <CardProducto v-for="product in products" :key="product.id" :producto="product" />
         </div>
 
+        <!-- Elemento trigger para infinite scroll -->
+        <div ref="loadMoreTrigger" class="h-1"></div>
+
         <!-- Indicador de Carga (Loading Spinner) -->
         <div v-if="isLoading" class="flex justify-center items-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-t-2 border-indigo-600"></div>
-            <p class="ml-3 text-indigo-600 font-semibold">Cargando más productos...</p>
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            <p class="ml-3 font-semibold">Cargando más productos...</p>
         </div>
 
         <!-- Mensaje de Fin de Resultados -->
@@ -167,7 +157,6 @@
 <style scoped>
     /* Estilos específicos para la vista si son necesarios */
     .container {
-        max-width: 1400px;
+        max-width: 100rem;
     }
-
 </style>

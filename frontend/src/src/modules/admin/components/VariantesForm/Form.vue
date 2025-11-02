@@ -73,7 +73,6 @@
     function getFormData() {
         const formData = new FormData();
         formData.append('precio', varianteState.value.precio?.toString() == undefined ? '' : varianteState.value.precio?.toString());
-        console.log(varianteState.value.precio?.toString());
         
         formData.append('descuento', varianteState.value.descuento?.toString() == undefined ? '' : varianteState.value.descuento?.toString());
         formData.append('descuento_desde', formatDateForForm(varianteState.value.descuento_desde));
