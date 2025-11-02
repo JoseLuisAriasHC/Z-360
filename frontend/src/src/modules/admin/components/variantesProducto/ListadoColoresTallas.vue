@@ -24,7 +24,7 @@
     const tallasSeleccionadas = ref<number[]>([]);
     const mostrarModalPrecio = ref(false);
 
-    const precio = ref<number>(0);
+    const precio = ref<number>(50);
     const stock = ref<number>(0);
 
     const precioError = ref('');
@@ -56,7 +56,6 @@
         formData.append('product_id', props.productoId?.toString() ?? '');
         formData.append('precio', precio.value.toString());
         formData.append('stock', stock.value.toString());
-        console.log(stock.value);
 
         coloresIDs.forEach((id) => {
             formData.append('colores[]', id.toString());
@@ -189,7 +188,7 @@
         <form @submit.prevent="handleSubmit">
             <span class="text-surface-500 dark:text-surface-400 block mb-8">
                 Si quieres puedes asignar un precio base a todos los productos generados, se pueden cambiar luego. Si no le asignas ningun precio, el
-                precio sera 0
+                precio sera de 50
             </span>
             <FormField id="precio" label="Precio" :error="precioError">
                 <InputNumber

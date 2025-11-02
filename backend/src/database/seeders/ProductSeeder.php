@@ -24,7 +24,7 @@ class ProductSeeder extends Seeder
         $allTypes = TipoProducto::cases();
         
         // 2. Crear 15 productos 'urbanas'
-        Product::factory()->count(15)->create([
+        Product::factory()->count(48)->create([
             'tipo' => TipoProducto::URBANAS,
             'marca_id' => fn () => fake()->randomElement($marcaIds),
         ]);
@@ -32,7 +32,7 @@ class ProductSeeder extends Seeder
         // 3. Crear 5 productos de los tipos restantes
         foreach ($allTypes as $tipo) {
             if ($tipo !== TipoProducto::URBANAS) {
-                Product::factory()->count(5)->create([
+                Product::factory()->count(22)->create([
                     'tipo' => $tipo,
                     'marca_id' => fn () => fake()->randomElement($marcaIds),
                 ]);

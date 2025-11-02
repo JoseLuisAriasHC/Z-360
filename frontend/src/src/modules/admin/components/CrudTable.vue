@@ -23,7 +23,7 @@
         data: CrudItem[];
         entityName: string;
         columns: CrudColumn[];
-        newRouteName: string;
+        newRouteName?: string;
         editRouteName: string;
         loading: boolean;
     }>();
@@ -117,7 +117,7 @@
         <div class="p-4 border border-surface-200 dark:border-surface-700 rounded-t-xl bg-surface-50 dark:bg-surface-800">
             <div class="flex flex-wrap gap-2 items-center justify-between">
                 <div class="flex gap-2 items-center mb-3">
-                    <Button :label="`New ${entityName}`" icon="pi pi-plus" severity="primary" @click="openNew" :disabled="props.loading" />
+                    <Button v-if="props.newRouteName" :label="`New ${entityName}`" icon="pi pi-plus" severity="primary" @click="openNew" :disabled="props.loading" />
                     <Button
                         label="Borrar"
                         icon="pi pi-trash"

@@ -6,9 +6,6 @@
         producto: Producto;
     }>();
 
-    console.log(props.producto);
-    console.log(props.producto.etiquetas);
-
     // --- Propiedades Computadas y Estado ---
 
     // Objeto de la variante principal (posición 0) para inicialización. Siempre será null si no hay variantes.

@@ -121,7 +121,7 @@ class ProductVariantControllerADM extends Controller
             'colores.*'  => 'exists:colores,id',
             'tallas'     => 'required|array|min:1',
             'tallas.*'   => 'exists:tallas,id',
-            'precio'   => 'sometimes|numeric|min:0',
+            'precio'   => 'required|numeric|min:1',
             'stock'   => 'sometimes|numeric|min:0',
         ]);
 

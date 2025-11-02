@@ -50,11 +50,6 @@ const adminRoutes: RouteRecordRaw[] = [
                 props: true,
             },
             {
-                path: 'variantes-producto/new',
-                name: 'admin-productos-variantes-new',
-                component: () => import('@admin/views/VariantesForm.vue'),
-            },
-            {
                 path: 'variantes-producto/:id',
                 name: 'admin-productos-variantes-edit',
                 component: () => import('@admin/views/VariantesForm.vue'),

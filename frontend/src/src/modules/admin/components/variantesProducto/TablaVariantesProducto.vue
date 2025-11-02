@@ -94,7 +94,6 @@
                     :data="variantes"
                     entityName="Variante"
                     :columns="COLUMNAS"
-                    newRouteName="admin-productos-variantes-new"
                     editRouteName="admin-productos-variantes-edit"
                     @delete-item="handleDelete"
                     @delete-selected="handleDeleteSelected"
