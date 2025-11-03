@@ -3,15 +3,50 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ProductListController extends Controller
+class ProductController extends Controller
 {
+    /**
+     * Obtener información completa del producto basándose en una variante
+     * 
+     * @param ProductVariant $productVariant
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProductDetail(ProductVariant $productVariant)
+    {
+        $product = $productVariant->product()->with([
+            'marca',
+            'detail',
+            'etiquetas',
+            'productVariants.color',
+            'productVariants.images',
+        ])->first();
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producto no encontrado'
+            ], 404);
+        }
+
+        $productVariant->load(['color', 'images', 'sizes.talla']);
+
+        return response()->json([
+            'success' => true,
+            'data' => (new ProductDetailResource($product))->additional([
+                'selected_variant' => $productVariant
+            ]),
+        ]);
+    }
+
     /**
      * Obtener productos más vendidos (top ventas)
      * 

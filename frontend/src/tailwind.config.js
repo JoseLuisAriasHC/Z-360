@@ -10,7 +10,7 @@ export default {
             colors: {
                 primary: '#1A1A1A',
                 'background-light': '#FFFFFF',
-                'background-dark': '#121212',
+                'background-dark': '#1E1E1E',
                 'surface-light': '#F5F5F5',
                 'surface-dark': '#1F1F1F',
                 'text-light': '#1A1A1A',
@@ -22,6 +22,8 @@ export default {
             },
             fontFamily: {
                 display: ['Roboto', 'sans-serif'],
+                oswald: ['Oswald', 'sans-serif'],
+                rubik: ['Rubik', 'sans-serif'],
             },
             borderRadius: {
                 DEFAULT: '0.5rem',

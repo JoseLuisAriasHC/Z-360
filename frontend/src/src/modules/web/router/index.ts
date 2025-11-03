@@ -7,7 +7,7 @@ const webRoutes: RouteRecordRaw[] = [
         component: AppLayout,
         children: [
             {
-                path: 'home',
+                path: '',
                 name: 'home',
                 component: () => import('@web/views/Home.vue'),
             },
@@ -24,7 +24,7 @@ const webRoutes: RouteRecordRaw[] = [
             {
                 path: 'productos/:id',
                 name: 'producto-detalles',
-                component: () => import('@web/views/Productos.vue'),
+                component: () => import('@web/views/Producto.vue'),
                 props: true,
             },
             {

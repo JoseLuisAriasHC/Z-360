@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
-    import { ProductService, type Producto, type ProductsResponseWrapper } from '@web/services/ProductoService';
+    import { ProductoListadoService, type Producto, type ProductsResponseWrapper } from '@/modules/web/services/ProductoListadoService';
     import type { Genero, CriterioBusqueda } from '@/constants/productos';
     import CardProducto from '@web/components/CardProducto.vue';
 
@@ -9,7 +9,7 @@
     const products = ref<Producto[]>([]);
     const pagination = ref<ProductsResponseWrapper['pagination'] | null>(null);
     const currentPage = ref(1);
-    const isLoading = ref(false);
+    const loading = ref(false);
     const hasMorePages = ref(true);
     const error = ref<string | null>(null);
 
@@ -23,11 +23,11 @@
         return `Resultados para ${genero} en ${criterioDisplay}`;
     });
 
-    const loadProducts = async (pageToLoad: number, reset: boolean = false) => {
+    const loadProductos = async (pageToLoad: number, reset: boolean = false) => {
         // Si la carga ya está en curso O no hay más páginas para cargar (y no es la primera página), salimos.
-        if (isLoading.value || (pageToLoad > 1 && !hasMorePages.value)) return;
+        if (loading.value || (pageToLoad > 1 && !hasMorePages.value)) return;
 
-        isLoading.value = true;
+        loading.value = true;
         error.value = null;
 
         if (reset) {
@@ -38,7 +38,7 @@
         }
 
         try {
-            const response = await ProductService.getProducts(currentGenero.value, currentCriterio.value, pageToLoad);
+            const response = await ProductoListadoService.getProductos(currentGenero.value, currentCriterio.value, pageToLoad);
 
             if (reset) {
                 products.value = response.data;
@@ -53,7 +53,7 @@
             console.error('Error al cargar productos:', e);
             error.value = 'No se pudieron cargar los productos. Intenta de nuevo.';
         } finally {
-            isLoading.value = false;
+            loading.value = false;
         }
     };
 
@@ -67,8 +67,8 @@
         observer = new IntersectionObserver(
             (entries) => {
                 const target = entries[0];
-                if (target.isIntersecting && hasMorePages.value && !isLoading.value && products.value.length > 0) {
-                    loadProducts(currentPage.value + 1);
+                if (target.isIntersecting && hasMorePages.value && !loading.value && products.value.length > 0) {
+                    loadProductos(currentPage.value + 1);
                 }
             },
             {
@@ -79,23 +79,8 @@
         observer.observe(loadMoreTrigger.value);
     };
 
-    const handleScroll = () => {
-        debugger;
-        const SCROLL_THRESHOLD = 300;
-
-        const viewportHeight = window.innerHeight;
-        const documentHeight = document.documentElement.offsetHeight;
-        const scrollPosition = window.scrollY + viewportHeight;
-
-        const nearBottom = scrollPosition >= documentHeight - SCROLL_THRESHOLD;
-
-        if (nearBottom && hasMorePages.value && !isLoading.value) {
-            loadProducts(currentPage.value + 1);
-        }
-    };
-
     onMounted(() => {
-        loadProducts(1, true);
+        loadProductos(1, true);
         setTimeout(setupIntersectionObserver, 100);
     });
 
@@ -108,7 +93,7 @@
     watch(
         () => [route.params.genero, route.params.criterioBusqueda],
         () => {
-            loadProducts(1, true);
+            loadProductos(1, true);
         }
     );
 </script>
@@ -127,7 +112,7 @@
         <!-- Mensaje de Sin Productos -->
         <!-- Condición: NO está cargando, la lista está vacía, Y no hay error -->
         <div
-            v-if="!isLoading && products.length === 0 && !error"
+            v-if="!loading && products.length === 0 && !error"
             class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg my-10">
             <p class="font-bold text-xl">¡Vaya!</p>
             <p>No se encontraron productos para el criterio seleccionado.</p>
@@ -142,20 +127,19 @@
         <div ref="loadMoreTrigger" class="h-1"></div>
 
         <!-- Indicador de Carga (Loading Spinner) -->
-        <div v-if="isLoading" class="flex justify-center items-center py-8">
+        <div v-if="loading" class="flex justify-center items-center py-8">
             <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
             <p class="ml-3 font-semibold">Cargando más productos...</p>
         </div>
 
         <!-- Mensaje de Fin de Resultados -->
-        <div v-if="!hasMorePages && products.length > 0 && !isLoading" class="text-center text-gray-500 py-10">
+        <div v-if="!hasMorePages && products.length > 0 && !loading" class="text-center text-gray-500 py-10">
             <p>Has llegado al final de los resultados.</p>
         </div>
     </div>
 </template>
 
 <style scoped>
-    /* Estilos específicos para la vista si son necesarios */
     .container {
         max-width: 100rem;
     }

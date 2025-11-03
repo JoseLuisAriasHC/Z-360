@@ -1,6 +1,5 @@
 <script setup lang="ts">
-    // Importaciones necesarias de PrimeVue
-    import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
+    import { FilterMatchMode } from '@primevue/core/api';
     import { onMounted, ref } from 'vue';
     import { useRouter } from 'vue-router';
 

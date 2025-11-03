@@ -20,7 +20,7 @@ use App\Http\Controllers\admin\UserPhotoControllerADM;
 use App\Http\Controllers\admin\VariantImageControllerADM;
 use App\Http\Controllers\admin\VariantSizeControllerADM;
 use App\Http\Controllers\admin\WebSettingsControllerADM;
-use App\Http\Controllers\ProductListController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,10 +40,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::prefix('products')->group(function () {
-    Route::get('/top-ventas', [ProductListController::class, 'topVentas']);
-    Route::get('/ofertas', [ProductListController::class, 'ofertas']);
-    Route::get('/novedades', [ProductListController::class, 'novedades']);
-    Route::get('/listado', [ProductListController::class, 'listado']);
+    Route::get('/top-ventas', [ProductController::class, 'topVentas']);
+    Route::get('/ofertas', [ProductController::class, 'ofertas']);
+    Route::get('/novedades', [ProductController::class, 'novedades']);
+    Route::get('/listado', [ProductController::class, 'listado']);
+    Route::get('/{productVariant}', [ProductController::class, 'getProductDetail']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
