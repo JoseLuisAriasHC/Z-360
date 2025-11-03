@@ -1,43 +1,30 @@
 <script setup lang="ts">
     import { computed, ref } from 'vue';
-    import type { Producto, VarianteProducto } from '@web/services/ProductoService';
+    import type { Producto, VarianteProducto } from '@/modules/web/services/ProductoListadoService';
 
     const props = defineProps<{
         producto: Producto;
     }>();
 
-    // --- Propiedades Computadas y Estado ---
-
-    // Objeto de la variante principal (posición 0) para inicialización. Siempre será null si no hay variantes.
     const mainVariant = computed(() => (props.producto.variants.length > 0 ? props.producto.variants[0] : null));
-
-    // Lista de todas las variantes
     const allVariants = computed(() => props.producto.variants);
 
-    // Estado para almacenar el ID de la variante activa. Se inicializa con el ID de la primera variante.
-    // Usamos -1 como fallback seguro para indicar "ninguna variante".
     const activeVariantId = ref(mainVariant.value?.id || -1);
 
-    // Propiedad computada para encontrar la variante activa actual (CORREGIDA LA INFERENCIA DE TIPO)
     const activeVariant = computed<VarianteProducto | null>(() => {
-        // 1. Buscamos la variante por el ID activo.
         const foundVariant = props.producto.variants.find((v) => v.id === activeVariantId.value);
 
-        // 2. Si se encuentra, la retornamos.
         if (foundVariant) {
             return foundVariant;
         }
 
-        // 3. Si no se encuentra (activeVariantId = -1 o error), volvemos a la principal.
         return mainVariant.value;
     });
 
-    // Propiedad computada para la URL de la imagen que se muestra
     const currentImage = computed(() => {
         return activeVariant.value?.imagen_principal;
     });
 
-    // --- Handler de Interacción ---
 
     /**
      * Establece el ID de la variante activa.
@@ -49,10 +36,6 @@
 </script>
 
 <template>
-    <!-- 
-        El card entero es un RouterLink. 
-        Importante: Usamos el ID de la variante activa (activeVariant.id) en el link.
-    -->
     <RouterLink
         v-if="activeVariant"
         :to="{ name: 'producto-detalles', params: { id: activeVariant.id.toString() } }"
