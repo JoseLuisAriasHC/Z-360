@@ -90,10 +90,7 @@ class ProductDetailResource extends JsonResource
                     : null,
                 // Imágenes adicionales de la variante
                 'imagenes_adicionales' => $selectedVariant->images->map(function ($image) {
-                    return [
-                        'id' => $image->id,
-                        'url' => asset('storage/' . $image->path),
-                    ];
+                    return asset('storage/' . $image->path);
                 }),
             ],
 

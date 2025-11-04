@@ -61,7 +61,6 @@
     let observer: IntersectionObserver | null = null;
 
     const setupIntersectionObserver = () => {
-        debugger;
         if (!loadMoreTrigger.value) return;
 
         observer = new IntersectionObserver(

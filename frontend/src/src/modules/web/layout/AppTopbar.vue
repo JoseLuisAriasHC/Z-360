@@ -229,9 +229,9 @@
                                 <Button icon="pi pi-user" aria-label="User" severity="secondary" rounded size="large" />
                             </router-link>
                             <router-link :to="{ name: 'carrito' }">
-                                <OverlayBadge value="2" severity="contrast">
+                                <!-- <OverlayBadge value="2" severity="contrast"> -->
                                     <Button icon="pi pi-shopping-cart" aria-label="Carrito" severity="secondary" rounded size="large" />
-                                </OverlayBadge>
+                                <!-- </OverlayBadge> -->
                             </router-link>
                         </div>
                     </div>
