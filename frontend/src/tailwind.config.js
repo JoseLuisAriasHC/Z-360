@@ -18,7 +18,9 @@ export default {
                 'muted-light': '#666666',
                 'muted-dark': '#999999',
                 'naranja': '#FF5000',
-                'muted-border': '#e5e7eb'
+                'muted-border': '#e5e7eb',
+                'verde': '#278427',
+                'azul-oscuro': '#334155'
             },
             fontFamily: {
                 display: ['Roboto', 'sans-serif'],
