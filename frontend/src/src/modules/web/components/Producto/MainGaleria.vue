@@ -2,7 +2,7 @@
     import { ref } from 'vue';
 
     const props = defineProps<{
-        imagenesAdicionales: string[];
+        imagenes: string[];
     }>();
 
     const responsiveOptionsProducto = ref([
@@ -16,7 +16,7 @@
 
 <template>
     <Galleria
-        :value="imagenesAdicionales"
+        :value="imagenes"
         :responsiveOptions="responsiveOptionsProducto"
         :numVisible="10"
         :circular="true"

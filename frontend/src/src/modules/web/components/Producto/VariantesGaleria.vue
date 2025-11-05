@@ -7,8 +7,10 @@
     }>();
 
     const responsiveOptionsVariantes = ref([
-        { breakpoint: '1000px', numVisible: 7 },
-        { breakpoint: '600px', numVisible: 3 },
+        { breakpoint: '1900px', numVisible: 5 },
+        { breakpoint: '1600px', numVisible: 4 },
+        { breakpoint: '650px', numVisible: 3 },
+        { breakpoint: '450px', numVisible: 2 },
         { breakpoint: '350px', numVisible: 1 },
     ]);
 </script>
