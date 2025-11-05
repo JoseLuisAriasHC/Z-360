@@ -20,7 +20,9 @@ export default {
                 'naranja': '#FF5000',
                 'muted-border': '#e5e7eb',
                 'verde': '#278427',
-                'azul-oscuro': '#334155'
+                'azul-oscuro': '#334155',
+                'rojo': '#cb2222',
+                'rojo-oscuro': '#981412'
             },
             fontFamily: {
                 display: ['Roboto', 'sans-serif'],
@@ -35,7 +37,7 @@ export default {
                 md: '768px',
                 lg: '992px',
                 xl: '1200px',
-                '2xl': '1920px',
+                '2xl': '1620px',
             },
         },
     },
