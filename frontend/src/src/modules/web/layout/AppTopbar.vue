@@ -4,9 +4,10 @@
     import MujerCalzadoMasVendido from '@/assets/img/navBar/mujer_calzado_mas_vendidos.webp';
     import MujerRebajas from '@/assets/img/navBar/mujer_calzado_rebajas.webp';
     import type { Genero, CriterioBusqueda } from '@/constants/productos';
+    import { useCestaStore } from '../stores/cesta';
 
     const router = useRouter();
-    const cartItemCount = ref(3);
+    const cesta = useCestaStore();
 
     // Función de navegación reutilizable con tipado estricto
     const navigateToProducts = (genero: Genero, criterioBusqueda: CriterioBusqueda) => {
@@ -225,14 +226,14 @@
                     <div class="layout-topbar-menu-content">
                         <!-- Botón/Trigger del Desplegable -->
                         <div class="flex gap-3">
-                            <router-link :to="{ name: 'carrito' }">
+                            <RouterLink :to="{ name: 'carrito' }">
                                 <Button icon="pi pi-user" aria-label="User" severity="secondary" rounded size="large" />
-                            </router-link>
-                            <router-link :to="{ name: 'carrito' }">
-                                <!-- <OverlayBadge value="2" severity="contrast"> -->
+                            </RouterLink>
+                            <RouterLink :to="{ name: 'carrito' }">
+                                <OverlayBadge :value="cesta.totalItems" severity="contrast">
                                     <Button icon="pi pi-shopping-cart" aria-label="Carrito" severity="secondary" rounded size="large" />
-                                <!-- </OverlayBadge> -->
-                            </router-link>
+                                </OverlayBadge>
+                            </RouterLink>
                         </div>
                     </div>
                 </div>

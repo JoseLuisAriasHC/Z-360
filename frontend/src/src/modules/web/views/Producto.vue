@@ -8,9 +8,13 @@
     import VariantesGaleria from '../components/Producto/VariantesGaleria.vue';
     import InformacionAdicional from '../components/Producto/InformacionAdicional.vue';
     import ModalTallasDisponibles from '../components/Producto/ModalTallasDisponibles.vue';
+    import ModalCesta from '../components/Producto/ModalCesta.vue';
+    import ButtonDark from '../components/ButtonDark.vue';
+    import { useCestaStore } from '../stores/cesta';
 
     // --- PROPS Y HOOKS ---
     const router = useRouter();
+    const cestaStore = useCestaStore();
 
     const idProductoVariante = getParamId();
     const loading = ref(false);
@@ -74,11 +78,29 @@
     };
 
     const handleAddProducto = () => {
-        if (tallaSelecionada.value) {
-            showModalCesta.value = true;
-        } else {
+        if (!productoDetalle.value) return;
+
+        if (!tallaSelecionada.value) {
             showModalTalla.value = true;
+            return;
         }
+
+        const variante = productoDetalle.value.variante_seleccionada;
+        cestaStore.addProducto({
+            id: variante.id,
+            nombre: productoDetalle.value.producto.nombre,
+            marca: productoDetalle.value.producto.marca.nombre,
+            talla: tallaSelecionada.value.talla.numero,
+            imagen: variante.imagen_principal?.replace('L_', 'S_') || noImageSvg,
+            precio: variante.precio,
+            cantidad: 1,
+            color: variante.color.nombre,
+            descuento: variante.descuento,
+            descuento_activo: variante.descuento_activo,
+            precio_con_descuento: variante.precio_con_descuento,
+        });
+
+        showModalCesta.value = true;
     };
 
     onMounted(() => {
@@ -137,12 +159,7 @@
                     </span>
                     <span v-else>Seleccionar Talla</span>
                 </button>
-                <button
-                    @click="handleAddProducto()"
-                    class="w-full font-semibold text-xl font-rubik bg-background-dark border border-background-dark text-background-light py-4 rounded-lg hover:bg-white hover:text-black transition duration-300">
-                    <i class="pi pi-shopping-bag mr-2" style="font-size: 1.25rem"></i>
-                    Añadir a la cesta
-                </button>
+                <ButtonDark @click="handleAddProducto" variant="primary" size="xl" icon="pi pi-shopping-bag" full-width>Añadir a la cesta</ButtonDark>
             </div>
 
             <div class="flex flex-col gap-2 mt-8 font-rubik text-lg text-muted-light">
@@ -167,45 +184,7 @@
             :mainImage="mainImage"
             @talla-seleccionada="handleTallaSelected" />
 
-        <Drawer
-            v-model:visible="showModalCesta"
-            header="#"
-            position="right"
-            :pt="{
-                root: { style: 'width: 33rem;' },
-                title: { style: 'opacity: 0;' },
-            }">
-            <div class="flex border-2 px-6 py-4 rounded-lg border-verde">
-                <i class="pi pi-check-circle mr-2 text-verde" style="font-size: 1.5rem" />
-                El artículo se ha añadido a la cesta de la compra.
-            </div>
-
-            <div class="mt-6">
-                <div class="text-center font-rubik font-semibold text-2xl mb-6">Tu cesta de la compra</div>
-                <div class="flex gap-4">
-                    <div style="height: 128px; width: 128px">
-                        <img :src="mainImage" alt="" />
-                    </div>
-                    <div>
-                        <p class="font-rubik text-lg mb-1">44 €</p>
-                        <p class="font-rubik text-lg leading-5 capitalize text-muted-ligh">puma</p>
-                        <p class="font-rubik text-lg leading-5 capitalize font-semibold mb-4">Fade Nitro LS</p>
-                        <p class="font-rubik text-md leading-5 capitalize">
-                            <span class="text-muted-light">Color:</span>
-                            Plata
-                        </p>
-                        <p class="font-rubik text-md leading-5">
-                            <span class="text-muted-light">Talla:</span>
-                            1
-                        </p>
-                        <p class="font-rubik text-md leading-5">
-                            <span class="text-muted-light">Cantidad:</span>
-                            1
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </Drawer>
+        <ModalCesta v-model:visible="showModalCesta" />
     </div>
 </template>
 
