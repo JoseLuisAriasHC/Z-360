@@ -21,7 +21,7 @@
 
 <template>
     <Dialog
-        :visible="props.visible"
+        v-model:visible="props.visible"
         @update:visible="closeModal"
         modal
         :header="productoDetalle?.producto.nombre"
