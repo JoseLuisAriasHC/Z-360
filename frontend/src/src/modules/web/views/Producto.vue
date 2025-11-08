@@ -62,7 +62,6 @@
 
         try {
             productoDetalle.value = await ProductoService.getProductoDetalle(idProductoVariante);
-            console.log(productoDetalle.value);
             productoDetalle.value.variante_seleccionada.imagen_principal ?? noImageSvg;
         } catch (e) {
             router.push({ name: 'not-found' });
@@ -74,7 +73,6 @@
     const handleTallaSelected = (tallaStock: TallaStock) => {
         showModalTalla.value = false;
         tallaSelecionada.value = tallaStock;
-        console.log(tallaSelecionada.value);
     };
 
     const handleAddProducto = () => {
@@ -90,6 +88,7 @@
             id: variante.id,
             nombre: productoDetalle.value.producto.nombre,
             marca: productoDetalle.value.producto.marca.nombre,
+            idTalla:tallaSelecionada.value.id,
             talla: tallaSelecionada.value.talla.numero,
             imagen: variante.imagen_principal?.replace('L_', 'S_') || noImageSvg,
             precio: variante.precio,

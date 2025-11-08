@@ -23,7 +23,7 @@ export default {
                 'azul-oscuro': '#334155',
                 'rojo': '#cb2222',
                 'rojo-oscuro': '#981412',
-                'verde-claro': '#E2F6E2'
+                'verde-claro': '#E2F6E2',
             },
             fontFamily: {
                 display: ['Roboto', 'sans-serif'],

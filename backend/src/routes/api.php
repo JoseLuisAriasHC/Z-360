@@ -20,6 +20,7 @@ use App\Http\Controllers\admin\UserPhotoControllerADM;
 use App\Http\Controllers\admin\VariantImageControllerADM;
 use App\Http\Controllers\admin\VariantSizeControllerADM;
 use App\Http\Controllers\admin\WebSettingsControllerADM;
+use App\Http\Controllers\CuponController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,8 @@ Route::prefix('products')->group(function () {
     Route::get('/listado', [ProductController::class, 'listado']);
     Route::get('/{productVariant}', [ProductController::class, 'getProductDetail']);
 });
+
+Route::get('/cupones/{codigo}', [CuponController::class, 'getByCodigo']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas para el carrito
