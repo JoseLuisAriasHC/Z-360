@@ -16,7 +16,6 @@ export const useSettingsStore = defineStore('settings', () => {
     error.value = null
     try {
       const response = await WebSettingService.getEnvioSettings()
-      console.log(response);
       envioSettings.value = {
         coste_envio: parseFloat(response.coste_envio.valor),
         free_coste_envio_from: parseFloat(response.free_coste_envio_from.valor)

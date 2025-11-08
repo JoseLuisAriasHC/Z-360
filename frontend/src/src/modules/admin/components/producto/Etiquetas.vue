@@ -65,7 +65,6 @@
         
         try {
             if (props.productoId) {
-                console.log(payload);
                 const data = await EtiquetaService.saveEtiquetasDelProducto(payload, props.productoId);
                 toast.add({ severity: 'success', summary: 'Éxito', detail: data.message, life: 3000 });
             }
