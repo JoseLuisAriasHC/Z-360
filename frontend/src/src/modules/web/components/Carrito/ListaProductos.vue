@@ -37,8 +37,8 @@
                 <div
                     class="flex justify-center items-center hover:bg-text-dark h-[40px] w-[40px] cursor-pointer"
                     style="padding: 8px; border-radius: 30px"
-                    @click="cesta.incrementarCantidad(item)">
-                    <i class="pi pi-plus font-semibold"></i>
+                    @click="cesta.decrementarCantidad(item)">
+                    <i class="pi pi-minus font-semibold"></i>
                 </div>
 
                 <div class="flex justify-center items-center w-[24px]">
@@ -50,8 +50,8 @@
                 <div
                     class="flex justify-center items-center hover:bg-text-dark h-[40px] w-[40px] cursor-pointer"
                     style="padding: 8px; border-radius: 30px"
-                    @click="cesta.decrementarCantidad(item)">
-                    <i class="pi pi-minus font-semibold"></i>
+                    @click="cesta.incrementarCantidad(item)">
+                    <i class="pi pi-plus font-semibold"></i>
                 </div>
             </div>
         </div>

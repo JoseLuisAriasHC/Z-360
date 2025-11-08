@@ -43,7 +43,7 @@
             </div>
 
             <router-link v-else :to="{ name: 'home' }">
-                <Button severity="contrast">
+                <Button severity="contrast" class="mt-4">
                     <span class="text-2xl mr-3">Comenzar</span>
                     <i class="pi pi-arrow-right" style="font-size: 1.5rem" />
                 </Button>
