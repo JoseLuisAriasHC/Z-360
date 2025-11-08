@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { ref, onMounted, computed } from 'vue';
-    import { useRouter } from 'vue-router';
+    import { ref, onMounted, computed, watch } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import { type ProductoDetalleData, type TallaStock, type VarianteDisponible, ProductoService } from '@/modules/web/services/ProductoService';
     import MainGaleria from '@web/components/Producto/MainGaleria.vue';
     import { getParamId } from '@/utils/utils';
@@ -13,6 +13,7 @@
     import { useCestaStore } from '../stores/cesta';
 
     // --- PROPS Y HOOKS ---
+    const route = useRoute();
     const router = useRouter();
     const cestaStore = useCestaStore();
 
@@ -88,7 +89,7 @@
             id: variante.id,
             nombre: productoDetalle.value.producto.nombre,
             marca: productoDetalle.value.producto.marca.nombre,
-            idTalla:tallaSelecionada.value.id,
+            idTalla: tallaSelecionada.value.id,
             talla: tallaSelecionada.value.talla.numero,
             imagen: variante.imagen_principal?.replace('L_', 'S_') || noImageSvg,
             precio: variante.precio,
@@ -107,6 +108,18 @@
             loadProducto(idProductoVariante.value);
         }
     });
+
+    watch(
+        () => route.params.id,
+        (newId) => {
+            if (newId) {
+                const idString = Array.isArray(newId) ? newId[0] : newId;
+                const idNumber = parseInt(idString as string, 10);
+                loadProducto(idNumber);
+            }
+        },
+        { immediate: true }
+    );
 </script>
 
 <template>

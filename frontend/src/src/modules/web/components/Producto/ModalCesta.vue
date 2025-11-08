@@ -2,7 +2,7 @@
     import { computed } from 'vue';
     import router from '@/router';
     import ButtonDark from '../ButtonDark.vue';
-    import { useCestaStore } from '../../stores/cesta';
+    import { useCestaStore, type CestaItem } from '../../stores/cesta';
     import { useSettingsStore } from '@/stores/settings';
 
     // Props y emits
@@ -24,16 +24,18 @@
 
     const totalConEnvio = computed(() => cesta.total + costeEnvio.value);
 
-    // Cerrar modal
-    const closeModal = () => {
-        emit('update:visible', false);
-    };
-
-    // Cantidad total
     const totalItemsText = computed(() => {
         const n = cesta.totalItems;
         return n === 1 ? '1 artículo' : `${n} artículos`;
     });
+
+    const closeModal = () => {
+        emit('update:visible', false);
+    };
+
+    const hanldeEliminarProductoCesta = (producto: CestaItem) => {
+        cesta.removeProducto(producto.id, producto.idTalla);
+    };
 </script>
 
 <template>
@@ -63,9 +65,18 @@
                     </div>
 
                     <div class="flex-1">
-                        <div class="text-lg mb-1 text-rojo font-bold">
-                            {{ item.precio_con_descuento }} €
-                            <span v-if="item.descuento_activo" class="text-muted-light line-through ml-2 font-normal">{{ item.precio }} €</span>
+                        <div class="flex justify-between">
+                            <div class="text-lg mb-1 text-rojo font-bold">
+                                {{ item.precio_con_descuento }} €
+                                <span v-if="item.descuento_activo" class="text-muted-light line-through ml-2 font-normal">{{ item.precio }} €</span>
+                            </div>
+                            <Button
+                                @click="hanldeEliminarProductoCesta(item)"
+                                icon="pi pi-trash"
+                                severity="secondary"
+                                variant="text"
+                                rounded
+                                aria-label="Bookmark" />
                         </div>
                         <p class="text-lg leading-5 capitalize text-muted-light">
                             {{ item.marca }}

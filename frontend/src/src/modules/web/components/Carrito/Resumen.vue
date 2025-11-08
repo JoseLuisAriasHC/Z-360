@@ -9,7 +9,7 @@
 
     const op = ref();
     const codigoCupon = ref<string>('');
-    const cuponActivo = ref<Cupon | null>(null);
+    const cupon = ref<Cupon | null>(null);
     const msgErrorCupon = ref<string>('');
 
     const showModalErrorCupon = ref(false);
@@ -18,9 +18,9 @@
         op.value.toggle(event);
     };
 
-    const envioGratis = computed(() => {
+    const envioGratis = computed<boolean>(() => {
         if (!settings.envioSettings) return false;
-        return cesta.total >= settings.envioSettings.free_coste_envio_from;
+        return cesta.total - descuentoCupon.value >= settings.envioSettings.free_coste_envio_from;
     });
 
     const costeEnvio = computed(() => {
@@ -29,12 +29,12 @@
     });
 
     const descuentoCupon = computed(() => {
-        if (!cuponActivo.value) return 0;
+        if (!cupon.value) return 0;
 
-        if (cuponActivo.value.tipo === 'fijo') {
-            return cuponActivo.value.descuento;
+        if (cupon.value.tipo === 'fijo') {
+            return cupon.value.descuento;
         } else {
-            return cesta.total * (cuponActivo.value.descuento / 100);
+            return cesta.total * (cupon.value.descuento / 100);
         }
     });
 
@@ -46,8 +46,9 @@
         const data = await CuponService.getCuponByCodigo(codigoCupon.value);
 
         if (data.success) {
-            cuponActivo.value = data.data;
+            cupon.value = data.data;
         } else {
+            cupon.value = null;
             msgErrorCupon.value = data.message;
             showModalErrorCupon.value = true;
         }
@@ -72,7 +73,7 @@
                             class="font-semibold"
                             severity="contrast"
                             outlined
-                            :disabled="codigoCupon == ''"
+                            :disabled="codigoCupon == '' || cesta.items.length == 0"
                             style="border-radius: 2rem; font-size: 1.25rem; padding: 0.5rem 2rem">
                             Aplicar
                         </Button>
@@ -126,8 +127,12 @@
     </div>
 
     <div class="pt-8">
-        <RouterLink :to="{name: 'home'}">
-            <Button class="font-semibold w-full" severity="contrast" :disabled="cesta.items.length == 0" style="border-radius: 2rem; font-size: 1.25rem; padding: 0.5rem 2rem">
+        <RouterLink :to="{ name: 'home' }">
+            <Button
+                class="font-semibold w-full"
+                severity="contrast"
+                :disabled="cesta.items.length == 0"
+                style="border-radius: 2rem; font-size: 1.25rem; padding: 0.5rem 2rem">
                 Pasa por caja
             </Button>
         </RouterLink>

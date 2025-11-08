@@ -56,12 +56,12 @@ export const useCestaStore = defineStore('cesta', () => {
         if (producto && producto.cantidad > 1) {
             producto.cantidad--;
         } else if (producto && producto.cantidad === 1) {
-            removeProducto(producto.id, producto.talla);
+            removeProducto(producto.id, producto.idTalla);
         }
     };
 
-    const removeProducto = (id: number, talla: string) => {
-        items.value = items.value.filter((i) => !(i.id === id && i.talla === talla));
+    const removeProducto = (id: number, talla: number) => {
+        items.value = items.value.filter((i) => !(i.id === id && i.idTalla === talla));
     };
 
     const clearCesta = () => {

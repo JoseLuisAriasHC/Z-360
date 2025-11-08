@@ -35,7 +35,9 @@
                 :class="{
                     'border border-muted-light shadow-md': data.item.seleccionada,
                 }">
-                <img :src="data.item.imagen_principal" :alt="data.item.id" class="w-full h-full object-contain" />
+                <RouterLink :to="{ name: 'producto-detalles', params: { id: data.item.id } }">
+                    <img :src="data.item.imagen_principal" :alt="data.item.id" class="w-full h-full object-contain" />
+                </RouterLink>
             </div>
         </template>
     </Galleria>
