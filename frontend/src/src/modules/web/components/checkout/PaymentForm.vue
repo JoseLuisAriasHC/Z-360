@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, nextTick } from 'vue';
     import { useRouter } from 'vue-router';
     import { useToast } from 'primevue/usetoast';
     import { useCestaStore } from '../../stores/cesta';
@@ -33,39 +33,18 @@
     // Cargar Stripe
     onMounted(async () => {
         try {
-            // Reemplaza con tu clave pública de Stripe
             const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-
-            if (!stripeKey) {
-                throw new Error('Stripe public key no configurada');
-            }
-
             stripe.value = await loadStripe(stripeKey);
-
-            if (!stripe.value) {
-                throw new Error('Error al cargar Stripe');
-            }
-
-            elements.value = stripe.value.elements({
-                clientSecret: props.clientSecret,
-            });
-
-            // Crear y montar el elemento de tarjeta
-            const paymentElement = elements.value.create('payment');
-
-            if (cardElement.value) {
-                paymentElement.mount(cardElement.value);
-            }
-
+            elements.value = stripe.value.elements({ clientSecret: props.clientSecret });
             mounted.value = true;
+
+            // Espera a que Vue renderice el div con el ref
+            await nextTick();
+
+            const paymentElement = elements.value.create('payment');
+            if (cardElement.value) paymentElement.mount(cardElement.value);
         } catch (error) {
             console.error('Error al inicializar Stripe:', error);
-            toast.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'No se pudo cargar el sistema de pago',
-                life: 5000,
-            });
         }
     });
 
@@ -144,7 +123,7 @@
 </script>
 
 <template>
-    <div class="payment-form">
+    <div class="w-full">
         <h3 class="text-2xl font-semibold mb-6 font-oswald">Método de Pago</h3>
 
         <!-- Loading state mientras se carga Stripe -->
@@ -180,26 +159,4 @@
     </div>
 </template>
 
-<style scoped>
-    .payment-form {
-        @apply w-full;
-    }
-
-    .stripe-element {
-        @apply p-4 border border-gray-300 rounded-lg bg-white;
-        min-height: 200px;
-    }
-
-    /* Estilos para los elementos de Stripe */
-    :deep(.StripeElement) {
-        @apply p-3;
-    }
-
-    :deep(.StripeElement--focus) {
-        @apply border-blue-500;
-    }
-
-    :deep(.StripeElement--invalid) {
-        @apply border-red-500;
-    }
-</style>
+<style scoped></style>

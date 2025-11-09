@@ -2,6 +2,21 @@
     // Asegúrate de que este componente esté disponible
     import Divider from 'primevue/divider';
     import ButtonDark from '../components/ButtonDark.vue';
+    import { onBeforeRouteUpdate } from 'vue-router';
+    import { useCestaStore } from '../stores/cesta';
+    import router from '@/router';
+
+    const cestaStore = useCestaStore();
+
+    onBeforeRouteUpdate(() => {
+        if (cestaStore.items.length === 0) {
+            router.push({ name: 'carrito' });
+        }
+    });
+
+    if (cestaStore.items.length === 0) {
+        router.push({ name: 'carrito' });
+    }
 </script>
 
 <template>

@@ -38,7 +38,7 @@ const webRoutes: RouteRecordRaw[] = [
                 component: () => import('@web/views/Checkout.vue'),
             },
             {
-                path: 'checkout-success',
+                path: 'checkout/success',
                 name: 'checkout-success',
                 component: () => import('@web/views/CheckoutSuccess.vue'),
             },

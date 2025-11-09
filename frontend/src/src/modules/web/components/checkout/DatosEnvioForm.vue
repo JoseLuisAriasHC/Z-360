@@ -12,7 +12,7 @@
 
     const props = defineProps<Props>();
     const emit = defineEmits<{
-        (e: 'order-created', data: { token: string; clientSecret: string; paymentIntentId: string }): void;
+        (e: 'order-created', data: { token: string; clientSecret: string; paymentIntentId: string, orderId: number }): void;
     }>();
 
     const toast = useToast();
@@ -39,6 +39,7 @@
                 token: result.data.token,
                 clientSecret: result.data.payment.clientSecret,
                 paymentIntentId: result.data.payment.paymentIntentId,
+                orderId: result.data.data.id,
             });
 
             props.onNextStep();
