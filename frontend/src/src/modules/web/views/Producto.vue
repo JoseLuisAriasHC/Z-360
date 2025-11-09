@@ -86,10 +86,9 @@
 
         const variante = productoDetalle.value.variante_seleccionada;
         cestaStore.addProducto({
-            id: variante.id,
+            id: tallaSelecionada.value.id,
             nombre: productoDetalle.value.producto.nombre,
             marca: productoDetalle.value.producto.marca.nombre,
-            idTalla: tallaSelecionada.value.id,
             talla: tallaSelecionada.value.talla.numero,
             imagen: variante.imagen_principal?.replace('L_', 'S_') || noImageSvg,
             precio: variante.precio,
