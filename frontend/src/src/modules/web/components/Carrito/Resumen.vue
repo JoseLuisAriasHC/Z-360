@@ -1,22 +1,32 @@
 <script setup lang="ts">
     import { computed, ref } from 'vue';
-    import { CuponService, type Cupon } from '../../services/CuponService';
+    import { CuponService } from '../../services/CuponService';
     import { useCestaStore } from '../../stores/cesta';
     import { useSettingsStore } from '@/stores/settings';
+    import ButtonDark from '../ButtonDark.vue';
+    import { useCuponStore } from '../../stores/cupon';
 
     const cesta = useCestaStore();
     const settings = useSettingsStore();
+    const cuponStore = useCuponStore();
 
     const op = ref();
     const codigoCupon = ref<string>('');
-    const cupon = ref<Cupon | null>(null);
     const msgErrorCupon = ref<string>('');
-
     const showModalErrorCupon = ref(false);
 
     const toggleInfoSubtotal = (event: any) => {
         op.value.toggle(event);
     };
+
+    const descuentoCupon = computed(() => {
+        if (!cuponStore.cupon) return 0;
+        if (cuponStore.tipo === 'fijo') {
+            return cuponStore.descuento;
+        } else {
+            return cesta.total * (cuponStore.descuento / 100);
+        }
+    });
 
     const envioGratis = computed<boolean>(() => {
         if (!settings.envioSettings) return false;
@@ -28,32 +38,22 @@
         return envioGratis.value ? 0 : settings.envioSettings.coste_envio;
     });
 
-    const descuentoCupon = computed(() => {
-        if (!cupon.value) return 0;
-
-        if (cupon.value.tipo === 'fijo') {
-            return cupon.value.descuento;
-        } else {
-            return cesta.total * (cupon.value.descuento / 100);
-        }
-    });
-
     const totalMasEnvioCupon = computed(() => {
         return cesta.total - descuentoCupon.value + costeEnvio.value;
     });
 
     const handleAplicarCupon = async () => {
         const data = await CuponService.getCuponByCodigo(codigoCupon.value);
-
         if (data.success) {
-            cupon.value = data.data;
+            cuponStore.cupon = data.data;
         } else {
-            cupon.value = null;
+            cuponStore.clearCupon();
             msgErrorCupon.value = data.message;
             showModalErrorCupon.value = true;
         }
     };
 </script>
+
 <template>
     <h2 class="font-semibold text-3xl text-text-light">Resumen</h2>
     <div class="py-4 border-b">
@@ -127,27 +127,15 @@
     </div>
 
     <div class="pt-8">
-        <RouterLink :to="{ name: 'home' }">
-            <Button
-                class="font-semibold w-full"
-                severity="contrast"
-                :disabled="cesta.items.length == 0"
-                style="border-radius: 2rem; font-size: 1.25rem; padding: 0.5rem 2rem">
-                Pasa por caja
-            </Button>
+        <RouterLink :to="{ name: 'precheckout' }">
+            <ButtonDark @click="showModalErrorCupon = false" variant="primary" size="xl" border-radius="full" full-width>Pasar por caja</ButtonDark>
         </RouterLink>
     </div>
 
     <Dialog v-model:visible="showModalErrorCupon" modal header="Error" :style="{ width: '40rem' }">
         {{ msgErrorCupon }}
         <div class="flex justify-center items-center">
-            <Button
-                @click="showModalErrorCupon = false"
-                class="font-semibold"
-                severity="contrast"
-                style="border-radius: 2rem; font-size: 1.25rem; padding: 0.5rem 2rem">
-                Aceptar
-            </Button>
+            <ButtonDark @click="showModalErrorCupon = false" variant="primary" size="xl" border-radius="full">Aceptar</ButtonDark>
         </div>
     </Dialog>
 </template>

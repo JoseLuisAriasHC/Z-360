@@ -24,9 +24,10 @@ class GuestOrderRequest extends FormRequest
     {
         return [
             // cliente invitado con items del cliente
-            'items'                   => ['required', 'array', 'min:1'],
-            'items.*.variant_size_id' => ['required', 'exists:variant_sizes,id'],
-            'items.*.cantidad'        => ['required', 'integer', 'min:1'],
+            'items'                         => ['required', 'array', 'min:1'],
+            'items.*.product_variant_id'    => ['required', 'exists:product_variants,id'],
+            'items.*.talla_id'              => ['required', 'exists:tallas,id'],
+            'items.*.cantidad'              => ['required', 'integer', 'min:1'],
 
             // Datos de ENVÍO
             'envio_nombre'                  => ['required', 'string', 'max:255'],

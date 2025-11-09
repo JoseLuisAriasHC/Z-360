@@ -3,6 +3,7 @@ import { computed } from 'vue';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text';
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+type ButtonRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
 
 interface Props {
     variant?: ButtonVariant;
@@ -13,6 +14,7 @@ interface Props {
     disabled?: boolean;
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
+    borderRadius?: ButtonRadius; 
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: false,
     loading: false,
     type: 'button',
+    borderRadius: 'lg', 
 });
 
 const emit = defineEmits<{
@@ -42,6 +45,12 @@ const buttonClasses = computed(() => {
 
     if (props.disabled || props.loading) {
         classes.push('btn-disabled');
+    }
+
+    if (props.borderRadius !== 'none') {
+        classes.push(`rounded-${props.borderRadius}`);
+    } else {
+        classes.push('rounded-none');
     }
 
     return classes.join(' ');
@@ -96,7 +105,7 @@ const handleClick = (event: MouseEvent) => {
 <style scoped>
 /* Base styles */
 .btn-base {
-    @apply font-rubik font-semibold rounded-lg;
+    @apply font-rubik font-semibold;
     @apply transition-all duration-300;
     @apply inline-flex items-center justify-center;
     @apply cursor-pointer;

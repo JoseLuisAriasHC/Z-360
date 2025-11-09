@@ -28,6 +28,16 @@ const webRoutes: RouteRecordRaw[] = [
                 props: true,
             },
             {
+                path: 'precheckout',
+                name: 'precheckout',
+                component: () => import('@web/views/Precheckout.vue'),
+            },
+            {
+                path: 'checkout',
+                name: 'checkout',
+                component: () => import('@web/views/Checkout.vue'),
+            },
+            {
                 path: ':catchAll(.*)*',
                 name: 'not-found',
                 component: () => import('@web/views/NotFound.vue'),
