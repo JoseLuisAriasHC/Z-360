@@ -58,3 +58,7 @@ export const toISOString = (fecha: Date | null | undefined): string => {
     }
     return '';
 };
+
+export const formatPrice = (price: number) => {
+    return price.toFixed(2);
+};

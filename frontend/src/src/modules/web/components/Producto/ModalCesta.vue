@@ -130,7 +130,10 @@
 
             <!-- Botones -->
             <div class="flex flex-col gap-4 pt-4">
-                <ButtonDark variant="primary" size="xl" full-width>Caja</ButtonDark>
+                <RouterLink :to="{ name: 'checkout' }">
+                    <ButtonDark variant="primary" size="xl" full-width>Caja</ButtonDark>
+                </RouterLink>
+
                 <RouterLink :to="{ name: 'carrito' }">
                     <ButtonDark variant="secondary" full-width>Cesta de la compra</ButtonDark>
                 </RouterLink>

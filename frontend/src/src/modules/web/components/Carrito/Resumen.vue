@@ -5,6 +5,7 @@
     import { useSettingsStore } from '@/stores/settings';
     import ButtonDark from '../ButtonDark.vue';
     import { useCuponStore } from '../../stores/cupon';
+    import { formatPrice } from '@/utils/utils';
 
     const cesta = useCestaStore();
     const settings = useSettingsStore();
@@ -92,14 +93,14 @@
                 </div>
             </Popover>
             <span class="font-semibold text-lg ml-auto">
-                <span v-if="cesta.total">{{ cesta.total }} €</span>
+                <span v-if="cesta.total">{{ formatPrice(cesta.total) }} €</span>
                 <span v-else>—</span>
             </span>
         </div>
 
         <div v-if="descuentoCupon != 0" class="flex gap-3 mt-3">
             <p class="font-semibold text-lg">Descuento</p>
-            <span class="font-semibold text-lg ml-auto text-verde">{{ descuentoCupon }} €</span>
+            <span class="font-semibold text-lg ml-auto text-verde">{{ formatPrice(descuentoCupon) }} €</span>
         </div>
 
         <div class="flex gap-3 mt-3">
@@ -107,7 +108,7 @@
             <span class="font-semibold text-lg ml-auto">
                 <span v-if="cesta.total">
                     <span v-if="envioGratis">Gratuito</span>
-                    <span v-else>{{ settings.envioSettings?.coste_envio }} €</span>
+                    <span v-else>{{ formatPrice(costeEnvio) }} €</span>
                 </span>
                 <span v-else>—</span>
             </span>
@@ -119,7 +120,7 @@
             <p class="font-semibold text-lg">Total</p>
             <span class="font-semibold text-lg ml-auto">
                 <span v-if="cesta.total">
-                    {{ totalMasEnvioCupon }}
+                    {{ formatPrice(totalMasEnvioCupon) }}
                 </span>
                 <span v-else>—</span>
             </span>
@@ -127,7 +128,7 @@
     </div>
 
     <div class="pt-8">
-        <RouterLink :to="{ name: 'precheckout' }">
+        <RouterLink :to="{ name: 'checkout' }">
             <ButtonDark @click="showModalErrorCupon = false" variant="primary" size="xl" border-radius="full" full-width>Pasar por caja</ButtonDark>
         </RouterLink>
     </div>

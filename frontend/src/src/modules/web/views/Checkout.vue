@@ -77,6 +77,7 @@
                                 :client-secret="paymentData.clientSecret"
                                 :payment-intent-id="paymentData.paymentIntentId"
                                 :order-id="paymentData.orderId || 0"
+                                :token="paymentData.token"
                                 :on-prev-step="() => activateStep('1')" />
                             <div v-else class="p-8 text-center">
                                 <Message severity="warn" :closable="false">No hay información de pago disponible</Message>
