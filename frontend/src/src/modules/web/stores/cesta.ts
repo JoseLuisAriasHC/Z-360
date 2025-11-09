@@ -5,7 +5,6 @@ export interface CestaItem {
     id: number;
     nombre: string;
     marca: string;
-    idTalla: number;
     talla: string;
     imagen: string;
     precio: number;
@@ -56,12 +55,12 @@ export const useCestaStore = defineStore('cesta', () => {
         if (producto && producto.cantidad > 1) {
             producto.cantidad--;
         } else if (producto && producto.cantidad === 1) {
-            removeProducto(producto.id, producto.idTalla);
+            removeProducto(producto.id);
         }
     };
 
-    const removeProducto = (id: number, talla: number) => {
-        items.value = items.value.filter((i) => !(i.id === id && i.idTalla === talla));
+    const removeProducto = (id: number) => {
+        items.value = items.value.filter((i) => !(i.id === id));
     };
 
     const clearCesta = () => {

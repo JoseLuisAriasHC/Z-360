@@ -38,6 +38,11 @@ const webRoutes: RouteRecordRaw[] = [
                 component: () => import('@web/views/Checkout.vue'),
             },
             {
+                path: 'checkout-success',
+                name: 'checkout-success',
+                component: () => import('@web/views/CheckoutSuccess.vue'),
+            },
+            {
                 path: ':catchAll(.*)*',
                 name: 'not-found',
                 component: () => import('@web/views/NotFound.vue'),
