@@ -316,8 +316,28 @@ class OrderController extends Controller
         $subtotal = 0;
 
         foreach ($items as $item) {
-            $variantSizeId = $fromCart ? $item->variant_size_id : $item['variant_size_id'];
-            $cantidad = $fromCart ? $item->cantidad : $item['cantidad'];
+            if ($fromCart) {
+                // Si vienen desde el carrito (ya hay relación con variant_size)
+                $variantSizeId = $item->variant_size_id;
+                $cantidad = $item->cantidad;
+            } else {
+                // Nuevo formato: product_variant_id + talla_id
+                $productVariantId = $item['product_variant_id'];
+                $tallaId = $item['talla_id'];
+                $cantidad = $item['cantidad'];
+
+                // Buscar el VariantSize que coincide
+                $variantSize = VariantSize::with('productVariant')
+                    ->where('product_variant_id', $productVariantId)
+                    ->where('talla_id', $tallaId)
+                    ->first();
+
+                if (!$variantSize) {
+                    throw new \Exception("No existe combinación de variante {$productVariantId} con talla {$tallaId}");
+                }
+
+                $variantSizeId = $variantSize->id;
+            }
 
             $variantSize = VariantSize::with('productVariant')->findOrFail($variantSizeId);
             $precio = $variantSize->productVariant->precio;
@@ -333,6 +353,7 @@ class OrderController extends Controller
 
         return $subtotal;
     }
+
 
     /**
      * Enviar factura por email
