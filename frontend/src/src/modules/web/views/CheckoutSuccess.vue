@@ -1,50 +1,33 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
-    import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
-    import type { Order } from '../services/GuestOrderService';
+    import { useRoute, useRouter } from 'vue-router';
+    import { GuestOrderService, type Order } from '../services/GuestOrderService';
     import ButtonDark from '../components/ButtonDark.vue';
-    import { useCestaStore } from '../stores/cesta';
 
     const route = useRoute();
     const router = useRouter();
-    const cestaStore = useCestaStore();
 
     const loading = ref(true);
     const order = ref<Order | null>(null);
     const error = ref<string | null>(null);
 
-    onBeforeRouteUpdate(() => {
-        if (cestaStore.items.length === 0) {
-            router.push({ name: 'carrito' });
-        }
-    });
-
-    if (cestaStore.items.length === 0) {
-        router.push({ name: 'carrito' });
-    }
-
     onMounted(async () => {
-        const orderId = route.query.order as string;
+        const orderToken = route.query.order as string;
 
-        if (!orderId) {
+        if (!orderToken) {
             error.value = 'No se encontró el pedido';
             loading.value = false;
             return;
         }
 
         try {
-            // Aquí podrías obtener los detalles del pedido si lo necesitas
-            // order.value = await GuestOrderService.getOrderById(Number(orderId));
+            order.value = await GuestOrderService.getOrderByToken(orderToken);
             loading.value = false;
         } catch (e) {
             error.value = 'Error al cargar los detalles del pedido';
             loading.value = false;
         }
     });
-
-    const handleGoHome = () => {
-        router.push({ name: 'home' });
-    };
 
     const handleViewOrders = () => {
         router.push({ name: 'my-orders' });
@@ -106,9 +89,10 @@
 
                 <!-- Acciones -->
                 <div class="success-actions">
-                    <ButtonDark variant="primary" size="lg" icon="pi pi-home" @click="handleGoHome">Volver al inicio</ButtonDark>
-
-                    <ButtonDark variant="outline" size="lg" icon="pi pi-list" @click="handleViewOrders">Ver mis pedidos</ButtonDark>
+                    <RouterLink :to="{ name: 'home' }">
+                        <ButtonDark variant="primary" size="lg" icon="pi pi-home">Volver al inicio</ButtonDark>
+                    </RouterLink>
+                    <!-- <ButtonDark variant="outline" size="lg" icon="pi pi-list" @click="handleViewOrders">Ver mis pedidos</ButtonDark> -->
                 </div>
 
                 <!-- Nota adicional -->
@@ -125,7 +109,7 @@
 
 <style scoped>
     .success-page {
-        @apply min-h-screen bg-gray-50 py-12 px-4;
+        @apply h-screen bg-gray-50 xl:pt-16  xl:pt-32 px-4;
     }
 
     .success-content {

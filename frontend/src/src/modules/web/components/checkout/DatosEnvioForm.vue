@@ -58,7 +58,7 @@
     <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
         <!-- Datos de Envío -->
         <section>
-            <h3 class="text-2xl font-semibold mb-4 font-oswald">Datos de Envío</h3>
+            <h3 class="text-2xl font-semibold mb-8 font-rubik">Datos de Envío</h3>
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12">
                     <FormField id="envio_email" label="Email" :error="errors.envio_email">

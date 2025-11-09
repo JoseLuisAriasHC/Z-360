@@ -13,6 +13,7 @@
         clientSecret: string;
         paymentIntentId: string;
         orderId: number;
+        token: string;
         onPrevStep: () => void;
     }
 
@@ -101,7 +102,7 @@
                     // Redirigir a página de éxito
                     router.push({
                         name: 'checkout-success',
-                        query: { order: props.orderId },
+                        query: { order: props.token },
                     });
                 } else {
                     throw new Error(confirmResult.message || 'Error al confirmar el pago');

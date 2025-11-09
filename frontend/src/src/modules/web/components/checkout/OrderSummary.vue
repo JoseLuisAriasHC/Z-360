@@ -2,16 +2,16 @@
     import { computed } from 'vue';
     import { useCestaStore } from '../../stores/cesta';
     import { useCuponStore } from '../../stores/cupon';
+    import { formatPrice } from '@/utils/utils';
+    import { useSettingsStore } from '@/stores/settings';
 
     const cestaStore = useCestaStore();
     const cuponStore = useCuponStore();
+    const settings = useSettingsStore();
 
-    // Constantes de envío
-    const COSTO_ENVIO = 5.99;
-    const ENVIO_GRATIS_DESDE = 50;
-
-    // Cálculos
-    const subtotal = computed(() => cestaStore.total);
+    const envioGratisDesde = computed<number>(() => {
+        settings.envioSettings?.free_coste_envio_from ?? 0;
+    });
 
     const descuentoCupon = computed(() => {
         if (!cuponStore.cupon) return 0;
@@ -23,28 +23,29 @@
         return cuponStore.descuento;
     });
 
+    const envioGratis = computed<boolean>(() => {
+        if (!settings.envioSettings) return false;
+        return cestaStore.total - descuentoCupon.value >= settings.envioSettings.free_coste_envio_from;
+    });
+
+    const costeEnvio = computed(() => {
+        if (!settings.envioSettings) return 0;
+        return envioGratis.value ? 0 : settings.envioSettings.coste_envio;
+    });
+
+    const totalMasEnvioCupon = computed(() => {
+        return cestaStore.total - descuentoCupon.value + costeEnvio.value;
+    });
+
+    const subtotal = computed(() => cestaStore.total);
     const subtotalConDescuento = computed(() => {
         return Math.max(0, subtotal.value - descuentoCupon.value);
     });
-
-    const costoEnvio = computed(() => {
-        return subtotalConDescuento.value >= ENVIO_GRATIS_DESDE ? 0 : COSTO_ENVIO;
-    });
-
-    const envioGratis = computed(() => costoEnvio.value === 0);
-
-    const total = computed(() => {
-        return subtotalConDescuento.value + costoEnvio.value;
-    });
-
-    const formatPrice = (price: number) => {
-        return price.toFixed(2);
-    };
 </script>
 
 <template>
-    <div class="order-summary">
-        <h3 class="text-xl font-semibold mb-4 font-oswald">Resumen del pedido</h3>
+    <div class="order-summary font-rubik">
+        <h3 class="text-2xl font-semibold mb-4 font-rubik">Resumen del pedido</h3>
 
         <!-- Lista de productos -->
         <div class="products-list mb-4">
@@ -54,10 +55,10 @@
                         <img :src="item.imagen" :alt="item.nombre" />
                     </div>
                     <div class="flex-1">
-                        <p class="font-semibold text-sm line-clamp-2">{{ item.nombre }}</p>
-                        <p class="text-xs text-gray-500">{{ item.marca }}</p>
-                        <p class="text-xs text-gray-500">Talla: {{ item.talla }} | Color: {{ item.color }}</p>
-                        <p class="text-sm font-medium mt-1">{{ formatPrice(item.precio_con_descuento) }}€ x {{ item.cantidad }}</p>
+                        <p class="font-semibold line-clamp-2">{{ item.nombre }}</p>
+                        <p class="text-sm text-gray-500">{{ item.marca }}</p>
+                        <p class="text-sm text-gray-500">Talla: {{ item.talla }} | Color: {{ item.color }}</p>
+                        <p class="font-medium mt-1">{{ formatPrice(item.precio_con_descuento) }}€ x {{ item.cantidad }}</p>
                     </div>
                     <div class="text-right">
                         <p class="font-semibold">{{ formatPrice(item.precio_con_descuento * item.cantidad) }}€</p>
@@ -89,12 +90,12 @@
             <div class="flex justify-between text-sm">
                 <span>Envío</span>
                 <span v-if="envioGratis" class="text-green-600 font-semibold">¡Gratis!</span>
-                <span v-else>{{ formatPrice(costoEnvio) }}€</span>
+                <span v-else>{{ formatPrice(costeEnvio) }}€</span>
             </div>
 
             <!-- Mensaje de envío gratis -->
-            <div v-if="!envioGratis && subtotalConDescuento < ENVIO_GRATIS_DESDE" class="text-xs text-gray-500 py-2">
-                Añade {{ formatPrice(ENVIO_GRATIS_DESDE - subtotalConDescuento) }}€ más para envío gratis
+            <div v-if="!envioGratis && subtotalConDescuento < envioGratisDesde" class="text-xs text-gray-500 py-2">
+                Añade {{ formatPrice(envioGratisDesde - subtotalConDescuento) }}€ más para envío gratis
             </div>
         </div>
 
@@ -104,7 +105,7 @@
         <!-- Total -->
         <div class="flex justify-between text-lg font-bold">
             <span>Total</span>
-            <span>{{ formatPrice(total) }}€</span>
+            <span>{{ formatPrice(totalMasEnvioCupon) }}€</span>
         </div>
 
         <!-- Nota IVA -->
@@ -115,7 +116,7 @@
 <style scoped>
     .order-summary {
         @apply bg-white rounded-lg p-6 shadow-sm border border-gray-200;
-        @apply sticky top-24;
+        @apply sticky top-32;
     }
 
     .products-list {
@@ -127,7 +128,7 @@
     }
 
     .product-image {
-        @apply w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0;
+        @apply w-[96px] h-[96px] bg-gray-100 rounded overflow-hidden flex-shrink-0;
     }
 
     .product-image img {
