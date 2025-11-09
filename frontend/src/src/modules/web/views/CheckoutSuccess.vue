@@ -1,15 +1,27 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
-    import AppButton from '@/components/AppButton.vue';
+    import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
     import type { Order } from '../services/GuestOrderService';
+    import ButtonDark from '../components/ButtonDark.vue';
+    import { useCestaStore } from '../stores/cesta';
 
     const route = useRoute();
     const router = useRouter();
+    const cestaStore = useCestaStore();
 
     const loading = ref(true);
     const order = ref<Order | null>(null);
     const error = ref<string | null>(null);
+
+    onBeforeRouteUpdate(() => {
+        if (cestaStore.items.length === 0) {
+            router.push({ name: 'carrito' });
+        }
+    });
+
+    if (cestaStore.items.length === 0) {
+        router.push({ name: 'carrito' });
+    }
 
     onMounted(async () => {
         const orderId = route.query.order as string;
@@ -94,9 +106,9 @@
 
                 <!-- Acciones -->
                 <div class="success-actions">
-                    <AppButton variant="primary" size="lg" icon="pi pi-home" @click="handleGoHome">Volver al inicio</AppButton>
+                    <ButtonDark variant="primary" size="lg" icon="pi pi-home" @click="handleGoHome">Volver al inicio</ButtonDark>
 
-                    <AppButton variant="outline" size="lg" icon="pi pi-list" @click="handleViewOrders">Ver mis pedidos</AppButton>
+                    <ButtonDark variant="outline" size="lg" icon="pi pi-list" @click="handleViewOrders">Ver mis pedidos</ButtonDark>
                 </div>
 
                 <!-- Nota adicional -->

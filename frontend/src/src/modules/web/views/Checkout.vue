@@ -1,8 +1,13 @@
 <script setup lang="ts">
+    import DatosEnvioForm from '../components/checkout/DatosEnvioForm.vue';
+    import PaymentForm from '../components/checkout/PaymentForm.vue';
+    import OrderSummary from '../components/checkout/OrderSummary.vue';
+    import { useCestaStore } from '../stores/cesta';
+    import router from '@/router';
+    import { onBeforeRouteUpdate } from 'vue-router';
     import { ref } from 'vue';
-import DatosEnvioForm from '../components/checkout/DatosEnvioForm.vue';
-import PaymentForm from '../components/checkout/PaymentForm.vue';
-import OrderSummary from '../components/checkout/OrderSummary.vue';
+
+    const cestaStore = useCestaStore();
 
     // Estado del pago
     const paymentData = ref<{
@@ -14,11 +19,9 @@ import OrderSummary from '../components/checkout/OrderSummary.vue';
 
     const currentStep = ref('1');
 
-    // Handlers
-    const handleOrderCreated = (data: { token: string; clientSecret: string; paymentIntentId: string }) => {
+    const handleOrderCreated = (data: { token: string; clientSecret: string; paymentIntentId: string; orderId: number }) => {
         paymentData.value = {
             ...data,
-            orderId: extractOrderIdFromToken(data.token), // Implementar según tu lógica
         };
     };
 
@@ -26,13 +29,15 @@ import OrderSummary from '../components/checkout/OrderSummary.vue';
         currentStep.value = step;
     };
 
-    // Helper para extraer order ID del token si es necesario
-    const extractOrderIdFromToken = (token: string): number => {
-        // Esta función dependerá de cómo estructures tu token
-        // Por ahora retornamos un placeholder
-        // Idealmente el backend debería retornar el orderId directamente
-        return 0; // TODO: Implementar lógica real
-    };
+    onBeforeRouteUpdate(() => {
+        if (cestaStore.items.length === 0) {
+            router.push({ name: 'carrito' });
+        }
+    });
+
+    if (cestaStore.items.length === 0) {
+        router.push({ name: 'carrito' });
+    }
 </script>
 
 <template>
