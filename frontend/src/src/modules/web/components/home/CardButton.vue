@@ -1,15 +1,16 @@
 <script setup lang="ts">
-    import { useRouter } from 'vue-router';
+    import { useRouter, type RouteParamsRawGeneric } from 'vue-router';
 
     const props = defineProps<{
         text: string;
         routeName: string;
+        params: RouteParamsRawGeneric | undefined
     }>();
 
     const router = useRouter();
 
     const navigate = () => {
-        router.push({ name: props.routeName });
+        router.push({ name: props.routeName , params: props.params});
     };
 </script>
 

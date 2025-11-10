@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue';
+    import { GENEROS_VALORES, CRITERIOS_ESPECIALES_VALORES } from '@/constants/productos';
 
     import CollectionCard from '@web/components/home/CollectionCard.vue';
 
@@ -9,9 +10,21 @@
             description: 'Descubre la moda masculina con diseños minimalistas y funcionales. Ropa que se adapta a tu ritmo, con máxima comodidad.',
             imageUrl: 'https://placehold.co/600x400/055996/ffffff?text=HOMBRE',
             buttons: [
-                { text: 'Top ventas', routeName: 'catalogo-hombre-casual' },
-                { text: 'Ofertas', routeName: 'catalogo-hombre-accesorios' },
-                { text: 'Novedades', routeName: 'catalogo-hombre-accesorios' },
+                {
+                    text: 'Top ventas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                },
+                {
+                    text: 'Ofertas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[0] },
+                },
+                {
+                    text: 'Novedades',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[2] },
+                },
             ],
         },
         {
@@ -19,9 +32,21 @@
             description: 'Prendas versátiles que desafían las convenciones. Diseños modernos y neutrales para un armario sin límites.',
             imageUrl: 'https://placehold.co/600x400/1D2024/ffffff?text=UNISEX',
             buttons: [
-                { text: 'Top ventas', routeName: 'catalogo-hombre-casual' },
-                { text: 'Ofertas', routeName: 'catalogo-hombre-accesorios' },
-                { text: 'Novedades', routeName: 'catalogo-hombre-accesorios' },
+                {
+                    text: 'Top ventas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[2], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                },
+                {
+                    text: 'Ofertas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[2], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[0] },
+                },
+                {
+                    text: 'Novedades',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[2], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[2] },
+                },
             ],
         },
         {
@@ -29,9 +54,21 @@
             description: 'Las últimas tendencias en moda femenina. Estilo atemporal que combina elegancia y comodidad para cualquier ocasión.',
             imageUrl: 'https://placehold.co/600x400/D35D96/ffffff?text=MUJER',
             buttons: [
-                { text: 'Top ventas', routeName: 'catalogo-hombre-casual' },
-                { text: 'Ofertas', routeName: 'catalogo-hombre-accesorios' },
-                { text: 'Novedades', routeName: 'catalogo-hombre-accesorios' },
+                {
+                    text: 'Top ventas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                },
+                {
+                    text: 'Ofertas',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[0] },
+                },
+                {
+                    text: 'Novedades',
+                    routeName: 'productos',
+                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[2] },
+                },
             ],
         },
     ]);
