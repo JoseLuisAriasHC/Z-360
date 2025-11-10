@@ -18,15 +18,22 @@ const router = createRouter({
             children: typedWebRoutes,
         },
     ],
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition;
+        }
+        else {
+            return { top: 0, left: 0 };
+        }
+    },
 });
 
 // Guard global para proteger rutas de admin
 router.beforeEach((to, from, next) => {
-    
     const requiresAuthAdmin = to.meta.requiresAuthAdmin as boolean | undefined;
     const requiresAuthUser = to.meta.requiresAuthUser as boolean | undefined;
     const isAuthenticated = !!localStorage.getItem('auth_token');
-    
+
     // Limpiar configuracion del admin
     if (!to.path.startsWith('/admin')) {
         if (localStorage.getItem(THEME_CONFIG_KEY)) localStorage.removeItem(THEME_CONFIG_KEY);
