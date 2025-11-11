@@ -294,8 +294,10 @@ class DashboardControllerADM extends Controller
         foreach ($results as $result) {
             $week = (int)$result->week;
             if ($weeklyData->has($week)) {
-                $weeklyData[$week]['orders_count'] = (int)$result->orders_count;
-                $weeklyData[$week]['total_revenue'] = round((float)$result->total_revenue, 2);
+                $data = $weeklyData->get($week);
+                $data['orders_count'] = (int)$result->orders_count;
+                $data['total_revenue'] = round((float)$result->total_revenue, 2);
+                $weeklyData->put($week, $data);
             }
         }
 

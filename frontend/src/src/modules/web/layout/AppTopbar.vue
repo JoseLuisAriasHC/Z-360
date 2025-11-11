@@ -1,10 +1,15 @@
 <script setup lang="ts">
     import { ref } from 'vue';
     import { useRouter } from 'vue-router';
-    import MujerCalzadoMasVendido from '@/assets/img/navBar/mujer_calzado_mas_vendidos.webp';
-    import MujerRebajas from '@/assets/img/navBar/mujer_calzado_rebajas.webp';
     import type { Genero, CriterioBusqueda } from '@/constants/productos';
     import { useCestaStore } from '../stores/cesta';
+    import hombre_top_ventas from '@/assets/img/card/hombre_top_ventas.webp';
+    import hombre_ofertas from '@/assets/img/card/hombre_ofertas.webp';
+    import mujer_ofertas from '@/assets/img/card/mujer_ofertas.webp';
+    import mujer_top_ventas from '@/assets/img/card/mujer_top_ventas.webp';
+    import unisex_ofertas from '@/assets/img/card/unisex_ofertas.webp';
+    import unisex_top_ventas from '@/assets/img/card/unisex_top_ventas.webp';
+    import CardButton from '../components/home/CardButton.vue';
 
     const router = useRouter();
     const cesta = useCestaStore();
@@ -21,7 +26,6 @@
     };
 
     const isMenuOpen = ref(false);
-
     const handleMouseEnter = () => {
         isMenuOpen.value = true;
     };
@@ -34,6 +38,7 @@
         }
     };
 
+    const btnStyle = 'w-2/4';
     const items = ref([
         {
             label: 'Hombre',
@@ -42,8 +47,8 @@
                     {
                         items: [
                             {
-                                image: 'https://primefaces.org/cdn/primevue/images/uikit/uikit-system.png',
-                                label: 'Más vendidos',
+                                image: hombre_top_ventas,
+                                label: 'Top Ventas',
                                 command: () => navigateToProducts('hombre', 'top-ventas'),
                             },
                         ],
@@ -75,7 +80,7 @@
                     {
                         items: [
                             {
-                                image: 'https://primefaces.org/cdn/primevue/images/uikit/uikit-system.png',
+                                image: hombre_ofertas,
                                 label: 'Rebajas',
                                 command: () => navigateToProducts('hombre', 'ofertas'),
                             },
@@ -92,8 +97,8 @@
                     {
                         items: [
                             {
-                                image: MujerCalzadoMasVendido,
-                                label: 'Más vendidos',
+                                image: unisex_top_ventas,
+                                label: 'Top Ventas',
                                 command: () => navigateToProducts('mujer', 'top-ventas'),
                             },
                         ],
@@ -125,7 +130,7 @@
                     {
                         items: [
                             {
-                                image: MujerRebajas,
+                                image: unisex_ofertas,
                                 label: 'Rebajas',
                                 command: () => navigateToProducts('unisex', 'ofertas'),
                             },
@@ -142,8 +147,8 @@
                     {
                         items: [
                             {
-                                image: MujerCalzadoMasVendido,
-                                label: 'Más vendidos',
+                                image: mujer_ofertas,
+                                label: 'Top Ventas',
                                 command: () => navigateToProducts('mujer', 'top-ventas'),
                             },
                         ],
@@ -175,8 +180,8 @@
                     {
                         items: [
                             {
-                                image: MujerRebajas,
-                                label: 'Rebajas',
+                                image: mujer_top_ventas,
+                                label: 'Ofertas',
                                 command: () => navigateToProducts('mujer', 'ofertas'),
                             },
                         ],
@@ -234,7 +239,9 @@
                     </span>
                 </a>
                 <div v-else class="hidden lg:block">
-                    <div class="w-full h-80 hidden lg:block" :style="{ backgroundImage: 'url(' + item.image + ')' }"></div>
+                    <div class="w-full h-80 hidden lg:flex justify-center items-center cursor-pointer" :style="{ backgroundImage: 'url(' + item.image + ')' }">
+                        <CardButton :text="item.label" :style="btnStyle"  />
+                    </div>
                 </div>
             </template>
             <template #end>
@@ -243,10 +250,10 @@
                     <div class="layout-topbar-menu">
                         <div class="layout-topbar-menu-content">
                             <!-- Botón/Trigger del Desplegable -->
-                            <div class="flex gap-3">
-                                <RouterLink :to="{ name: 'carrito' }">
+                            <div class="flex gap-3 mr-3">
+                                <!-- <RouterLink :to="{ name: 'carrito' }">
                                     <Button icon="pi pi-user" aria-label="User" severity="secondary" rounded size="large" />
-                                </RouterLink>
+                                </RouterLink> -->
                                 <RouterLink :to="{ name: 'carrito' }">
                                     <OverlayBadge :value="cesta.totalItems" severity="contrast">
                                         <Button icon="pi pi-shopping-cart" aria-label="Carrito" severity="secondary" rounded size="large" />

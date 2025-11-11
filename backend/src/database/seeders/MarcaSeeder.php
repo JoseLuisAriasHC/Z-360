@@ -19,10 +19,10 @@ class MarcaSeeder extends Seeder
             ['nombre' => 'Converse', 'logo' => '#/logos/converse.svg', 'talla_offset' => 1.00],
             ['nombre' => 'Vans', 'logo' => '#/logos/vans.svg', 'talla_offset' => -0.50],
             ['nombre' => 'New Balance', 'logo' => '#/logos/new_balance.svg', 'talla_offset' => 0.25],
-            ['nombre' => 'Reebok', 'logo' => '#/logos/reebok.svg', 'talla_offset' => -0.5],
-            ['nombre' => 'Skechers', 'logo' => '#/logos/skechers.svg', 'talla_offset' => 1.50],
-            ['nombre' => 'Timberland', 'logo' => '#/logos/timberland.svg', 'talla_offset' => -1.00],
-            ['nombre' => 'Clarks', 'logo' => '#/logos/clarks.svg', 'talla_offset' => -0.5],
+            ['nombre' => 'Asics', 'logo' => '#/logos/asics.svg', 'talla_offset' => -0.5],
+            ['nombre' => 'Hoka', 'logo' => '#/logos/hoka.svg', 'talla_offset' => 1.50],
+            ['nombre' => 'Lacoste', 'logo' => '#/logos/lacoste.svg', 'talla_offset' => -1.00],
+            ['nombre' => 'Jordan', 'logo' => '#/logos/jordan.svg', 'talla_offset' => -0.5],
         ];
 
         foreach ($marcas as $marca) {
