@@ -15,10 +15,6 @@
 </template>
 
 <style scoped>
-    .main {
-        padding-top: 3rem;
-    }
-
     @media (min-width: 1280px) {
         .main {
             padding-top: 6.7rem;
