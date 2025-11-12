@@ -5,7 +5,9 @@
     import Aura from '@primeuix/themes/aura';
     import Lara from '@primeuix/themes/lara';
     import Nora from '@primeuix/themes/nora';
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch, nextTick } from 'vue';
+
+    console.log($t());
 
     // Tipos para colores
     interface ColorPalette {
@@ -110,12 +112,9 @@
                 document.documentElement.classList.remove('app-dark');
             }
 
-            // 4. CORRECCIÓN CRÍTICA: Aplicar todo el tema completo
-            // Se usa setTimeout para diferir la aplicación del tema. Esto asegura que
-            // el código se ejecuta después de que el ciclo de montaje de Vue ha terminado
-            // de procesar todos los cambios reactivos (layoutConfig),
-            // evitando la condición de carrera con la librería de temas.
-            setTimeout(applyFullTheme, 50);
+            nextTick(() => {
+                applyFullTheme();
+            });
         } catch (e) {
             console.warn('Error al cargar configuración:', e);
         }
@@ -214,6 +213,7 @@
     }
 
     function updateColors(type: 'primary' | 'surface', color: ThemeColor) {
+        console.log('🔄 updateColors called:', { type, color: color.name });
         if (type === 'primary') {
             layoutConfig.primary = color.name;
         } else if (type === 'surface') {
@@ -222,14 +222,23 @@
 
         applyTheme(type, color);
         saveConfig();
+
+        console.log('💾 Config saved:', layoutConfig);
     }
 
     function applyTheme(type: 'primary' | 'surface', color: ThemeColor) {
+        console.log(color.palette);
+        
         if (type === 'primary') {
             updatePreset(getPresetExt());
         } else if (type === 'surface') {
             updateSurfacePalette(color.palette);
         }
+
+        setTimeout(() => {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--p-primary-500');
+            console.log('✅ CSS Variable after change:', primaryColor.trim());
+        }, 100);
     }
 
     function onPresetChange() {
