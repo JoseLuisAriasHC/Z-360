@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue';
-    import { GENEROS_VALORES, CRITERIOS_ESPECIALES_VALORES } from '@/constants/productos';
+    import { GENEROS_VALORES, TIPOS_VALORES } from '@/constants/productos';
     import card_deporte_hombre from '@/assets/img/card/card_deporte_hombre.webp';
     import card_deporte_mujer from '@/assets/img/card/card_urbano_mujer.avif';
     import card_urbano_hombre from '@/assets/img/card/card_urbano_hombre.webp';
@@ -17,7 +17,7 @@
                 {
                     text: 'Explorar Colección',
                     routeName: 'productos',
-                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: TIPOS_VALORES[1] },
                 },
             ],
         },
@@ -29,7 +29,7 @@
                 {
                     text: 'Explorar Colección',
                     routeName: 'productos',
-                    params: { genero: GENEROS_VALORES[2], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: TIPOS_VALORES[1] },
                 },
             ],
         },
@@ -41,7 +41,7 @@
                 {
                     text: 'Explorar Colección',
                     routeName: 'productos',
-                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                    params: { genero: GENEROS_VALORES[0], criterioBusqueda: TIPOS_VALORES[0] },
                 },
             ],
         },
@@ -53,7 +53,7 @@
                 {
                     text: 'Explorar Colección',
                     routeName: 'productos',
-                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: CRITERIOS_ESPECIALES_VALORES[1] },
+                    params: { genero: GENEROS_VALORES[1], criterioBusqueda: TIPOS_VALORES[1] },
                 },
             ],
         },

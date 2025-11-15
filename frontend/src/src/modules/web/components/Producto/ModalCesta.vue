@@ -34,7 +34,7 @@
     };
 
     const hanldeEliminarProductoCesta = (producto: CestaItem) => {
-        cesta.removeProducto(producto.id, producto.idTalla);
+        cesta.removeProducto(producto.id);
     };
 </script>
 

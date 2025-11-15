@@ -160,8 +160,7 @@ class ProductVariantControllerADM extends Controller
             }
         });
 
-        $variants = ProductVariant::with(['color', 'sizes.talla'])
-            ->paginate(config('web.paginacion_por_pagina'));
+        $variants = ProductVariant::with(['color', 'sizes.talla']);
 
         return ProductVariantResource::collection($variants);
     }

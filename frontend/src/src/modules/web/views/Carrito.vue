@@ -49,7 +49,9 @@
                 </Button>
             </router-link>
 
-            <div class="pt-4 mt-auto border-solid border-t-2 border-muted-border px-8 xl:p-0">
+
+            <!-- TODO: Usuario -->
+            <!-- <div class="pt-4 mt-auto border-solid border-t-2 border-muted-border px-8 xl:p-0">
                 <div class="font-semibold text-3xl">Novedades</div>
                 <div class="flex">
                     <p class="font-semibold text-lg">¿Quieres resivir novedades?</p>
@@ -59,7 +61,7 @@
                         <a href="#" class="text-muted-dark hover:border-b border-black">Iniciar sesión</a>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="col-span-12 xl:col-span-4 px-8 xl:p-0">

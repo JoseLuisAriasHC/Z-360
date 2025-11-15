@@ -87,6 +87,7 @@
         const variante = productoDetalle.value.variante_seleccionada;
         cestaStore.addProducto({
             id: tallaSelecionada.value.id,
+            idVariante: productoDetalle.value.variante_seleccionada.id,
             nombre: productoDetalle.value.producto.nombre,
             marca: productoDetalle.value.producto.marca.nombre,
             talla: tallaSelecionada.value.talla.numero,

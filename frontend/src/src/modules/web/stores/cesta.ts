@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue';
 
 export interface CestaItem {
     id: number;
+    idVariante: number;
     nombre: string;
     marca: string;
     talla: string;
