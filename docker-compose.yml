@@ -1,6 +1,8 @@
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: z360_backend
     volumes:
       - ./backend/src:/var/www/html
@@ -13,7 +15,9 @@ services:
       - z360
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: z360_frontend
     volumes:
       - ./frontend/src:/app
