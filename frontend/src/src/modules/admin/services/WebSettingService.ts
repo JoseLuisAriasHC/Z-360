@@ -31,12 +31,12 @@ export const WebSettingService = {
     },
 
     async getEmpresaSettings(): Promise<WebSetting[]> {
-        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('admin/web-settings/empresa');
+        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('web-settings/empresa');
         return response.data.data;
     },
 
     async getEnvioSettings(): Promise<WebSetting[]> {
-        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('admin/web-settings/envio');
+        const response: AxiosResponse<AllResponseWrapper> = await apiClient.get('web-settings/envio');
         return response.data.data;
     },
 
