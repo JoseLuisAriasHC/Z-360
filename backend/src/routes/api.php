@@ -50,6 +50,10 @@ Route::prefix('products')->group(function () {
 
 Route::get('/cupones/{codigo}', [CuponController::class, 'getByCodigo']);
 
+// Rutas de acceso global para datos de la Web
+Route::get('/web-settings/empresa', [WebSettingsControllerADM::class, 'getEmpresaSettings']);
+Route::get('/web-settings/envio', [WebSettingsControllerADM::class, 'getEnvioSettings']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas para el carrito
     Route::get('cart', [CartController::class, 'getCart']);
@@ -148,8 +152,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::delete('user-photos/{product_id}/eliminar-no-aprobadas', [UserPhotoControllerADM::class, 'eliminarNoAprobadas']);
 
     // Rutas para las configuraciones de la aplicacion (IVA, Coste de envio, cuando es gratis el coste de envio, etc) 
-    Route::get('/web-settings/empresa', [WebSettingsControllerADM::class, 'getEmpresaSettings']);
-    Route::get('/web-settings/envio', [WebSettingsControllerADM::class, 'getEnvioSettings']);
     Route::get('/web-settings/ecommerce', [WebSettingsControllerADM::class, 'getEcommerceSettings']);
     Route::patch('/web-settings/save-empresa', [WebSettingsControllerADM::class, 'saveEmpresaSettings']);
     Route::patch('/web-settings/save-envio', [WebSettingsControllerADM::class, 'saveEnvioSettings']);
