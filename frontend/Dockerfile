@@ -12,6 +12,15 @@ RUN npm ci
 # Copiar código fuente
 COPY src/. .
 
+# Pasar variables a vite
+ARG VITE_API_URL
+ARG VITE_ENV
+ARG VITE_STORAGE_URL
+
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_ENV=$VITE_ENV
+ENV VITE_STORAGE_URL=$VITE_STORAGE_URL
+
 # Build de producción
 RUN npm run build
 
