@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagickwand-dev imagemagick \
     nginx \
     supervisor \
+    default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Configurar extensiones PHP
@@ -35,12 +36,15 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Configuración de Nginx
+# Copiar configuraciones
 COPY nginx.conf /etc/nginx/sites-available/default
-
-# Configuración de Supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copiar y hacer ejecutable el script de inicialización
+COPY init.sh /usr/local/bin/init.sh
+RUN chmod +x /usr/local/bin/init.sh
 
 EXPOSE 8000
 
+# Usar el script de inicialización como comando de inicio
 CMD ["/usr/local/bin/init.sh"]
