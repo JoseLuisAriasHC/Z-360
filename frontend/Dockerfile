@@ -1,20 +1,31 @@
-FROM node:22-alpine
-
-RUN apk add --no-cache dumb-init
+# Etapa 1: Build
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
 # Copiar archivos de dependencias
 COPY src/package*.json ./
 
-# Instalar dependencias
-RUN npm install
+# Instalar dependencias 
+RUN npm ci
 
 # Copiar código fuente
 COPY src/. .
 
-EXPOSE 5173
+# Build de producción
+RUN npm run build
 
-ENTRYPOINT ["dumb-init", "--"]
+# Etapa 2: Servidor Nginx
+FROM nginx:alpine
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Copiar archivos compilados desde la etapa de build
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copiar configuración personalizada de Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Exponer puerto 80
+EXPOSE 80
+
+# Comando por defecto (Nginx en foreground)
+CMD ["nginx", "-g", "daemon off;"]
