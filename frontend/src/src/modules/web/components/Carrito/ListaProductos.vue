@@ -6,15 +6,17 @@
 
 <template>
     <div v-for="item in cesta.items" class="flex gap-4">
-        <div style="height: 164px; width: 164px">
-            <img :src="item.imagen" :alt="item.nombre" />
-        </div>
+        <RouterLink :to="{ name: 'producto-detalles', params: { id: item.idVariante } }">
+            <div class="cursor-pointer" style="height: 164px; width: 164px">
+                <img :src="item.imagen" :alt="item.nombre" />
+            </div>
+        </RouterLink>
         <div class="flex-1 text-lg">
             <div class="capitalize text-muted-light">
                 {{ item.marca }}
             </div>
             <div class="flex justify-between w-full">
-                <RouterLink :to="{ name: 'producto-detalles', params: { id: item.id } }">
+                <RouterLink :to="{ name: 'producto-detalles', params: { id: item.idVariante } }">
                     <div class="leading-5 capitalize font-semibold mb-4 transition duration-300 ease-in-out hover:text-muted-light">
                         {{ item.nombre }}
                     </div>

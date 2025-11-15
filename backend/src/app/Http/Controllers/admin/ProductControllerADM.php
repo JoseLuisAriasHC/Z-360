@@ -49,7 +49,7 @@ class ProductControllerADM extends Controller
             });
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate(config('web.paginacion_por_pagina'));
+        $products = $query->orderBy('created_at', 'desc');
 
         return response()->json([
             'success' => true,

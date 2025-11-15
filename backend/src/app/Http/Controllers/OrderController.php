@@ -34,8 +34,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('user_id', Auth::id())
-            ->paginate(config('web.paginacion_por_pagina_en_pedidos', 10));
+        $orders = Order::where('user_id', Auth::id());
 
         return response()->json([
             'success' => true,

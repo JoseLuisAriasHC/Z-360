@@ -81,7 +81,7 @@
                         items: [
                             {
                                 image: hombre_ofertas,
-                                label: 'Rebajas',
+                                label: 'Ofertas',
                                 command: () => navigateToProducts('hombre', 'ofertas'),
                             },
                         ],
@@ -131,7 +131,7 @@
                         items: [
                             {
                                 image: unisex_ofertas,
-                                label: 'Rebajas',
+                                label: 'Ofertas',
                                 command: () => navigateToProducts('unisex', 'ofertas'),
                             },
                         ],

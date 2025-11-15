@@ -73,7 +73,7 @@ class SendFacturaMailJob implements ShouldQueue
 
         // Notificar al administrador sobre el fallo
         try {
-            $adminEmail = WebSettings::getValue('email_admin', config('web.paginacion_por_pagina'));
+            $adminEmail = WebSettings::getValue('email_admin');
             Mail::to($adminEmail)
                 ->send(new FailedFacturaMail(
                     $this->order,
