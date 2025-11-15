@@ -29,6 +29,9 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
 
+# Usar usuario no root para evitar problemas de permisos
+USER devuser
+
 # Copiar archivos de dependencias y instalar
 COPY src/composer.json src/composer.lock ./
 RUN composer install --no-scripts --no-autoloader
@@ -38,9 +41,6 @@ COPY src/. .
 RUN composer dump-autoload --optimize
 
 RUN chown -R devuser:laravelgroup storage bootstrap/cache
-
-# Usar usuario no root para evitar problemas de permisos
-USER devuser
 
 # Comando para arrancar Laravel
 CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000
