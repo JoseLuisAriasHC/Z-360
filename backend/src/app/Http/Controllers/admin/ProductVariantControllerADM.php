@@ -160,7 +160,7 @@ class ProductVariantControllerADM extends Controller
             }
         });
 
-        $variants = ProductVariant::with(['color', 'sizes.talla']);
+        $variants = ProductVariant::with(['color', 'sizes.talla'])->where('product_id', $productId)->get();
 
         return ProductVariantResource::collection($variants);
     }
