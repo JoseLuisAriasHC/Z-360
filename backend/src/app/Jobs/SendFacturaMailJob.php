@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Mail\FacturaMail;
-use App\Mail\FailedFacturaMail;
 use App\Models\Order;
 use App\Models\WebSettings;
+use App\Services\BrevoEmailService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,83 +13,153 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class SendFacturaMailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Número de intentos
-     */
     public $tries = 3;
+    public $timeout = 60; // Reducido a 60 segundos
+    public $backoff = 30; // Esperar 30 segundos entre reintentos
 
-    /**
-     * Timeout en segundos
-     */
-    public $timeout = 120;
-
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         public Order $order
     ) {}
 
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
+    public function handle(BrevoEmailService $brevoService): void
     {
         try {
-            Mail::to($this->order->envio_email)->send(new FacturaMail($this->order));
+            // Preparar datos
+            $webSettings = $this->getWebSettings();
+            $items = $this->prepareItems();
 
-            Log::info('Factura enviada correctamente', [
+            // Generar HTML del email
+            $htmlContent = view('emails.factura', [
+                'order' => $this->order,
+                'items' => $items,
+                'settings' => $webSettings
+            ])->render();
+
+            // Generar PDF
+            $pdf = Pdf::loadView('emails.factura-pdf', [
+                'order' => $this->order,
+                'items' => $items,
+                'settings' => $webSettings
+            ]);
+
+            $pdfContent = base64_encode($pdf->output());
+
+            // Enviar via API de Brevo
+            $brevoService->sendEmail(
+                [
+                    'email' => $this->order->envio_email,
+                    'name' => $this->order->envio_nombre . ' ' . $this->order->envio_apellidos
+                ],
+                'Factura de tu pedido #' . $this->order->id,
+                $htmlContent,
+                null,
+                [
+                    [
+                        'content' => $pdfContent,
+                        'name' => 'factura-' . $this->order->id . '.pdf'
+                    ]
+                ]
+            );
+
+            Log::info('Factura enviada correctamente via Brevo API', [
                 'order_id' => $this->order->id,
                 'email' => $this->order->envio_email
             ]);
+
         } catch (Exception $e) {
-            Log::error('Error enviando factura por email: ' . $e->getMessage(), [
+            Log::error('Error enviando factura: ' . $e->getMessage(), [
                 'order_id' => $this->order->id,
                 'email' => $this->order->envio_email,
-                'error' => $e->getMessage()
+                'attempt' => $this->attempts()
             ]);
 
-            // Re-lanzar para que el job se reintente
             throw $e;
         }
     }
 
-    /**
-     * Handle a job failure.
-     */
     public function failed(\Throwable $exception): void
     {
-        Log::error('Job de envío de factura falló definitivamente', [
+        Log::error('Job de factura falló definitivamente', [
             'order_id' => $this->order->id,
             'email' => $this->order->envio_email,
             'error' => $exception->getMessage()
         ]);
 
-        // Notificar al administrador sobre el fallo
+        // Notificar al administrador
         try {
             $adminEmail = WebSettings::getValue('email_admin');
-            Mail::to($adminEmail)
-                ->send(new FailedFacturaMail(
-                    $this->order,
-                    $exception,
-                    'Error al enviar factura después de ' . $this->tries . ' intentos.'
-                ));
+            $brevoService = app(BrevoEmailService::class);
 
-            Log::info('Notificación de fallo en el envio de la facutara al correo del cliente enviada al administrador', [
-                'order_id' => $this->order->id,
-                'admin_email' => $adminEmail
-            ]);
+            $htmlContent = view('emails.failed-order-notification', [
+                'order' => $this->order,
+                'exception' => $exception,
+                'errorMessage' => 'Error después de ' . $this->tries . ' intentos: ' . $exception->getMessage()
+            ])->render();
+
+            $brevoService->sendEmail(
+                ['email' => $adminEmail, 'name' => 'Administrador'],
+                '⚠️ ERROR: Fallo en envío de factura - Pedido #' . $this->order->id,
+                $htmlContent
+            );
+
         } catch (Exception $e) {
-            Log::critical('No se pudo notificar al administrador sobre el fallo', [
+            Log::critical('No se pudo notificar al admin', [
                 'order_id' => $this->order->id,
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    private function prepareItems()
+    {
+        $items = $this->order->items->load([
+            'variantSize.productVariant.product',
+            'variantSize.productVariant.color',
+            'variantSize.talla'
+        ]);
+
+        // Convertir imágenes a base64 para PDF
+        foreach ($items as $item) {
+            if (
+                $item->variantSize &&
+                $item->variantSize->productVariant &&
+                $item->variantSize->productVariant->imagen_principal_jpeg
+            ) {
+                $jpegFilename = $item->variantSize->productVariant->imagen_principal_jpeg;
+                $jpegPath = storage_path("app/public/product_variants/S_{$jpegFilename}");
+
+                try {
+                    if (file_exists($jpegPath)) {
+                        $imageData = file_get_contents($jpegPath);
+                        $mimeType = mime_content_type($jpegPath);
+                        $item->imagen_base64 = "data:{$mimeType};base64," . base64_encode($imageData);
+                    }
+                } catch (Exception $e) {
+                    Log::warning('Error cargando imagen para PDF', [
+                        'path' => $jpegPath,
+                        'error' => $e->getMessage()
+                    ]);
+                    $item->imagen_base64 = null;
+                }
+            }
+        }
+
+        return $items;
+    }
+
+    private function getWebSettings(): array
+    {
+        return [
+            'iva' => (float) WebSettings::getValue('iva', 21),
+            'empresa_nombre' => WebSettings::getValue('empresa_nombre', 'Z-360'),
+            'empresa_direccion' => WebSettings::getValue('empresa_direccion', 'Casco Antiguo, 50004 Zaragoza'),
+            'empresa_telefono' => WebSettings::getValue('empresa_telefono', '+34 666 777 888 999'),
+            'empresa_email' => WebSettings::getValue('empresa_email', 'z360@gmail.com'),
+        ];
     }
 }
