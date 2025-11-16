@@ -7,8 +7,6 @@
     import Nora from '@primeuix/themes/nora';
     import { ref, onMounted, watch, nextTick } from 'vue';
 
-    console.log($t());
-
     // Tipos para colores
     interface ColorPalette {
         [key: string]: string;
@@ -213,7 +211,6 @@
     }
 
     function updateColors(type: 'primary' | 'surface', color: ThemeColor) {
-        console.log('🔄 updateColors called:', { type, color: color.name });
         if (type === 'primary') {
             layoutConfig.primary = color.name;
         } else if (type === 'surface') {
@@ -222,13 +219,9 @@
 
         applyTheme(type, color);
         saveConfig();
-
-        console.log('💾 Config saved:', layoutConfig);
     }
 
     function applyTheme(type: 'primary' | 'surface', color: ThemeColor) {
-        console.log(color.palette);
-        
         if (type === 'primary') {
             updatePreset(getPresetExt());
         } else if (type === 'surface') {
@@ -237,7 +230,6 @@
 
         setTimeout(() => {
             const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--p-primary-500');
-            console.log('✅ CSS Variable after change:', primaryColor.trim());
         }, 100);
     }
 
